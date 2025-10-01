@@ -1,0 +1,26 @@
+import {
+  Hero,
+  Stats,
+  CourseCategories,
+  ExploreCourses,
+  Testimonial,
+  Events,
+  StudentsFeedback,
+  TrustedCompanies
+} from "@/components/home";
+
+export default function HomePage() {
+  return (
+    <>
+      <Hero />
+      {/* <Stats /> */}
+      <CourseCategories />
+      <ExploreCourses />
+      <Testimonial />
+      <Events />
+      <StudentsFeedback />
+      <TrustedCompanies />
+    </>
+  );
+}
+
