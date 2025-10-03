@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Phone, Mail, User, Search, Menu, X, ChevronDown, Ship } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -49,9 +50,9 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <div className="flex items-center space-x-3">
+            <Link href="/" className="flex items-center space-x-3 group">
               <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-950 to-blue-800 rounded-lg flex items-center justify-center shadow-md group hover:shadow-xl transition-shadow">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-950 to-blue-800 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-xl transition-shadow">
                   <Ship className="w-7 h-7 text-yellow-500 group-hover:scale-110 transition-transform" />
                 </div>
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
@@ -60,38 +61,36 @@ export default function Navbar() {
                 <span className="text-xl font-bold text-blue-950 block leading-none">BVT Training</span>
                 <span className="text-xs text-gray-500">Naval Excellence</span>
               </div>
-            </div>
+            </Link>
 
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center space-x-1">
-              <a href="#" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
+              <Link href="/" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
                 Home
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-              </a>
-              <a href="#" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
+              </Link>
+              <Link href="/about" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
                 About
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-              </a>
-              <div className="relative group">
-                <button className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all flex items-center gap-1">
-                  Courses
-                  <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform" />
-                </button>
-              </div>
+              </Link>
+              <Link href="/courses" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
+                Courses
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+              </Link>
               <div className="relative group">
                 <button className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all flex items-center gap-1">
                   Programs
                   <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform" />
                 </button>
               </div>
-              <a href="#" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
+              <Link href="#" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
                 Events
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-              </a>
-              <a href="#" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
+              </Link>
+              <Link href="#" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
                 Contact
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-              </a>
+              </Link>
             </nav>
 
             {/* Right Side Actions */}
@@ -121,24 +120,24 @@ export default function Navbar() {
           {isMobileMenuOpen && (
             <div className="lg:hidden mt-4 pb-4 border-t border-gray-200 pt-4 animate-in slide-in-from-top">
               <div className="flex flex-col space-y-2">
-                <a href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
+                <Link href="/" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
                   Home
-                </a>
-                <a href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
+                </Link>
+                <Link href="/about" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
                   About
-                </a>
-                <a href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
+                </Link>
+                <Link href="/courses" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
                   Courses
-                </a>
-                <a href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
+                </Link>
+                <Link href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
                   Programs
-                </a>
-                <a href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
+                </Link>
+                <Link href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
                   Events
-                </a>
-                <a href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
+                </Link>
+                <Link href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
                   Contact
-                </a>
+                </Link>
                 <button className="mt-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-600 transition-all">
                   Enroll Now
                 </button>
