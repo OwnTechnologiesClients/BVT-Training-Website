@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from 'next/link';
 import { motion } from "framer-motion";
 import { 
   Star, 
@@ -131,7 +132,6 @@ const RELATED_COURSES = [
 export default function CourseDetailsPage() {
   const [activeTab, setActiveTab] = useState("info");
   const [expandedSections, setExpandedSections] = useState(["Getting Started"]);
-  const [isSticky, setIsSticky] = useState(false);
 
   const toggleSection = (sectionTitle) => {
     setExpandedSections(prev => 
@@ -141,35 +141,6 @@ export default function CourseDetailsPage() {
     );
   };
 
-  useEffect(() => {
-    let ticking = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const aboutSection = document.querySelector('#about-course');
-          const relatedSection = document.querySelector('#related-courses');
-          
-          if (aboutSection && relatedSection) {
-            const aboutTop = aboutSection.offsetTop;
-            const relatedTop = relatedSection.offsetTop;
-            const scrollY = window.scrollY;
-            
-            // Sidebar behavior:
-            // 1. Scroll normally until About Course section
-            // 2. Stick when About Course section starts
-            // 3. When approaching Related Courses (within 200px), start scrolling again
-            setIsSticky(scrollY >= aboutTop - 100 && scrollY < relatedTop - 300);
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -397,7 +368,7 @@ export default function CourseDetailsPage() {
 
               {/* Sticky Sidebar */}
               <div className="lg:col-span-1">
-                <div className={`${isSticky ? 'sticky top-6' : ''} transition-all duration-500 ease-in-out`}>
+                <div className="sticky top-6">
                   <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                     {/* Course Thumbnail */}
                     <div className="relative">
@@ -416,9 +387,11 @@ export default function CourseDetailsPage() {
 
                     {/* Course Details */}
                     <div className="p-6">
-                      <button className="w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors mb-6 shadow-md">
-                        Start Learning
-                      </button>
+                      <Link href={`/courses/${COURSE_DATA.slug}/learn`}>
+                        <button className="w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors mb-6 shadow-md">
+                          Start Learning
+                        </button>
+                      </Link>
 
                       <div className="space-y-4 mb-6">
                         <div className="flex items-center justify-between py-2">
@@ -518,9 +491,11 @@ export default function CourseDetailsPage() {
                   {/* Price and CTA */}
                   <div className="flex items-center justify-between">
                     <div className="text-2xl font-bold text-gray-900">${course.price}</div>
-                    <button className="bg-blue-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-800 transition-colors">
-                      Start Learning
-                    </button>
+                    <Link href={`/courses/${course.slug}/learn`}>
+                      <button className="bg-blue-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-800 transition-colors">
+                        Start Learning
+                      </button>
+                    </Link>
                   </div>
                 </div>
               </div>

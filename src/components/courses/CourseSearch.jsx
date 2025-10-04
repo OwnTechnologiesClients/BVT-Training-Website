@@ -1,49 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Filter, X, Clock, Users, Star } from "lucide-react";
+import { Search, Filter, X, Clock, Users, Star, MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 
-const COURSE_FILTERS = [
-  { id: "all", label: "All Courses", count: 400 },
-  { id: "beginner", label: "Beginner", count: 120 },
-  { id: "intermediate", label: "Intermediate", count: 180 },
-  { id: "advanced", label: "Advanced", count: 100 }
-];
-
-const CATEGORY_FILTERS = [
-  "Marine Engineering",
-  "Navigation",
-  "Leadership",
-  "Communications",
-  "Safety & Security",
-  "Weapons Systems"
-];
-
-const DURATION_FILTERS = [
-  "Under 4 weeks",
-  "4-8 weeks", 
-  "8-16 weeks",
-  "16+ weeks"
-];
-
-// Sample courses data for search
-const SAMPLE_COURSES = [
-  { id: 1, title: "Marine Engineering Fundamentals", category: "Marine Engineering", level: "Beginner", duration: "12 weeks", instructor: "Commander Sarah Johnson" },
-  { id: 2, title: "Advanced Navigation Systems", category: "Navigation", level: "Intermediate", duration: "8 weeks", instructor: "Captain Michael Chen" },
-  { id: 3, title: "Maritime Safety & Security", category: "Safety & Security", level: "Advanced", duration: "16 weeks", instructor: "Lieutenant Commander David Rodriguez" },
-  { id: 4, title: "Naval Communications", category: "Communications", level: "Beginner", duration: "10 weeks", instructor: "Chief Petty Officer Lisa Wang" },
-  { id: 5, title: "Leadership & Command", category: "Leadership", level: "Intermediate", duration: "14 weeks", instructor: "Admiral James Thompson" },
-  { id: 6, title: "Weapons Systems Operations", category: "Weapons Systems", level: "Advanced", duration: "20 weeks", instructor: "Captain Elena Petrova" }
-];
-
-export default function CourseSearch({ onSearchResults, onFilterChange }) {
+export default function CourseSearch({ 
+  searchContent, 
+  sampleCourses, 
+  onSearchResults, 
+  onFilterChange 
+}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedDuration, setSelectedDuration] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [filteredResults, setFilteredResults] = useState(SAMPLE_COURSES);
+  const [filteredResults, setFilteredResults] = useState(sampleCourses);
 
   const toggleCategory = (category) => {
     setSelectedCategories(prev => 
@@ -62,28 +34,31 @@ export default function CourseSearch({ onSearchResults, onFilterChange }) {
 
   // Search and filter functionality
   useEffect(() => {
-    let results = SAMPLE_COURSES;
+    let results = sampleCourses;
 
     // Apply search query
     if (searchQuery) {
       results = results.filter(course =>
         course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         course.instructor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.category.toLowerCase().includes(searchQuery.toLowerCase())
+        course.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (course.location && course.location.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
 
-    // Apply level filter
+    // Apply level/category filter
     if (selectedFilter !== "all") {
       results = results.filter(course => 
-        course.level.toLowerCase() === selectedFilter.toLowerCase()
+        course.level?.toLowerCase() === selectedFilter.toLowerCase() ||
+        course.category?.toLowerCase().includes(selectedFilter.toLowerCase())
       );
     }
 
     // Apply category filters
     if (selectedCategories.length > 0) {
       results = results.filter(course =>
-        selectedCategories.includes(course.category)
+        selectedCategories.includes(course.category) ||
+        selectedCategories.includes(course.location)
       );
     }
 
@@ -100,6 +75,14 @@ export default function CourseSearch({ onSearchResults, onFilterChange }) {
             return parseInt(duration) >= 8 && parseInt(duration) <= 16;
           case "16+ weeks":
             return parseInt(duration) > 16;
+          case "1-3 days":
+            return parseInt(duration) >= 1 && parseInt(duration) <= 3;
+          case "4-5 days":
+            return parseInt(duration) >= 4 && parseInt(duration) <= 5;
+          case "6-7 days":
+            return parseInt(duration) >= 6 && parseInt(duration) <= 7;
+          case "1+ weeks":
+            return parseInt(duration) >= 7;
           default:
             return true;
         }
@@ -107,13 +90,13 @@ export default function CourseSearch({ onSearchResults, onFilterChange }) {
     }
 
     setFilteredResults(results);
-  }, [searchQuery, selectedFilter, selectedCategories, selectedDuration]);
+  }, [searchQuery, selectedFilter, selectedCategories, selectedDuration, sampleCourses]);
 
   // Separate effect for notifying parent components
   useEffect(() => {
     if (onSearchResults) onSearchResults(filteredResults);
     if (onFilterChange) onFilterChange({ selectedFilter, selectedCategories, selectedDuration, searchQuery });
-  }, [filteredResults, selectedFilter, selectedCategories, selectedDuration, searchQuery]);
+  }, [filteredResults, selectedFilter, selectedCategories, selectedDuration, searchQuery, onSearchResults, onFilterChange]);
 
   return (
     <section className="py-6 bg-gray-50">
@@ -129,7 +112,7 @@ export default function CourseSearch({ onSearchResults, onFilterChange }) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search courses by name, instructor, or skills..."
+                placeholder={searchContent.placeholder}
                 className="w-full pl-12 pr-4 py-4 rounded-xl bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
               />
             </div>
@@ -149,7 +132,7 @@ export default function CourseSearch({ onSearchResults, onFilterChange }) {
 
           {/* Filter Tabs */}
           <div className="flex flex-wrap gap-2 mb-4">
-            {COURSE_FILTERS.map((filter) => (
+            {searchContent.filters.map((filter) => (
               <button
                 key={filter.id}
                 onClick={() => setSelectedFilter(filter.id)}
@@ -185,19 +168,21 @@ export default function CourseSearch({ onSearchResults, onFilterChange }) {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Categories */}
+                {/* Categories or Locations */}
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-3">Categories</h4>
+                  <h4 className="font-medium text-gray-900 mb-3">
+                    {searchContent.locations ? "Training Locations" : "Categories"}
+                  </h4>
                   <div className="space-y-2">
-                    {CATEGORY_FILTERS.map((category) => (
-                      <label key={category} className="flex items-center gap-3 cursor-pointer">
+                    {(searchContent.locations || searchContent.categories).map((item) => (
+                      <label key={item} className="flex items-center gap-3 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={selectedCategories.includes(category)}
-                          onChange={() => toggleCategory(category)}
+                          checked={selectedCategories.includes(item)}
+                          onChange={() => toggleCategory(item)}
                           className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                         />
-                        <span className="text-sm text-gray-700">{category}</span>
+                        <span className="text-sm text-gray-700">{item}</span>
                       </label>
                     ))}
                   </div>
@@ -205,9 +190,11 @@ export default function CourseSearch({ onSearchResults, onFilterChange }) {
 
                 {/* Duration */}
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-3">Duration</h4>
+                  <h4 className="font-medium text-gray-900 mb-3">
+                    {searchContent.locations ? "Workshop Duration" : "Duration"}
+                  </h4>
                   <div className="space-y-2">
-                    {DURATION_FILTERS.map((duration) => (
+                    {searchContent.durationFilters.map((duration) => (
                       <label key={duration} className="flex items-center gap-3 cursor-pointer">
                         <input
                           type="radio"
@@ -232,11 +219,15 @@ export default function CourseSearch({ onSearchResults, onFilterChange }) {
                     </label>
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input type="checkbox" className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
-                      <span className="text-sm text-gray-700">Online Available</span>
+                      <span className="text-sm text-gray-700">
+                        {searchContent.locations ? "Hands-on Equipment" : "Online Available"}
+                      </span>
                     </label>
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input type="checkbox" className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
-                      <span className="text-sm text-gray-700">Hands-on Training</span>
+                      <span className="text-sm text-gray-700">
+                        {searchContent.locations ? "Accommodation Available" : "Hands-on Training"}
+                      </span>
                     </label>
                   </div>
                 </div>
@@ -286,6 +277,7 @@ export default function CourseSearch({ onSearchResults, onFilterChange }) {
               <option>Newest First</option>
               <option>Highest Rated</option>
               <option>Shortest Duration</option>
+              {searchContent.locations && <option>By Location</option>}
             </select>
           </div>
         </div>

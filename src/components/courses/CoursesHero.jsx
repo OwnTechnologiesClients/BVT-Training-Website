@@ -1,103 +1,175 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BookOpen, Users, Award, Search, Filter, Star } from "lucide-react";
+import { Play, Users, Award, Clock, MapPin, Wrench, Star, CheckCircle, ArrowRight } from "lucide-react";
 
-export default function CoursesHero() {
+const iconMap = {
+  Globe: "🌐",
+  Clock: Clock,
+  Users: Users,
+  Award: Award,
+  MapPin: MapPin,
+  Wrench: Wrench
+};
+
+export default function CoursesHero({ content }) {
   return (
-    <div className="relative bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 py-20 overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-20 w-96 h-96 border-2 border-yellow-500 rounded-full"></div>
-        <div className="absolute bottom-20 right-20 w-64 h-64 border-2 border-yellow-500 rounded-full"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 border border-yellow-500/50 rounded-full"></div>
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center max-w-4xl mx-auto">
-          {/* Badge */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 bg-yellow-600/20 backdrop-blur-sm px-6 py-3 rounded-full border border-yellow-600/30 mb-6"
-          >
-            <BookOpen className="w-5 h-5 text-yellow-500" />
-            <span className="text-sm font-semibold text-yellow-500 uppercase tracking-wide">
-              400+ Professional Courses
-            </span>
-          </motion.div>
-
-          {/* Main Heading */}
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 !leading-tight"
-          >
-            Master Your <span className="text-yellow-500">Naval Career</span><br />
-            with Expert Training
-          </motion.h1>
-          
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto"
-          >
-            Discover comprehensive naval training programs designed to advance your career. 
-            From technical skills to leadership development, find the perfect course for your professional growth.
-          </motion.p>
-
-          {/* Search Bar */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            className="max-w-2xl mx-auto mb-8"
-          >
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="w-5 h-5 text-gray-400" />
+    <section className="relative bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white py-20 overflow-hidden">
+      {/* Background Image Overlay */}
+      {content.backgroundImage && (
+        <div className="absolute inset-0 opacity-10">
+          <img
+            src={content.backgroundImage}
+            alt="Naval Training"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+      
+      <div className="relative container mx-auto px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Column - Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="space-y-8"
+            >
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 bg-yellow-500/20 backdrop-blur-sm px-4 py-2 rounded-full border border-yellow-500/30">
+                <Star className="w-4 h-4 text-yellow-400" />
+                <span className="text-sm font-medium text-yellow-200">Premier Naval Training</span>
               </div>
-              <input
-                type="text"
-                placeholder="Search courses by name, category, or skills..."
-                className="w-full pl-12 pr-4 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-              />
-              <button className="absolute right-2 top-2 bottom-2 px-6 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-500 transition-colors flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                Filter
-              </button>
-            </div>
-          </motion.div>
 
-          {/* Stats */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto"
-          >
-            {[
-              { icon: BookOpen, value: "400+", label: "Training Programs" },
-              { icon: Users, value: "8,500+", label: "Active Students" },
-              { icon: Star, value: "4.9/5", label: "Average Rating" }
-            ].map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-yellow-600/20 rounded-lg mb-3">
-                    <Icon className="w-6 h-6 text-yellow-500" />
-                  </div>
-                  <div className="text-2xl font-bold text-white">{stat.value}</div>
-                  <div className="text-sm text-blue-200">{stat.label}</div>
+              {/* Title and Subtitle */}
+              <div>
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+                  {content.title}
+                </h1>
+                <p className="text-xl text-blue-100 mb-6 leading-relaxed">
+                  {content.subtitle}
+                </p>
+                <p className="text-lg text-blue-200 leading-relaxed">
+                  {content.description}
+                </p>
+              </div>
+
+              {/* Stats */}
+              {content.stats && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  {content.stats.map((stat, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
+                      className="text-center"
+                    >
+                      <div className="text-3xl md:text-4xl font-bold text-yellow-400 mb-1">
+                        {stat.number}
+                      </div>
+                      <div className="text-sm text-blue-200">
+                        {stat.label}
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
-              );
-            })}
-          </motion.div>
+              )}
+
+              {/* CTAs */}
+              {content.cta && (
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-yellow-500 text-blue-950 px-8 py-4 rounded-xl font-bold text-lg hover:bg-yellow-400 transition-colors shadow-lg flex items-center justify-center gap-2"
+                  >
+                    {content.cta.primary}
+                    <ArrowRight className="w-5 h-5" />
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-950 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Play className="w-5 h-5" />
+                    {content.cta.secondary}
+                  </motion.button>
+                </div>
+              )}
+
+              {/* Features */}
+              <div className="flex flex-wrap gap-3">
+                {content.features.map((feature, index) => {
+                  const IconComponent = iconMap[feature.icon];
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
+                      className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20"
+                    >
+                      {IconComponent && typeof IconComponent === 'string' ? (
+                        <span className="text-lg">{IconComponent}</span>
+                      ) : (
+                        IconComponent && <IconComponent className="w-4 h-4" />
+                      )}
+                      <span className="text-sm font-medium">{feature.text}</span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+
+            {/* Right Column - Badges/Highlights */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-6"
+            >
+              {content.badges && (
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                  <h3 className="text-xl font-bold mb-4 text-center">Why Choose Our Training?</h3>
+                  <div className="space-y-3">
+                    {content.badges.map((badge, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4 + index * 0.1, duration: 0.3 }}
+                        className="flex items-center gap-3"
+                      >
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                        <span className="text-blue-100">{badge}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Trust Indicators */}
+              <div className="text-center space-y-4">
+                <div className="flex items-center justify-center gap-2 text-yellow-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-current" />
+                  ))}
+                  <span className="ml-2 text-white font-medium">4.8/5 Average Rating</span>
+                </div>
+                <p className="text-blue-200 text-sm">
+                  Trusted by 15,000+ naval professionals worldwide
+                </p>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Decorative Elements */}
+      <div className="absolute top-10 right-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-10 left-10 w-24 h-24 bg-blue-400/10 rounded-full blur-2xl"></div>
+    </section>
   );
 }

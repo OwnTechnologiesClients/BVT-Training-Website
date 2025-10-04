@@ -73,21 +73,51 @@ export default function Navbar() {
                 About
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
               </Link>
-              <Link href="/courses" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
-                Courses
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-              </Link>
+              <div className="relative group">
+                <button className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all flex items-center gap-1">
+                  Courses
+                  <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform" />
+                </button>
+                {/* Courses Dropdown Menu */}
+                <div className="absolute top-full left-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="py-2">
+                    <Link href="/courses" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-950 transition-colors">
+                      Online Courses
+                    </Link>
+                    <Link href="/courses/offline" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-950 transition-colors">
+                      Offline Courses
+                    </Link>
+                  </div>
+                </div>
+              </div>
               <div className="relative group">
                 <button className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all flex items-center gap-1">
                   Programs
                   <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform" />
                 </button>
+                {/* Dropdown Menu */}
+                <div className="absolute top-full left-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="py-2">
+                    <Link href="/programs" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-950 transition-colors">
+                      All Programs
+                    </Link>
+                    <Link href="/programs?category=technical" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-950 transition-colors">
+                      Technical Training
+                    </Link>
+                    <Link href="/programs?category=leadership" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-950 transition-colors">
+                      Leadership Development
+                    </Link>
+                    <Link href="/programs?category=security" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-950 transition-colors">
+                      Security & Defense
+                    </Link>
+                  </div>
+                </div>
               </div>
-              <Link href="#" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
+              <Link href="/events" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
                 Events
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
               </Link>
-              <Link href="#" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
+              <Link href="/contact" className="px-4 py-2 text-gray-700 hover:text-blue-950 font-medium hover:bg-blue-50 rounded-lg transition-all relative group">
                 Contact
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
               </Link>
@@ -98,9 +128,11 @@ export default function Navbar() {
               <button className="hidden md:flex p-2 hover:bg-blue-50 rounded-lg transition-colors group">
                 <Search className="w-5 h-5 text-gray-600 group-hover:text-blue-950 group-hover:scale-110 transition-transform" />
               </button>
-              <button className="hidden md:block bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-600 hover:shadow-lg hover:scale-105 transition-all">
-                Enroll Now
-              </button>
+              <Link href="/login">
+                <button className="hidden md:block bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-600 hover:shadow-lg hover:scale-105 transition-all">
+                  Enroll Now
+                </button>
+              </Link>
               
               {/* Mobile Menu Button */}
               <button 
@@ -126,21 +158,31 @@ export default function Navbar() {
                 <Link href="/about" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
                   About
                 </Link>
-                <Link href="/courses" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
-                  Courses
-                </Link>
-                <Link href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
+                <div className="px-4 py-3">
+                  <div className="text-gray-700 font-medium mb-2">Courses</div>
+                  <div className="ml-4 space-y-2">
+                    <Link href="/courses" className="block px-4 py-2 text-gray-600 hover:text-blue-950 hover:bg-blue-50 rounded-lg transition-all">
+                      Online Courses
+                    </Link>
+                    <Link href="/courses/offline" className="block px-4 py-2 text-gray-600 hover:text-blue-950 hover:bg-blue-50 rounded-lg transition-all">
+                      Offline Courses
+                    </Link>
+                  </div>
+                </div>
+                <Link href="/programs" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
                   Programs
                 </Link>
-                <Link href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
+                <Link href="/events" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
                   Events
                 </Link>
-                <Link href="#" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
+                <Link href="/contact" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
                   Contact
                 </Link>
-                <button className="mt-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-600 transition-all">
-                  Enroll Now
-                </button>
+                <Link href="/login">
+                  <button className="mt-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-600 transition-all">
+                    Enroll Now
+                  </button>
+                </Link>
               </div>
             </div>
           )}

@@ -39,9 +39,11 @@ export default function CourseCard({ course, index }) {
               View Details
             </button>
           </Link>
-          <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors shadow-lg">
-            Buy Course
-          </button>
+          <Link href={`/courses/${id}/learn`} className="block">
+            <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors shadow-lg">
+              Start Learning
+            </button>
+          </Link>
         </div>
       </div>
 
