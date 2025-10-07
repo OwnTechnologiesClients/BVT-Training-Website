@@ -12,6 +12,7 @@ export const ONLINE_COURSES_DATA = [
   {
     id: 1,
     title: "Marine Engineering Fundamentals",
+    slug: "marine-engineering-fundamentals",
     description: "Master the basics of marine engineering, from propulsion systems to electrical operations. Essential training for technical ratings.",
     instructor: "Commander Sarah Johnson",
     duration: "12 weeks",
@@ -29,6 +30,7 @@ export const ONLINE_COURSES_DATA = [
   {
     id: 2,
     title: "Advanced Navigation Systems",
+    slug: "advanced-navigation-systems",
     description: "Learn modern navigation techniques, GPS systems, and chart plotting. Essential skills for deck officers and navigation specialists.",
     instructor: "Captain Michael Chen",
     duration: "8 weeks",
@@ -46,6 +48,7 @@ export const ONLINE_COURSES_DATA = [
   {
     id: 3,
     title: "Maritime Safety & Security",
+    slug: "maritime-safety-security",
     description: "Comprehensive training in safety protocols, emergency response, and security measures for maritime operations.",
     instructor: "Lieutenant Commander David Rodriguez",
     duration: "16 weeks",
@@ -63,6 +66,7 @@ export const ONLINE_COURSES_DATA = [
   {
     id: 4,
     title: "Naval Communications",
+    slug: "naval-communications",
     description: "Master naval communication systems, radio operations, and signal procedures essential for fleet operations.",
     instructor: "Chief Petty Officer Lisa Wang",
     duration: "10 weeks",

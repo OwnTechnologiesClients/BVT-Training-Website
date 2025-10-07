@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { ChevronLeft, ChevronRight, Play, Clock, CheckCircle, Circle, Lock, Menu, X } from "lucide-react";
 import Link from "next/link";
+import VideoPlayer from "../../../../components/VideoPlayer";
 
 const COURSE_CONTENT = {
   modules: [
@@ -17,35 +18,40 @@ const COURSE_CONTENT = {
           title: "Intro to Naval Training Course",
           duration: "5:30",
           isCompleted: false,
-          type: "video"
+          type: "video",
+          videoSrc: "/200993-914924518.mp4"
         },
         {
           id: 2,
           title: "Getting started with Naval Operations",
           duration: "8:15",
           isCompleted: false,
-          type: "video"
+          type: "video",
+          videoSrc: "/200993-914924518.mp4"
         },
         {
           id: 3,
           title: "What is Naval Warfare",
           duration: "12:45",
           isCompleted: false,
-          type: "video"
+          type: "video",
+          videoSrc: "/200993-914924518.mp4"
         },
         {
           id: 4,
           title: "Naval FAQs - Essential Knowledge",
           duration: "6:20",
           isCompleted: false,
-          type: "video"
+          type: "video",
+          videoSrc: "/200993-914924518.mp4"
         },
         {
           id: 5,
           title: "How to start your Naval Career",
           duration: "15:30",
           isCompleted: false,
-          type: "video"
+          type: "video",
+          videoSrc: "/200993-914924518.mp4"
         }
       ]
     },
@@ -60,14 +66,16 @@ const COURSE_CONTENT = {
           title: "Mission Overview",
           duration: "10:15",
           isCompleted: false,
-          type: "video"
+          type: "video",
+          videoSrc: "/200993-914924518.mp4"
         },
         {
           id: 7,
           title: "Strategic Planning",
           duration: "18:30",
           isCompleted: false,
-          type: "video"
+          type: "video",
+          videoSrc: "/200993-914924518.mp4"
         }
       ]
     },
@@ -82,28 +90,32 @@ const COURSE_CONTENT = {
           title: "Navigation Fundamentals",
           duration: "22:45",
           isCompleted: false,
-          type: "video"
+          type: "video",
+          videoSrc: "CevxZvSJLk8"
         },
         {
           id: 9,
           title: "Communication Protocols",
           duration: "14:20",
           isCompleted: false,
-          type: "video"
+          type: "video",
+          videoSrc: "kffacxfA7G4"
         },
         {
           id: 10,
           title: "Emergency Procedures",
           duration: "16:10",
           isCompleted: false,
-          type: "video"
+          type: "video",
+          videoSrc: "/200993-914924518.mp4"
         },
         {
           id: 11,
           title: "Team Coordination",
           duration: "19:35",
           isCompleted: false,
-          type: "video"
+          type: "video",
+          videoSrc: "/200993-914924518.mp4"
         }
       ]
     },
@@ -119,6 +131,7 @@ const COURSE_CONTENT = {
           duration: "25:15",
           isCompleted: false,
           type: "video",
+          videoSrc: "/200993-914924518.mp4",
           isLocked: true
         },
         {
@@ -127,6 +140,7 @@ const COURSE_CONTENT = {
           duration: "20:45",
           isCompleted: false,
           type: "video",
+          videoSrc: "/200993-914924518.mp4",
           isLocked: true
         },
         {
@@ -142,21 +156,18 @@ const COURSE_CONTENT = {
   ]
 };
 
-export default function CourseLearningPage() {
+export default function CourseLearningPage({ params }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [expandedModules, setExpandedModules] = useState(["getting-started"]);
   const [currentLessonId, setCurrentLessonId] = useState(1);
 
+  // Unwrap params using React.use()
+  const resolvedParams = use(params);
+  
+  // Debug params
+  console.log("Course slug:", resolvedParams?.slug);
+
   const toggleModule = (moduleId) => {
-    const currentLessonModule = COURSE_CONTENT.modules.find(module =>
-      module.lessons.some(lesson => lesson.id === currentLessonId)
-    );
-
-    // If the clicked module is the one containing the current lesson, do not collapse it
-    if (moduleId === currentLessonModule?.id) {
-      return;
-    }
-
     setExpandedModules(prev => 
       prev.includes(moduleId) 
         ? prev.filter(id => id !== moduleId)
@@ -344,51 +355,19 @@ export default function CourseLearningPage() {
 
         {/* Video/Content Area */}
         <div className="flex-1 bg-black">
-          <div className="relative w-full h-full flex items-center justify-center">
-            {/* Video Thumbnail/Player */}
-            <div className="relative w-full h-full bg-gradient-to-br from-blue-900 via-blue-800 to-navy-900 flex items-center justify-center">
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-20">
-                <div className="absolute top-20 left-20 w-96 h-96 border-2 border-yellow-500 rounded-full"></div>
-                <div className="absolute bottom-20 right-20 w-64 h-64 border-2 border-yellow-500 rounded-full"></div>
-              </div>
-
-              {/* Content Overlay */}
-              <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-8">
-                <div className="mb-8">
-                  <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                    Learn Naval Operations
-                  </h2>
-                  <p className="text-xl text-blue-100 mb-8">
-                    Master the fundamentals of naval warfare and operations
-                  </p>
-                </div>
-
-                {/* Play Button */}
-                <div className="flex items-center justify-center gap-6">
-                  <button className="bg-white text-blue-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors flex items-center gap-3 shadow-lg">
-                    <Play className="w-6 h-6" />
-                    Start Learning
-                  </button>
-                  <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-blue-900 transition-colors flex items-center gap-3">
-                    <Clock className="w-5 h-5" />
-                    Watch Later
-                  </button>
-                </div>
-              </div>
-
-              {/* Instructor Photo */}
-              <div className="absolute bottom-8 right-8">
-                <div className="w-24 h-24 bg-white rounded-full overflow-hidden shadow-lg">
-                  <img 
-                    src="/images/instructor.jpg" 
-                    alt="Instructor"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <VideoPlayer 
+            key={currentLessonId} // Force remount when lesson changes
+            videoSrc={currentLesson?.videoSrc}
+            title={currentLesson?.title || "Course Video"}
+            autoplay={false}
+            onVideoEnd={() => {
+              // Mark lesson as completed when video ends
+              console.log("Video ended for lesson:", currentLesson?.id);
+            }}
+            onVideoStart={() => {
+              console.log("Video started for lesson:", currentLesson?.id);
+            }}
+          />
         </div>
 
         {/* Bottom Controls */}

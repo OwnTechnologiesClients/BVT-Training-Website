@@ -22,6 +22,7 @@ import {
 const COURSE_DATA = {
   id: 1,
   title: "Advanced Naval Warfare Strategies",
+  slug: "advanced-naval-warfare-strategies",
   category: "Advanced Warfare",
   lastUpdated: "December 11, 2024",
   rating: 4.9,
@@ -106,6 +107,7 @@ const RELATED_COURSES = [
   {
     id: 2,
     title: "Submarine Command Operations",
+    slug: "submarine-command-operations",
     instructor: "Commander James Rodriguez",
     instructorImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
     category: "Submarine Operations",
@@ -118,6 +120,7 @@ const RELATED_COURSES = [
   {
     id: 3,
     title: "Leadership Excellence Program",
+    slug: "leadership-excellence-program",
     instructor: "Vice Admiral Michael Thompson",
     instructorImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
     category: "Leadership",

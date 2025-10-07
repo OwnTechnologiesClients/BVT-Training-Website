@@ -20,7 +20,8 @@ export default function CourseCard({ course, index }) {
     isFeatured,
     location,
     lessons,
-    certificate
+    certificate,
+    slug
   } = course;
 
   return (
@@ -34,12 +35,12 @@ export default function CourseCard({ course, index }) {
       {/* Hover Overlay */}
       <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center">
         <div className="flex flex-col gap-3 px-6">
-          <Link href={`/courses/${id}`} className="block">
+          <Link href={`/courses/${slug || id}`} className="block">
             <button className="w-full bg-white text-blue-900 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg">
               View Details
             </button>
           </Link>
-          <Link href={`/courses/${id}/learn`} className="block">
+          <Link href={`/courses/${slug || id}/learn`} className="block">
             <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors shadow-lg">
               Start Learning
             </button>

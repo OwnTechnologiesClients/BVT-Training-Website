@@ -64,7 +64,7 @@ export default function OnlineCourseCard({ course, index }) {
         {/* Price and CTA */}
         <div className="flex items-center justify-between">
           <div className="text-2xl font-bold text-gray-900">${course.price}</div>
-          <Link href={`/courses/${course.slug}`}>
+          <Link href={`/courses/${course.slug || course.id}`}>
             <button className="bg-blue-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-800 transition-colors">
               View Details
             </button>

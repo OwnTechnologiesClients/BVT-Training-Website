@@ -242,3 +242,5 @@ export default function EventsSearch({ onSearchResults, onFilterChange }) {
     </section>
   );
 }
+
+
