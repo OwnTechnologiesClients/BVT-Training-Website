@@ -7,7 +7,7 @@ export default function ContactMap() {
   const locations = [
     {
       name: "Main Training Center",
-      address: "123 Naval Base Road, San Diego, CA 92101",
+      address: "123 BVT Base Road, San Diego, CA 92101",
       phone: "+1 (555) 123-4567",
       email: "main@navytraining.com",
       hours: "Mon-Fri: 8AM-6PM EST",
@@ -17,7 +17,7 @@ export default function ContactMap() {
     },
     {
       name: "East Coast Branch",
-      address: "456 Naval Station Blvd, Norfolk, VA 23511",
+      address: "456 BVT Station Blvd, Norfolk, VA 23511",
       phone: "+1 (555) 234-5678",
       email: "east@navytraining.com",
       hours: "Mon-Fri: 9AM-5PM EST",

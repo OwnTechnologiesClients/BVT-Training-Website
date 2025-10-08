@@ -34,7 +34,7 @@ export default function ProgramsHero() {
             
             <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
               Discover our extensive range of professional development programs designed to enhance 
-              your naval career. From technical expertise to leadership skills, we provide comprehensive 
+              your BVT career. From technical expertise to leadership skills, we provide comprehensive 
               training solutions for every level.
             </p>
 

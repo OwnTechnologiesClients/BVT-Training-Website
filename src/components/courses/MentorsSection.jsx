@@ -33,7 +33,7 @@ export default function MentorsSection({ mentors, showLocations = false }) {
               Learn from Naval Experts
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Our instructors are distinguished naval officers with decades of real-world experience. 
+              Our instructors are distinguished BVT officers with decades of real-world experience. 
               {showLocations ? " Learn hands-on skills from the best in state-of-the-art facilities." : " Learn from the best and advance your career with proven strategies and techniques."}
             </p>
           </div>
@@ -83,8 +83,8 @@ export default function MentorsSection({ mentors, showLocations = false }) {
             </h3>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
               {showLocations ? 
-                "Join hundreds of naval personnel who have advanced their careers through our expert-led offline training programs. Experience real-world training with state-of-the-art equipment." :
-                "Join thousands of naval personnel who have advanced their careers through our expert-led training programs. Start your journey with world-class instructors."
+                "Join hundreds of BVT personnel who have advanced their careers through our expert-led offline training programs. Experience real-world training with state-of-the-art equipment." :
+                "Join thousands of BVT personnel who have advanced their careers through our expert-led training programs. Start your journey with world-class instructors."
               }
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

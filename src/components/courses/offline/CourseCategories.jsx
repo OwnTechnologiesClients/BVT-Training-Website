@@ -51,9 +51,9 @@ const OFFLINE_CATEGORIES = [
     featured: true
   },
   {
-    id: "naval-operations",
+    id: "BVT-operations",
     title: "Naval Operations",
-    description: "Comprehensive naval operations training on actual vessels",
+    description: "Comprehensive BVT operations training on actual vessels",
     icon: Ship,
     coursesCount: 8,
     studentsCount: 160,
@@ -113,7 +113,7 @@ export default function OfflineCourseCategories() {
               Hands-On Training by Location
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Explore our comprehensive offline training programs at various naval facilities. 
+              Explore our comprehensive offline training programs at various BVT facilities. 
               Experience real-world training with expert instructors and state-of-the-art equipment.
             </p>
           </div>
@@ -227,7 +227,7 @@ export default function OfflineCourseCategories() {
               Training Locations
             </h3>
             <p className="text-gray-600 mb-6">
-              Our offline training programs are conducted at various naval bases and training centers across the country, 
+              Our offline training programs are conducted at various BVT bases and training centers across the country, 
               providing convenient access to world-class facilities.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">

@@ -89,7 +89,7 @@ export default function Hero() {
             </h1>
             
             <p className="text-lg md:text-xl text-white max-w-2xl mx-auto">
-              Advance your career in the naval forces with our comprehensive vocational 
+              Advance your career in the BVT forces with our comprehensive vocational 
               training programs. From technical skills to leadership development, we provide 
               the education you need to succeed.
             </p>

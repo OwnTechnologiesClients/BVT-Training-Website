@@ -19,7 +19,7 @@ export default function EventsStats() {
       icon: MapPin,
       value: "15+",
       label: "Event Locations",
-      description: "Strategic venues across naval bases"
+      description: "Strategic venues across BVT bases"
     },
     {
       icon: Clock,
@@ -43,7 +43,7 @@ export default function EventsStats() {
             Join Our Growing Community
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Be part of the largest naval training community. Our events bring together 
+            Be part of the largest BVT training community. Our events bring together 
             professionals from across the globe for knowledge sharing and networking.
           </p>
         </motion.div>

@@ -53,8 +53,8 @@ export default function FeaturedCourses({ courses }) {
               Elite Training Programs
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover our most prestigious and highly-rated naval training programs, 
-              designed for the next generation of naval leaders.
+              Discover our most prestigious and highly-rated BVT training programs, 
+              designed for the next generation of BVT leaders.
             </p>
           </div>
         </div>

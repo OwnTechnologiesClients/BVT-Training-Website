@@ -85,7 +85,7 @@ export default function RegisterPage() {
           <div className="mx-auto h-16 w-16 bg-yellow-500 rounded-full flex items-center justify-center mb-6">
             <User className="h-8 w-8 text-blue-950" />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">Join Our Naval Community</h2>
+          <h2 className="text-3xl font-bold text-white mb-2">Join Our BVT Community</h2>
           <p className="text-blue-200">Create your account and start your training journey</p>
         </motion.div>
 
@@ -188,11 +188,11 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Naval Information */}
+            {/* BVT Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="rank" className="block text-sm font-medium text-white mb-2">
-                  Naval Rank
+                  BVT Rank
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

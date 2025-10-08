@@ -9,7 +9,7 @@ const ACHIEVEMENTS = [
     title: "Naval Training Excellence Award",
     year: "2024",
     organization: "US Navy",
-    description: "Recognized for outstanding contribution to naval vocational training and education.",
+    description: "Recognized for outstanding contribution to BVT vocational training and education.",
     category: "Excellence"
   },
   {
@@ -17,7 +17,7 @@ const ACHIEVEMENTS = [
     title: "Innovation in Education",
     year: "2023",
     organization: "Maritime Education Council",
-    description: "Awarded for pioneering use of simulation technology in naval training programs.",
+    description: "Awarded for pioneering use of simulation technology in BVT training programs.",
     category: "Innovation"
   },
   {
@@ -33,7 +33,7 @@ const ACHIEVEMENTS = [
     title: "Training Program of the Year",
     year: "2021",
     organization: "International Maritime Organization",
-    description: "Recognized for the most comprehensive and effective naval training curriculum.",
+    description: "Recognized for the most comprehensive and effective BVT training curriculum.",
     category: "Recognition"
   },
   {

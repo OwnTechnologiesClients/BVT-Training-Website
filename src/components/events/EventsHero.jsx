@@ -33,7 +33,7 @@ export default function EventsHero() {
             </h1>
             
             <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-              Stay updated with the latest naval training events, conferences, workshops, and networking 
+              Stay updated with the latest BVT training events, conferences, workshops, and networking 
               opportunities. Connect with fellow professionals and advance your career.
             </p>
 

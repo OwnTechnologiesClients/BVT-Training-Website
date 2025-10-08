@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, Mail, User, Search, Menu, X, ChevronDown, Ship } from 'lucide-react';
 import Link from 'next/link';
+import LanguageToggle from './LanguageToggle';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -59,7 +60,7 @@ export default function Navbar() {
               </div>
               <div>
                 <span className="text-xl font-bold text-blue-950 block leading-none">BVT Training</span>
-                <span className="text-xs text-gray-500">Naval Excellence</span>
+                <span className="text-xs text-gray-500">BVT Excellence</span>
               </div>
             </Link>
 
@@ -128,6 +129,12 @@ export default function Navbar() {
               <button className="hidden md:flex p-2 hover:bg-blue-50 rounded-lg transition-colors group">
                 <Search className="w-5 h-5 text-gray-600 group-hover:text-blue-950 group-hover:scale-110 transition-transform" />
               </button>
+              
+              {/* Language Toggle */}
+              <div className="hidden md:block">
+                <LanguageToggle />
+              </div>
+              
               <Link href="/login">
                 <button className="hidden md:block bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-600 hover:shadow-lg hover:scale-105 transition-all">
                   Enroll Now
@@ -178,6 +185,12 @@ export default function Navbar() {
                 <Link href="/contact" className="px-4 py-3 text-gray-700 hover:text-blue-950 hover:bg-blue-50 rounded-lg font-medium transition-all">
                   Contact
                 </Link>
+                
+                {/* Mobile Language Toggle */}
+                <div className="px-4 py-3">
+                  <LanguageToggle />
+                </div>
+                
                 <Link href="/login">
                   <button className="mt-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-600 transition-all">
                     Enroll Now

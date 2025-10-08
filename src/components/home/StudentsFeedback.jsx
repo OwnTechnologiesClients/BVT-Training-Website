@@ -52,7 +52,7 @@ export default function StudentsFeedback() {
             What Our Trainees Are Saying
           </h2>
           <p className="mb-10 max-w-2xl text-lg text-gray-500">
-            Our mission is to empower naval personnel with the knowledge and skills
+            Our mission is to empower BVT personnel with the knowledge and skills
             they need to excel in their careers. Hear from our graduates about their
             training experience.
           </p>
@@ -135,7 +135,7 @@ export default function StudentsFeedback() {
           <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-gradient-to-r from-blue-900 to-blue-950 px-8 py-6 rounded-2xl shadow-xl">
             <div className="text-left">
               <p className="text-yellow-500 font-bold text-lg">Join 8,500+ Successful Graduates</p>
-              <p className="text-blue-200 text-sm">Start your naval training journey today</p>
+              <p className="text-blue-200 text-sm">Start your BVT training journey today</p>
             </div>
             <button className="bg-yellow-600 text-blue-950 px-6 py-3 rounded-lg font-bold hover:bg-yellow-500 transition-colors whitespace-nowrap">
               View Success Stories

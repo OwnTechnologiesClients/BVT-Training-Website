@@ -64,7 +64,7 @@ const ONLINE_CATEGORIES = [
   {
     id: "communications",
     title: "Communications",
-    description: "Master naval communication systems and signal procedures",
+    description: "Master BVT communication systems and signal procedures",
     icon: Zap,
     coursesCount: 25,
     studentsCount: 1400,
@@ -75,7 +75,7 @@ const ONLINE_CATEGORIES = [
   {
     id: "weapons-systems",
     title: "Weapons Systems",
-    description: "Advanced training in naval weapons and tactical operations",
+    description: "Advanced training in BVT weapons and tactical operations",
     icon: Target,
     coursesCount: 22,
     studentsCount: 1200,
@@ -108,7 +108,7 @@ const ONLINE_CATEGORIES = [
   {
     id: "cyber-security",
     title: "Cyber Security",
-    description: "Modern cybersecurity training for naval personnel",
+    description: "Modern cybersecurity training for BVT personnel",
     icon: Shield,
     coursesCount: 20,
     studentsCount: 1100,

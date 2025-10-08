@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import LanguageToggle from "./LanguageToggle";
 
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
@@ -14,7 +13,6 @@ export default function ConditionalLayout({ children }) {
   if (isLearningPage) {
     return (
       <>
-        <LanguageToggle />
         <main>{children}</main>
       </>
     );
@@ -22,7 +20,6 @@ export default function ConditionalLayout({ children }) {
   
   return (
     <>
-      <LanguageToggle />
       <Navbar />
       <main>{children}</main>
       <Footer />

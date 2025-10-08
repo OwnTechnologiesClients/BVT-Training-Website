@@ -159,7 +159,7 @@ export default function CoursesHero({ content }) {
                   <span className="ml-2 text-white font-medium">4.8/5 Average Rating</span>
                 </div>
                 <p className="text-blue-200 text-sm">
-                  Trusted by 15,000+ naval professionals worldwide
+                  Trusted by 15,000+ BVT professionals worldwide
                 </p>
               </div>
             </motion.div>

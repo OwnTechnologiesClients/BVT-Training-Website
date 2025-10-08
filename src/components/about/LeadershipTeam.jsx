@@ -19,7 +19,7 @@ const TEAM_MEMBERS = [
     department: "Training Operations",
     experience: "28+ Years",
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop&crop=face",
-    bio: "Expert in naval training methodologies with a focus on modern simulation and hands-on learning approaches.",
+    bio: "Expert in BVT training methodologies with a focus on modern simulation and hands-on learning approaches.",
     achievements: ["Training Excellence Award", "28+ Years Experience", "Innovation Leader"]
   },
   {
@@ -75,7 +75,7 @@ export default function LeadershipTeam() {
             Meet Our Leadership
           </h2>
           <p className="text-lg text-gray-500 max-w-3xl mx-auto">
-            Our leadership team brings together decades of naval experience, educational expertise, 
+            Our leadership team brings together decades of BVT experience, educational expertise, 
             and a shared commitment to excellence in training the next generation of maritime professionals.
           </p>
         </div>

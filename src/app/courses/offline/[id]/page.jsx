@@ -41,28 +41,28 @@ const OFFLINE_COURSE_DATA = {
   currentStudents: 12,
   skillLevel: "Advanced",
   certificate: true,
-  description: `The Advanced Naval Engineering Workshop is a comprehensive hands-on training program designed for naval engineers and technical personnel who want to master advanced engineering principles and practical applications in naval systems.
+  description: `The Advanced Naval Engineering Workshop is a comprehensive hands-on training program designed for BVT engineers and technical personnel who want to master advanced engineering principles and practical applications in BVT systems.
 
-This intensive 5-day workshop combines theoretical knowledge with extensive practical exercises, allowing participants to work directly with cutting-edge naval engineering equipment and systems. You'll learn from experienced naval engineers and gain insights from real-world case studies and scenarios.
+This intensive 5-day workshop combines theoretical knowledge with extensive practical exercises, allowing participants to work directly with cutting-edge BVT engineering equipment and systems. You'll learn from experienced BVT engineers and gain insights from real-world case studies and scenarios.
 
-The program covers advanced topics including propulsion systems, electrical systems, hydraulic systems, and maintenance protocols. Participants will engage in hands-on workshops, group discussions, and practical exercises that simulate real naval engineering challenges.
+The program covers advanced topics including propulsion systems, electrical systems, hydraulic systems, and maintenance protocols. Participants will engage in hands-on workshops, group discussions, and practical exercises that simulate real BVT engineering challenges.
 
-By the end of this workshop, you'll have the practical skills and knowledge needed to handle complex naval engineering tasks, troubleshoot advanced systems, and contribute effectively to naval engineering projects.`,
+By the end of this workshop, you'll have the practical skills and knowledge needed to handle complex BVT engineering tasks, troubleshoot advanced systems, and contribute effectively to BVT engineering projects.`,
   
   learningOutcomes: [
-    "Master advanced naval engineering principles and applications",
-    "Develop hands-on skills with naval engineering equipment",
+    "Master advanced BVT engineering principles and applications",
+    "Develop hands-on skills with BVT engineering equipment",
     "Learn advanced troubleshooting and maintenance techniques",
     "Understand safety protocols and best practices",
     "Gain experience with real-world engineering scenarios",
-    "Network with fellow naval engineering professionals",
-    "Receive certification in advanced naval engineering",
+    "Network with fellow BVT engineering professionals",
+    "Receive certification in advanced BVT engineering",
     "Apply engineering knowledge to solve complex problems"
   ],
   
   materials: [
     "Comprehensive workshop manual and reference materials",
-    "Hands-on access to naval engineering equipment",
+    "Hands-on access to BVT engineering equipment",
     "Safety equipment and protective gear",
     "Certificate of completion",
     "Digital resources and documentation",
@@ -75,7 +75,7 @@ By the end of this workshop, you'll have the practical skills and knowledge need
       title: "Introduction to Advanced Naval Engineering",
       topics: [
         "Welcome and orientation",
-        "Overview of naval engineering systems",
+        "Overview of BVT engineering systems",
         "Safety protocols and procedures",
         "Introduction to workshop equipment"
       ]
@@ -129,11 +129,11 @@ By the end of this workshop, you'll have the practical skills and knowledge need
     rating: 5.0,
     courses: 12,
     students: 450,
-    bio: "Commander James Rodriguez is a distinguished naval engineer with over 15 years of experience in naval engineering and systems maintenance. He has served in various capacities including Chief Engineer on multiple naval vessels and has been instrumental in developing advanced engineering training programs for the navy. Commander Rodriguez holds advanced degrees in Mechanical Engineering and Naval Architecture, and has received numerous awards for his contributions to naval engineering education and training.",
+    bio: "Commander James Rodriguez is a distinguished BVT engineer with over 15 years of experience in BVT engineering and systems maintenance. He has served in various capacities including Chief Engineer on multiple BVT vessels and has been instrumental in developing advanced engineering training programs for the navy. Commander Rodriguez holds advanced degrees in Mechanical Engineering and Naval Architecture, and has received numerous awards for his contributions to BVT engineering education and training.",
     qualifications: [
       "Master's in Mechanical Engineering",
       "Advanced Naval Architecture Certification",
-      "15+ years naval engineering experience",
+      "15+ years BVT engineering experience",
       "Certified Engineering Instructor"
     ]
   },

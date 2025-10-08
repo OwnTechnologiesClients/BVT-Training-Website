@@ -15,7 +15,7 @@ export default function ProgramCategories() {
     {
       icon: Users,
       title: "Leadership Development",
-      description: "Command and leadership skills for naval officers",
+      description: "Command and leadership skills for BVT officers",
       programs: 28,
       color: "green"
     },
@@ -93,7 +93,7 @@ export default function ProgramCategories() {
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Find the perfect training program for your career goals. Our comprehensive categories 
-              cover every aspect of naval operations and professional development.
+              cover every aspect of BVT operations and professional development.
             </p>
           </motion.div>
         </div>
@@ -159,7 +159,7 @@ export default function ProgramCategories() {
               Ready to Start Your Training Journey?
             </h3>
             <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-              Join thousands of naval professionals who have advanced their careers with our comprehensive training programs.
+              Join thousands of BVT professionals who have advanced their careers with our comprehensive training programs.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">

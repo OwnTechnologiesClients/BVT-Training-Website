@@ -67,7 +67,7 @@ const VALUES = [
   {
     icon: Target,
     title: "Service",
-    description: "We are committed to serving our naval community and the broader maritime industry.",
+    description: "We are committed to serving our BVT community and the broader maritime industry.",
     details: [
       "Community engagement",
       "Service to others",
@@ -94,7 +94,7 @@ export default function OurValues() {
           </h2>
           <p className="text-lg text-gray-500 max-w-3xl mx-auto">
             Our core values guide every decision we make and every program we deliver, 
-            ensuring that we maintain the highest standards while serving our naval community.
+            ensuring that we maintain the highest standards while serving our BVT community.
           </p>
         </div>
 

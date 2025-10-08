@@ -114,7 +114,7 @@ export default function LanguageToggle() {
   };
 
   return (
-    <div className="language-toggle-container">
+    <div className="language-toggle-container-navbar">
       <div className="language-toggle">
         <img 
           src="/download.png" 

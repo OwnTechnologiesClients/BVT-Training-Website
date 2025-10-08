@@ -53,7 +53,7 @@ export default function Stats() {
           </h2>
           <p className="mx-auto w-full text-lg text-blue-100 lg:w-6/12">
             Decades of experience delivering world-class vocational training 
-            to naval personnel. Your success is our mission.
+            to BVT personnel. Your success is our mission.
           </p>
         </div>
 

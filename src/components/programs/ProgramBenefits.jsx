@@ -15,21 +15,21 @@ export default function ProgramBenefits() {
     {
       icon: Award,
       title: "Industry Recognition",
-      description: "Certifications recognized by top naval organizations worldwide",
+      description: "Certifications recognized by top BVT organizations worldwide",
       stat: "100%",
       color: "blue"
     },
     {
       icon: Users,
       title: "Expert Instructors",
-      description: "Learn from active and retired naval officers with real-world experience",
+      description: "Learn from active and retired BVT officers with real-world experience",
       stat: "50+",
       color: "purple"
     },
     {
       icon: Globe,
       title: "Global Network",
-      description: "Connect with naval professionals from over 25 countries",
+      description: "Connect with BVT professionals from over 25 countries",
       stat: "25+",
       color: "indigo"
     },
@@ -77,7 +77,7 @@ export default function ProgramBenefits() {
               Why Choose Our Programs?
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Join thousands of successful naval professionals who have advanced their careers 
+              Join thousands of successful BVT professionals who have advanced their careers 
               through our comprehensive training programs.
             </p>
           </motion.div>
@@ -130,7 +130,7 @@ export default function ProgramBenefits() {
               {[
                 "Industry-recognized certifications",
                 "Real-world case studies and projects",
-                "Access to exclusive naval resources",
+                "Access to exclusive BVT resources",
                 "Lifetime learning community access",
                 "Career placement assistance",
                 "Continuing education credits"
@@ -152,7 +152,7 @@ export default function ProgramBenefits() {
           >
             <h3 className="text-xl font-bold mb-6">Ready to Start?</h3>
             <p className="text-blue-100 mb-6">
-              Join the next cohort and begin your journey to naval excellence. 
+              Join the next cohort and begin your journey to BVT excellence. 
               Limited seats available for each program.
             </p>
             <div className="space-y-4">

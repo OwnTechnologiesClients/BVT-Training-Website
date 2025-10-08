@@ -58,7 +58,7 @@ export default function CourseTabs({
               Browse Training Programs
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Explore our comprehensive collection of naval training programs, 
+              Explore our comprehensive collection of BVT training programs, 
               categorized for easy navigation and discovery.
             </p>
           </div>

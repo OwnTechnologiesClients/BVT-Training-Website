@@ -44,7 +44,7 @@ const COURSES = [
     tag: "Beginner • 10 Weeks • 180 Cadets",
     title: "Naval Communications",
     label: "Apply Now",
-    desc: "Master naval communication systems, radio operations, and signal procedures essential for fleet operations.",
+    desc: "Master BVT communication systems, radio operations, and signal procedures essential for fleet operations.",
     color: "from-indigo-700 to-indigo-900",
     level: "Beginner",
     duration: "10 Weeks",
@@ -56,7 +56,7 @@ const COURSES = [
     tag: "Intermediate • 14 Weeks • 95 Cadets",
     title: "Leadership & Command",
     label: "Apply Now",
-    desc: "Develop essential leadership skills, team management, and command principles for advancing your naval career.",
+    desc: "Develop essential leadership skills, team management, and command principles for advancing your BVT career.",
     color: "from-blue-900 to-blue-950",
     level: "Intermediate",
     duration: "14 Weeks",
@@ -68,7 +68,7 @@ const COURSES = [
     tag: "Advanced • 20 Weeks • 160 Cadets",
     title: "Weapons Systems Operations",
     label: "Apply Now",
-    desc: "Advanced training in naval weapons systems, targeting, and tactical operations for defense specialists.",
+    desc: "Advanced training in BVT weapons systems, targeting, and tactical operations for defense specialists.",
     color: "from-slate-800 to-slate-950",
     level: "Advanced",
     duration: "20 Weeks",
@@ -92,7 +92,7 @@ export default function ExploreCourses() {
           Explore Training Programs
         </h2>
         <p className="mt-2 mx-auto w-full px-4 text-lg text-gray-500 lg:w-6/12 lg:px-8">
-          Browse through our comprehensive naval vocational training programs and find the perfect path 
+          Browse through our comprehensive BVT vocational training programs and find the perfect path 
           for your career advancement.
         </p>
       </div>

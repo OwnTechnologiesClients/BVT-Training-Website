@@ -6,7 +6,7 @@ const SAMPLE_PROGRAMS = [
   {
     id: 1,
     title: "Advanced Naval Engineering",
-    description: "Master the latest technologies in naval engineering and ship systems.",
+    description: "Master the latest technologies in BVT engineering and ship systems.",
     category: "Technical",
     duration: "12 weeks",
     students: "245 enrolled",
@@ -21,7 +21,7 @@ const SAMPLE_PROGRAMS = [
   {
     id: 2,
     title: "Leadership in Maritime Operations",
-    description: "Develop essential leadership skills for commanding naval operations.",
+    description: "Develop essential leadership skills for commanding BVT operations.",
     category: "Leadership",
     duration: "8 weeks",
     students: "189 enrolled",
@@ -50,7 +50,7 @@ const SAMPLE_PROGRAMS = [
   {
     id: 4,
     title: "Navigation and Seamanship",
-    description: "Essential navigation skills for modern naval operations.",
+    description: "Essential navigation skills for modern BVT operations.",
     category: "Navigation",
     duration: "10 weeks",
     students: "298 enrolled",
@@ -65,7 +65,7 @@ const SAMPLE_PROGRAMS = [
   {
     id: 5,
     title: "Communication Systems",
-    description: "Advanced communication protocols and systems for naval operations.",
+    description: "Advanced communication protocols and systems for BVT operations.",
     category: "Technical",
     duration: "7 weeks",
     students: "134 enrolled",

@@ -49,7 +49,7 @@ export default function LoginPage() {
             <Shield className="h-8 w-8 text-blue-950" />
           </div>
           <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-          <p className="text-blue-200">Sign in to continue your naval training journey</p>
+          <p className="text-blue-200">Sign in to continue your BVT training journey</p>
         </motion.div>
 
         {/* Login Form */}

@@ -7,7 +7,7 @@ const TIMELINE = [
   {
     year: "1973",
     title: "Foundation",
-    description: "BVT Training was established with a vision to provide world-class naval vocational training.",
+    description: "BVT Training was established with a vision to provide world-class BVT vocational training.",
     icon: Ship,
     color: "from-blue-600 to-blue-800"
   },
@@ -35,14 +35,14 @@ const TIMELINE = [
   {
     year: "2015",
     title: "Global Reach",
-    description: "Extended training programs to international naval forces and maritime organizations.",
+    description: "Extended training programs to international BVT forces and maritime organizations.",
     icon: Ship,
     color: "from-indigo-700 to-indigo-900"
   },
   {
     year: "2025",
     title: "Future",
-    description: "Continuing to lead in naval education with cutting-edge technology and methodologies.",
+    description: "Continuing to lead in BVT education with cutting-edge technology and methodologies.",
     icon: Award,
     color: "from-blue-900 to-blue-950"
   }
@@ -63,7 +63,7 @@ export default function OurStory() {
             Our Story Through the Decades
           </h2>
           <p className="text-lg text-gray-500 max-w-3xl mx-auto">
-            From humble beginnings in 1973 to becoming a global leader in naval vocational training, 
+            From humble beginnings in 1973 to becoming a global leader in BVT vocational training, 
             our journey has been marked by continuous innovation, excellence, and dedication to our mission.
           </p>
         </div>
@@ -121,7 +121,7 @@ export default function OurStory() {
           <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white px-8 py-6 rounded-2xl shadow-xl border border-gray-200">
             <div className="text-left">
               <p className="text-blue-900 font-bold text-lg">Join Our Continuing Legacy</p>
-              <p className="text-gray-600 text-sm">Be part of the next chapter in naval training excellence</p>
+              <p className="text-gray-600 text-sm">Be part of the next chapter in BVT training excellence</p>
             </div>
             <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors whitespace-nowrap shadow-lg">
               Start Your Journey

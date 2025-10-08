@@ -15,7 +15,7 @@ export default function ContactFAQ() {
       questions: [
         {
           question: "What types of training programs do you offer?",
-          answer: "We offer comprehensive naval training programs including technical skills, leadership development, maritime security, navigation, safety protocols, strategic planning, communications, and equipment maintenance. Our programs range from beginner to advanced levels."
+          answer: "We offer comprehensive BVT training programs including technical skills, leadership development, maritime security, navigation, safety protocols, strategic planning, communications, and equipment maintenance. Our programs range from beginner to advanced levels."
         },
         {
           question: "How long are the training programs?",
@@ -27,7 +27,7 @@ export default function ContactFAQ() {
         },
         {
           question: "What are the prerequisites for enrollment?",
-          answer: "Prerequisites vary by program. Most programs require basic naval knowledge, while advanced courses may require specific certifications or experience levels. We provide detailed requirements for each program."
+          answer: "Prerequisites vary by program. Most programs require basic BVT knowledge, while advanced courses may require specific certifications or experience levels. We provide detailed requirements for each program."
         }
       ]
     },
@@ -61,7 +61,7 @@ export default function ContactFAQ() {
       questions: [
         {
           question: "Do you provide industry-recognized certifications?",
-          answer: "Yes, we offer industry-recognized certifications that are widely accepted in the naval and maritime sectors. Our certifications are accredited by relevant professional bodies and military organizations."
+          answer: "Yes, we offer industry-recognized certifications that are widely accepted in the BVT and maritime sectors. Our certifications are accredited by relevant professional bodies and military organizations."
         },
         {
           question: "How long are certifications valid?",

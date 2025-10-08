@@ -12,7 +12,7 @@ export const OFFLINE_COURSES_DATA = [
   {
     id: 1,
     title: "Advanced Naval Engineering Workshop",
-    description: "Hands-on workshop covering advanced naval engineering principles, system maintenance, and technical troubleshooting.",
+    description: "Hands-on workshop covering advanced BVT engineering principles, system maintenance, and technical troubleshooting.",
     instructor: "Commander James Rodriguez",
     instructorImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
     image: "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop",
@@ -102,7 +102,7 @@ export const OFFLINE_COURSES_DATA = [
   {
     id: 6,
     title: "Naval Intelligence Analysis",
-    description: "Specialized training in naval intelligence gathering, analysis techniques, and strategic intelligence operations.",
+    description: "Specialized training in BVT intelligence gathering, analysis techniques, and strategic intelligence operations.",
     instructor: "Lieutenant Commander Priya Sharma",
     instructorImage: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
     image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=300&fit=crop",
@@ -138,7 +138,7 @@ export const OFFLINE_COURSES_DATA = [
   {
     id: 8,
     title: "Communication Systems Workshop",
-    description: "Hands-on training in naval communication systems, radio operations, and signal procedures.",
+    description: "Hands-on training in BVT communication systems, radio operations, and signal procedures.",
     instructor: "Chief Petty Officer Lisa Wang",
     instructorImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face",
     image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=300&fit=crop",
@@ -177,7 +177,7 @@ export const OFFLINE_FEATURED_COURSES = [
   {
     id: 1,
     title: "Advanced Naval Engineering Workshop",
-    description: "Hands-on workshop covering advanced naval engineering principles, system maintenance, and technical troubleshooting with real equipment.",
+    description: "Hands-on workshop covering advanced BVT engineering principles, system maintenance, and technical troubleshooting with real equipment.",
     instructor: "Commander James Rodriguez",
     duration: "5 days",
     studentsCount: 15,
@@ -264,7 +264,7 @@ export const OFFLINE_FEATURED_COURSES = [
 export const OFFLINE_HERO_CONTENT = {
   title: "Elite Hands-On Naval Training",
   subtitle: "Master Real-World Skills in State-of-the-Art Training Facilities",
-  description: "Experience intensive, immersive naval training with cutting-edge equipment and world-class instructors. Our offline workshops provide unparalleled hands-on learning opportunities in strategically located facilities across India.",
+  description: "Experience intensive, immersive BVT training with cutting-edge equipment and world-class instructors. Our offline workshops provide unparalleled hands-on learning opportunities in strategically located facilities across India.",
   features: [
     { icon: "MapPin", text: "Multiple Locations" },
     { icon: "Users", text: "Small Class Sizes" },
@@ -326,7 +326,7 @@ export const OFFLINE_MENTORS_DATA = [
     workshopsCount: 12,
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
     availableLocations: ["Mumbai Naval Base", "Delhi Training Center", "Kochi Naval Academy"],
-    bio: "Expert naval engineer with 18 years of experience in marine engineering, system maintenance, and technical training. Specialist in hands-on workshop delivery.",
+    bio: "Expert BVT engineer with 18 years of experience in marine engineering, system maintenance, and technical training. Specialist in hands-on workshop delivery.",
     achievements: [
       "Chief Engineer on multiple destroyers",
       "Marine Engineering Excellence Award",
@@ -350,7 +350,7 @@ export const OFFLINE_MENTORS_DATA = [
     workshopsCount: 15,
     image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
     availableLocations: ["Delhi Training Center", "Goa Naval Command", "Mumbai Naval Base"],
-    bio: "Veteran naval officer with 25 years of leadership experience. Expert in organizational development, strategic planning, and executive leadership training.",
+    bio: "Veteran BVT officer with 25 years of leadership experience. Expert in organizational development, strategic planning, and executive leadership training.",
     achievements: [
       "Chief of Naval Operations Staff (2018-2021)",
       "Commander of Naval Education and Training Command",
@@ -422,7 +422,7 @@ export const OFFLINE_MENTORS_DATA = [
     workshopsCount: 5,
     image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
     availableLocations: ["Pune Intelligence Center", "Delhi Training Center"],
-    bio: "Specialist in naval intelligence gathering and analysis with expertise in data processing, strategic intelligence operations, and report writing.",
+    bio: "Specialist in BVT intelligence gathering and analysis with expertise in data processing, strategic intelligence operations, and report writing.",
     achievements: [
       "Established Intelligence Analysis Center",
       "Developed intelligence protocols for fleet operations",
@@ -446,7 +446,7 @@ export const OFFLINE_MENTORS_DATA = [
     workshopsCount: 4,
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
     availableLocations: ["Weapons Training Facility", "Kochi Naval Academy"],
-    bio: "Expert in naval weapons systems with extensive experience in targeting, tactical operations, and weapons training programs.",
+    bio: "Expert in BVT weapons systems with extensive experience in targeting, tactical operations, and weapons training programs.",
     achievements: [
       "Weapons Systems Excellence Award",
       "Advanced Tactical Operations certification",

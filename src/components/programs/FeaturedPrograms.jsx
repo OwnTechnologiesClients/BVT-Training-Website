@@ -49,7 +49,7 @@ export default function FeaturedPrograms() {
               Most Popular Training Programs
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover our top-rated programs that have helped thousands of naval professionals advance their careers.
+              Discover our top-rated programs that have helped thousands of BVT professionals advance their careers.
             </p>
           </motion.div>
         </div>

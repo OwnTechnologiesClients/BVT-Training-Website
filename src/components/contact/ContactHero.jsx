@@ -34,7 +34,7 @@ export default function ContactHero() {
             
             <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
               Have questions about our training programs or need assistance? Our dedicated team 
-              is here to help you succeed in your naval career journey.
+              is here to help you succeed in your BVT career journey.
             </p>
 
             {/* Quick Contact Info */}

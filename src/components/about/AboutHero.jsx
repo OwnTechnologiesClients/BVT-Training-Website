@@ -36,7 +36,7 @@ export default function AboutHero() {
 
               {/* Description */}
               <p className="text-xl text-gray-600 leading-relaxed">
-                Trusted by naval forces worldwide for over 50 years, delivering 
+                Trusted by BVT forces worldwide for over 50 years, delivering 
                 comprehensive vocational training that transforms careers.
               </p>
 
@@ -79,7 +79,7 @@ export default function AboutHero() {
 
                 {/* Description */}
                 <p className="text-blue-100 text-lg leading-relaxed ">
-                  We are committed to excellence in naval vocational training, 
+                  We are committed to excellence in BVT vocational training, 
                   preparing professionals for successful maritime careers.
                 </p>
               </div>

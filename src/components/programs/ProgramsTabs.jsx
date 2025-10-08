@@ -41,7 +41,7 @@ export default function ProgramsTabs({ searchResults, activeFilters }) {
             Browse Our Programs
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Explore our comprehensive range of training programs designed to advance your naval career.
+            Explore our comprehensive range of training programs designed to advance your BVT career.
           </p>
         </div>
 

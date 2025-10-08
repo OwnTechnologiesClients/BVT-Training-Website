@@ -46,7 +46,7 @@ export default function EventsTabs({ searchResults, activeFilters }) {
             Discover Events
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Find and register for upcoming naval training events, conferences, and workshops 
+            Find and register for upcoming BVT training events, conferences, and workshops 
             that match your professional development goals.
           </p>
         </div>

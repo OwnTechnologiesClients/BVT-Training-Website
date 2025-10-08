@@ -43,7 +43,7 @@ export default function ProgramsStats() {
             Why Choose Our Programs?
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Our training programs are designed with naval professionals in mind, 
+            Our training programs are designed with BVT professionals in mind, 
             combining practical skills with theoretical knowledge.
           </p>
         </motion.div>

@@ -22,7 +22,7 @@ import {
 const COURSE_DATA = {
   id: 1,
   title: "Advanced Naval Warfare Strategies",
-  slug: "advanced-naval-warfare-strategies",
+  slug: "advanced-BVT-warfare-strategies",
   category: "Advanced Warfare",
   lastUpdated: "December 11, 2024",
   rating: 4.9,
@@ -35,13 +35,13 @@ const COURSE_DATA = {
   skillLevel: "Advanced",
   certificate: true,
   students: 250,
-  description: `Mastering Naval Warfare Strategies is a comprehensive course designed for those who want to create professional, fully responsive naval operations without writing a single line of code. Whether you're a naval officer, strategist, or military professional looking to build advanced tactical skills or command operations, this course will teach you how to leverage modern naval warfare principles to bring your strategic vision to life.
+  description: `Mastering Naval Warfare Strategies is a comprehensive course designed for those who want to create professional, fully responsive BVT operations without writing a single line of code. Whether you're a BVT officer, strategist, or military professional looking to build advanced tactical skills or command operations, this course will teach you how to leverage modern BVT warfare principles to bring your strategic vision to life.
 
-In this hands-on course, you'll learn how to plan, execute, and lead naval operations using advanced strategic frameworks. From creating battle plans and coordinating fleet movements to integrating technology and intelligence, you'll gain the skills needed to produce highly effective and successful naval campaigns. You'll also dive into best practices for logistics, communication, and mission planning, ensuring your operations succeed in any environment and achieve strategic objectives.
+In this hands-on course, you'll learn how to plan, execute, and lead BVT operations using advanced strategic frameworks. From creating battle plans and coordinating fleet movements to integrating technology and intelligence, you'll gain the skills needed to produce highly effective and successful BVT campaigns. You'll also dive into best practices for logistics, communication, and mission planning, ensuring your operations succeed in any environment and achieve strategic objectives.
 
-By the end of this course, you'll have the expertise to lead complex naval operations with confidence, and you'll be prepared to use advanced strategic principles to bring your military leadership vision to life—no prior experience required!`,
+By the end of this course, you'll have the expertise to lead complex BVT operations with confidence, and you'll be prepared to use advanced strategic principles to bring your military leadership vision to life—no prior experience required!`,
   learningOutcomes: [
-    "Create responsive naval operations using modern strategies",
+    "Create responsive BVT operations using modern strategies",
     "Basic tactical planning techniques",
     "Build your own strategic framework",
     "How to optimize operations for maximum effectiveness",
@@ -99,7 +99,7 @@ By the end of this course, you'll have the expertise to lead complex naval opera
     rating: 5.0,
     courses: 8,
     students: 1250,
-    bio: "Hi! I'm Admiral Sarah Mitchell, and I'm passionate about naval excellence. I specialize in strategic naval operations and have led campaigns for multiple international operations. I use a conversational style in my teaching so that students don't get bored. I aim to teach more like a colleague walking you through the material rather than a jargon-heavy, mundane lecturer. Hope you enjoy my courses!"
+    bio: "Hi! I'm Admiral Sarah Mitchell, and I'm passionate about BVT excellence. I specialize in strategic BVT operations and have led campaigns for multiple international operations. I use a conversational style in my teaching so that students don't get bored. I aim to teach more like a colleague walking you through the material rather than a jargon-heavy, mundane lecturer. Hope you enjoy my courses!"
   }
 };
 

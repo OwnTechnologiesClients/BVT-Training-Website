@@ -59,7 +59,7 @@ export default function FeaturedEvents() {
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Join our most popular and highly-rated events featuring industry experts 
-              and cutting-edge naval training programs.
+              and cutting-edge BVT training programs.
             </p>
           </motion.div>
         </div>

@@ -6,7 +6,7 @@ import { Calendar, MapPin, Users, ArrowRight, Clock } from "lucide-react";
 const EVENTS = [
   {
     title: "Naval Career Advancement Workshop",
-    desc: "Discover pathways for advancement in your naval career with guidance from senior officers and career counselors.",
+    desc: "Discover pathways for advancement in your BVT career with guidance from senior officers and career counselors.",
     buttonLabel: "Register Now",
     color: "from-blue-800 to-blue-950",
     date: "March 15, 2025",
@@ -17,7 +17,7 @@ const EVENTS = [
   },
   {
     title: "Maritime Technology Expo 2025",
-    desc: "Explore the latest naval technologies, equipment demonstrations, and hands-on training opportunities.",
+    desc: "Explore the latest BVT technologies, equipment demonstrations, and hands-on training opportunities.",
     buttonLabel: "Register Now",
     color: "from-blue-700 to-blue-900",
     date: "March 22, 2025",
@@ -68,7 +68,7 @@ export default function Events() {
           Events & Seminars
         </h2>
         <p className="mx-auto w-full px-4 font-normal text-lg text-gray-500 lg:w-6/12">
-          Join our naval training events, workshops, and seminars designed to enhance 
+          Join our BVT training events, workshops, and seminars designed to enhance 
           your professional development and career growth.
         </p>
       </div>

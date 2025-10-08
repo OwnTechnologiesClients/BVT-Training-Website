@@ -6,7 +6,7 @@ const COMPANIES = [
     logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg/200px-Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg.png"
   },
   {
-    name: "Naval Academy",
+    name: "BVT Academy",
     logo: "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=150&h=80&fit=crop"
   },
   {
@@ -18,7 +18,7 @@ const COMPANIES = [
     logo: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=150&h=80&fit=crop"
   },
   {
-    name: "Naval Reserve",
+    name: "BVT Reserve",
     logo: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=150&h=80&fit=crop"
   },
   {
@@ -36,7 +36,7 @@ export default function TrustedCompanies() {
             OFFICIAL PARTNERS
           </p>
           <h2 className="mb-12 text-4xl font-bold text-gray-900">
-            Recognized by Leading Naval Organizations
+            Recognized by Leading BVT Organizations
           </h2>
         </div>
 

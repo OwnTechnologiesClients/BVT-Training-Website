@@ -24,7 +24,7 @@ export default function EventTypes() {
     {
       icon: Trophy,
       title: "Competitions",
-      description: "Skills competitions and challenges for naval professionals",
+      description: "Skills competitions and challenges for BVT professionals",
       count: "8 Events",
       color: "yellow",
       features: ["Skill Challenges", "Team Competitions", "Awards", "Recognition"]
@@ -48,7 +48,7 @@ export default function EventTypes() {
     {
       icon: Radio,
       title: "Tech Demonstrations",
-      description: "Showcasing latest naval technology and equipment",
+      description: "Showcasing latest BVT technology and equipment",
       count: "18 Events",
       color: "indigo",
       features: ["Live Demos", "Hands-on Testing", "Technical Q&A", "Innovation"]
@@ -95,7 +95,7 @@ export default function EventTypes() {
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               From large conferences to intimate workshops, we offer diverse event formats 
-              to meet every learning and networking need in the naval community.
+              to meet every learning and networking need in the BVT community.
             </p>
           </motion.div>
         </div>
@@ -165,8 +165,8 @@ export default function EventTypes() {
               Host Your Own Event
             </h3>
             <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-              Have an idea for a naval training event? Partner with us to create meaningful 
-              experiences for the naval community.
+              Have an idea for a BVT training event? Partner with us to create meaningful 
+              experiences for the BVT community.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">

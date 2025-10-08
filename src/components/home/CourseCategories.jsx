@@ -43,7 +43,7 @@ export default function CourseCategories() {
             Training Programs
           </h2>
           <p className="text-lg text-gray-500 lg:w-6/12">
-            Comprehensive vocational training programs designed to enhance your naval 
+            Comprehensive vocational training programs designed to enhance your BVT 
             career and develop essential skills for service excellence.
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function CourseCategories() {
               Naval Basics Training
             </h3>
             <p className="mt-4 mb-14 font-normal opacity-50 text-white">
-              Start your journey with essential naval skills and knowledge.
+              Start your journey with essential BVT skills and knowledge.
             </p>
             <button className="px-6 py-2 text-sm bg-yellow-600 text-blue-950 rounded-lg font-medium hover:bg-yellow-500 hover:scale-105 transition-all shadow-lg">
               Start Training

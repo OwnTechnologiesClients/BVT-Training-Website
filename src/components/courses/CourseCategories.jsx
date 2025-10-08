@@ -64,7 +64,7 @@ const CATEGORIES = [
   {
     id: "communications",
     title: "Communications",
-    description: "Master naval communication systems and signal procedures",
+    description: "Master BVT communication systems and signal procedures",
     icon: Zap,
     coursesCount: 25,
     studentsCount: 1400,
@@ -75,7 +75,7 @@ const CATEGORIES = [
   {
     id: "weapons-systems",
     title: "Weapons Systems",
-    description: "Advanced training in naval weapons and tactical operations",
+    description: "Advanced training in BVT weapons and tactical operations",
     icon: Target,
     coursesCount: 22,
     studentsCount: 1200,
@@ -108,7 +108,7 @@ const CATEGORIES = [
   {
     id: "cyber-security",
     title: "Cyber Security",
-    description: "Modern cybersecurity training for naval personnel",
+    description: "Modern cybersecurity training for BVT personnel",
     icon: Shield,
     coursesCount: 20,
     studentsCount: 1100,
@@ -136,7 +136,7 @@ export default function CourseCategories() {
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               Browse our comprehensive training programs organized by specialized areas. 
-              Each category offers multiple courses designed to advance your naval career.
+              Each category offers multiple courses designed to advance your BVT career.
             </p>
           </div>
         </div>

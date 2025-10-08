@@ -10,7 +10,7 @@ export default function LearningPaths({ selectedPath, onPathChange }) {
     {
       id: "technical",
       title: "Technical Excellence Path",
-      description: "Master advanced technical skills in naval engineering and systems",
+      description: "Master advanced technical skills in BVT engineering and systems",
       duration: "12-18 months",
       difficulty: "Advanced",
       programCount: 8,

@@ -7,19 +7,19 @@ const REASONS = [
   {
     icon: Award,
     title: "Proven Excellence",
-    description: "50+ years of delivering world-class naval training with a 95% graduate success rate.",
+    description: "50+ years of delivering world-class BVT training with a 95% graduate success rate.",
     benefits: ["Established in 1973", "95% Success Rate", "Navy Certified"]
   },
   {
     icon: Users,
     title: "Expert Instructors",
-    description: "Learn from experienced naval officers and industry professionals with decades of real-world experience.",
+    description: "Learn from experienced BVT officers and industry professionals with decades of real-world experience.",
     benefits: ["120+ Expert Instructors", "Real-World Experience", "Navy Certified"]
   },
   {
     icon: Target,
     title: "Comprehensive Programs",
-    description: "400+ specialized training programs covering all aspects of naval operations and maritime careers.",
+    description: "400+ specialized training programs covering all aspects of BVT operations and maritime careers.",
     benefits: ["400+ Programs", "All Specialties", "Career-Focused"]
   },
   {
@@ -37,7 +37,7 @@ const REASONS = [
   {
     icon: Star,
     title: "Career Advancement",
-    description: "Proven track record of helping graduates advance their careers in naval and maritime industries.",
+    description: "Proven track record of helping graduates advance their careers in BVT and maritime industries.",
     benefits: ["Career Support", "Industry Connections", "Success Stories"]
   }
 ];
@@ -72,7 +72,7 @@ export default function WhyChooseUs() {
             The BVT Training Advantage
           </h2>
           <p className="text-lg text-gray-500 max-w-3xl mx-auto">
-            Discover what makes BVT Training the premier choice for naval vocational education 
+            Discover what makes BVT Training the premier choice for BVT vocational education 
             and career advancement in the maritime industry.
           </p>
         </div>
@@ -172,7 +172,7 @@ export default function WhyChooseUs() {
               <h3 className="text-3xl font-bold mb-4">Ready to Start Your Naval Career Journey?</h3>
               <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
                 Join thousands of successful graduates who have advanced their careers through BVT Training's 
-                world-class programs. Your future in naval excellence starts here.
+                world-class programs. Your future in BVT excellence starts here.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

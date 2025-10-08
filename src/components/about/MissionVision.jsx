@@ -18,8 +18,8 @@ export default function MissionVision() {
             Mission, Vision & Values
           </h2>
           <p className="text-lg text-gray-500 max-w-3xl mx-auto">
-            Our commitment to naval excellence is built on a solid foundation of core principles 
-            that guide everything we do in preparing the next generation of naval professionals.
+            Our commitment to BVT excellence is built on a solid foundation of core principles 
+            that guide everything we do in preparing the next generation of BVT professionals.
           </p>
         </div>
 
@@ -39,7 +39,7 @@ export default function MissionVision() {
             <div className="mb-6">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h3>
               <p className="text-gray-600 leading-relaxed">
-                To provide world-class naval vocational training that empowers maritime professionals 
+                To provide world-class BVT vocational training that empowers maritime professionals 
                 with the knowledge, skills, and leadership qualities necessary to excel in their careers 
                 and serve their nations with distinction.
               </p>
@@ -76,7 +76,7 @@ export default function MissionVision() {
             <div className="mb-6">
               <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
               <p className="text-blue-100 leading-relaxed">
-                To be the global leader in naval vocational education, recognized for our innovative 
+                To be the global leader in BVT vocational education, recognized for our innovative 
                 training methods, outstanding faculty, and the exceptional success of our graduates 
                 in maritime operations worldwide.
               </p>
@@ -114,7 +114,7 @@ export default function MissionVision() {
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Values</h3>
               <p className="text-gray-600 leading-relaxed">
                 Integrity, excellence, and service form the cornerstone of our educational philosophy, 
-                ensuring that every graduate embodies the highest standards of naval professionalism.
+                ensuring that every graduate embodies the highest standards of BVT professionalism.
               </p>
             </div>
 

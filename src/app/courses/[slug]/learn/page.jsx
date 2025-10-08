@@ -15,7 +15,7 @@ const COURSE_CONTENT = {
       lessons: [
         {
           id: 1,
-          title: "Intro to Naval Training Course",
+          title: "Intro to BVT Training Course",
           duration: "5:30",
           isCompleted: false,
           type: "video",
@@ -23,7 +23,7 @@ const COURSE_CONTENT = {
         },
         {
           id: 2,
-          title: "Getting started with Naval Operations",
+          title: "Getting started with BVT Operations",
           duration: "8:15",
           isCompleted: false,
           type: "video",
@@ -31,7 +31,7 @@ const COURSE_CONTENT = {
         },
         {
           id: 3,
-          title: "What is Naval Warfare",
+          title: "What is BVT Warfare",
           duration: "12:45",
           isCompleted: false,
           type: "video",
@@ -39,7 +39,7 @@ const COURSE_CONTENT = {
         },
         {
           id: 4,
-          title: "Naval FAQs - Essential Knowledge",
+          title: "BVT FAQs - Essential Knowledge",
           duration: "6:20",
           isCompleted: false,
           type: "video",
@@ -47,7 +47,7 @@ const COURSE_CONTENT = {
         },
         {
           id: 5,
-          title: "How to start your Naval Career",
+          title: "How to start your BVT Career",
           duration: "15:30",
           isCompleted: false,
           type: "video",

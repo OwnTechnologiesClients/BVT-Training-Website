@@ -66,8 +66,8 @@ export const ONLINE_COURSES_DATA = [
   {
     id: 4,
     title: "Naval Communications",
-    slug: "naval-communications",
-    description: "Master naval communication systems, radio operations, and signal procedures essential for fleet operations.",
+    slug: "BVT-communications",
+    description: "Master BVT communication systems, radio operations, and signal procedures essential for fleet operations.",
     instructor: "Chief Petty Officer Lisa Wang",
     duration: "10 weeks",
     level: "Beginner",
@@ -84,7 +84,7 @@ export const ONLINE_COURSES_DATA = [
   {
     id: 5,
     title: "Leadership & Command",
-    description: "Develop essential leadership skills, team management, and command principles for advancing your naval career.",
+    description: "Develop essential leadership skills, team management, and command principles for advancing your BVT career.",
     instructor: "Admiral James Thompson",
     duration: "14 weeks",
     level: "Intermediate",
@@ -101,7 +101,7 @@ export const ONLINE_COURSES_DATA = [
   {
     id: 6,
     title: "Weapons Systems Operations",
-    description: "Advanced training in naval weapons systems, targeting, and tactical operations for defense specialists.",
+    description: "Advanced training in BVT weapons systems, targeting, and tactical operations for defense specialists.",
     instructor: "Captain Elena Petrova",
     duration: "20 weeks",
     level: "Advanced",
@@ -152,7 +152,7 @@ export const ONLINE_COURSES_DATA = [
   {
     id: 9,
     title: "Cyber Security in Naval Operations",
-    description: "Modern cybersecurity training for naval personnel, covering threat detection, network security, and digital warfare.",
+    description: "Modern cybersecurity training for BVT personnel, covering threat detection, network security, and digital warfare.",
     instructor: "Lieutenant Alex Turner",
     duration: "12 weeks",
     level: "Intermediate",
@@ -172,7 +172,7 @@ export const ONLINE_FEATURED_COURSES = [
   {
     id: 1,
     title: "Advanced Naval Warfare Strategies",
-    description: "Master the art of naval warfare with cutting-edge strategies, tactical planning, and modern combat techniques.",
+    description: "Master the art of BVT warfare with cutting-edge strategies, tactical planning, and modern combat techniques.",
     instructor: "Admiral Sarah Mitchell",
     duration: "16 weeks",
     studentsCount: 250,
@@ -204,7 +204,7 @@ export const ONLINE_FEATURED_COURSES = [
   {
     id: 3,
     title: "Cyber Defense for Naval Networks",
-    description: "Protect naval communications and systems from cyber threats with advanced security protocols and digital warfare techniques.",
+    description: "Protect BVT communications and systems from cyber threats with advanced security protocols and digital warfare techniques.",
     instructor: "Lieutenant Commander Elena Chen",
     duration: "12 weeks",
     studentsCount: 180,
@@ -220,7 +220,7 @@ export const ONLINE_FEATURED_COURSES = [
   {
     id: 4,
     title: "Leadership Excellence Program",
-    description: "Develop exceptional leadership skills with our comprehensive program designed for senior naval officers and future commanders.",
+    description: "Develop exceptional leadership skills with our comprehensive program designed for senior BVT officers and future commanders.",
     instructor: "Vice Admiral Michael Thompson",
     duration: "18 weeks",
     studentsCount: 120,
@@ -254,7 +254,7 @@ export const ONLINE_FEATURED_COURSES = [
 export const ONLINE_HERO_CONTENT = {
   title: "Master Naval Excellence Online",
   subtitle: "Transform Your Naval Career with World-Class Digital Training",
-  description: "Join thousands of naval professionals who have advanced their careers through our comprehensive online training programs. Learn from distinguished instructors, access cutting-edge content, and earn recognized certifications - all from the comfort of your location.",
+  description: "Join thousands of BVT professionals who have advanced their careers through our comprehensive online training programs. Learn from distinguished instructors, access cutting-edge content, and earn recognized certifications - all from the comfort of your location.",
   features: [
     { icon: "Globe", text: "Learn from Anywhere" },
     { icon: "Clock", text: "Flexible Schedule" },
@@ -315,7 +315,7 @@ export const ONLINE_MENTORS_DATA = [
     studentsCount: 1250,
     coursesCount: 8,
     image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
-    bio: "Distinguished naval officer with 25 years of experience in fleet operations, strategic planning, and combat leadership. Led multiple successful naval campaigns and trained thousands of officers.",
+    bio: "Distinguished BVT officer with 25 years of experience in fleet operations, strategic planning, and combat leadership. Led multiple successful BVT campaigns and trained thousands of officers.",
     achievements: [
       "Led Operation Ocean Shield (2018-2020)",
       "Commander of the 7th Fleet (2015-2018)",
@@ -361,7 +361,7 @@ export const ONLINE_MENTORS_DATA = [
     studentsCount: 650,
     coursesCount: 5,
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
-    bio: "Pioneer in naval cyber security with expertise in network defense, digital warfare tactics, and information security protocols. Leads the Navy's cyber defense initiatives.",
+    bio: "Pioneer in BVT cyber security with expertise in network defense, digital warfare tactics, and information security protocols. Leads the Navy's cyber defense initiatives.",
     achievements: [
       "Established Navy Cyber Defense Center",
       "Developed cyber security protocols for fleet operations",
@@ -384,7 +384,7 @@ export const ONLINE_MENTORS_DATA = [
     studentsCount: 2100,
     coursesCount: 10,
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
-    bio: "Veteran naval officer with three decades of leadership experience. Expert in organizational development, strategic planning, and executive leadership training for senior officers.",
+    bio: "Veteran BVT officer with three decades of leadership experience. Expert in organizational development, strategic planning, and executive leadership training for senior officers.",
     achievements: [
       "Chief of Naval Operations Staff (2018-2021)",
       "Commander of Naval Education and Training Command",
@@ -407,10 +407,10 @@ export const ONLINE_MENTORS_DATA = [
     studentsCount: 720,
     coursesCount: 7,
     image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face",
-    bio: "Accomplished naval aviator and aircraft carrier operations expert. Specializes in flight deck management, aircraft handling procedures, and carrier-based operations.",
+    bio: "Accomplished BVT aviator and aircraft carrier operations expert. Specializes in flight deck management, aircraft handling procedures, and carrier-based operations.",
     achievements: [
       "Commanded Carrier Air Wing 17",
-      "Over 3000 flight hours in naval aircraft",
+      "Over 3000 flight hours in BVT aircraft",
       "Navy Air Medal with Combat Distinguishing Device",
       "Flight Operations Excellence Award"
     ],

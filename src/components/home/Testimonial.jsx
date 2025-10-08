@@ -34,8 +34,8 @@ export default function Testimonial() {
             </h3>
             
             <p className="mb-1 w-full font-normal text-gray-500">
-              Become a versatile naval professional by combining technical expertise with 
-              operational knowledge. Master all aspects of modern naval operations.
+              Become a versatile BVT professional by combining technical expertise with 
+              operational knowledge. Master all aspects of modern BVT operations.
             </p>
 
             <div className="grid mb-4 mt-4">
