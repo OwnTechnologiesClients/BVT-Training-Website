@@ -25,7 +25,7 @@ export const OFFLINE_COURSES_DATA = [
     location: "Mumbai Naval Base",
     startDate: "March 15, 2024",
     endDate: "March 19, 2024",
-    skills: ["Naval Engineering", "System Maintenance", "Technical Troubleshooting", "Safety Protocols"]
+    skills: ["BVT Engineering", "System Maintenance", "Technical Troubleshooting", "Safety Protocols"]
   },
   {
     id: 2,
