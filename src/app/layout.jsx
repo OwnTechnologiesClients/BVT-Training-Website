@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "BVT Training - Navy Vocational Training",
   description: "Professional navy vocational training programs and courses for career advancement",
+  icons: {
+    icon: "/BVT_logo.png",
+    shortcut: "/BVT_logo.png",
+    apple: "/BVT_logo.png",
+  },
 };
 
 export default function RootLayout({ children }) {

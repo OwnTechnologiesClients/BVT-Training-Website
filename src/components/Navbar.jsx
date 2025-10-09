@@ -53,10 +53,13 @@ export default function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-950 to-blue-800 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-xl transition-shadow">
-                  <Ship className="w-7 h-7 text-yellow-500 group-hover:scale-110 transition-transform" />
+                <div className="w-16 h-16 rounded-lg">
+                  <img 
+                    src="/BVT_logo.png" 
+                    alt="BVT Training Logo" 
+                    className="w-full h-full"
+                  />
                 </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
               </div>
               <div>
                 <span className="text-xl font-bold text-blue-950 block leading-none">BVT Training</span>
