@@ -136,6 +136,20 @@ export default function CoursesPage() {
     fetchCourses();
   }, []);
 
+  // Handle hash navigation (e.g., /courses#instructors)
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === '#instructors') {
+      setTimeout(() => {
+        const element = document.getElementById('instructors');
+        if (element) {
+          const offsetTop = element.offsetTop - 100; // Account for header
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      }, 500);
+    }
+  }, []);
+
   // Generate tabs based on actual course data
   const generateTabs = () => {
     const tabs = [
