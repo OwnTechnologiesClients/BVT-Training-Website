@@ -62,7 +62,7 @@ const TEAM_MEMBERS = [
 
 export default function LeadershipTeam() {
   return (
-    <section className="px-8 py-20 bg-white">
+    <section id="leadership-team" className="px-8 py-20 bg-white">
       <div className="container mx-auto">
         <div className="mb-16 text-center">
           <div className="inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full mb-4">

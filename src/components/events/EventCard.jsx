@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Users, Clock, ExternalLink, Star } from "lucide-react";
+import { Calendar, MapPin, Users, Clock } from "lucide-react";
 import Link from "next/link";
 
 const SAMPLE_EVENTS = [
@@ -277,6 +277,7 @@ const SAMPLE_EVENTS = [
 
 export default function EventCard({ 
   id,
+  slug,
   title, 
   description, 
   date, 
@@ -303,16 +304,6 @@ export default function EventCard({
     });
   };
 
-  const getAttendancePercentage = () => {
-    return Math.round((attendees / maxAttendees) * 100);
-  };
-
-  const getAttendanceColor = () => {
-    const percentage = getAttendancePercentage();
-    if (percentage >= 90) return "text-red-600 bg-red-50";
-    if (percentage >= 75) return "text-yellow-600 bg-yellow-50";
-    return "text-green-600 bg-green-50";
-  };
 
   return (
     <motion.div
@@ -388,50 +379,28 @@ export default function EventCard({
         </div>
 
         {/* Attendance */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-gray-400" />
-            <span className="text-sm text-gray-600">
-              {attendees}/{maxAttendees} attendees
-            </span>
-          </div>
-          <div className={`px-2 py-1 rounded-full text-xs font-medium ${getAttendanceColor()}`}>
-            {getAttendancePercentage()}% full
-          </div>
-        </div>
-
-        {/* Rating */}
         <div className="flex items-center gap-2 mb-4">
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className={`w-4 h-4 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-            ))}
-          </div>
-          <span className="text-sm font-medium text-gray-900">{rating}</span>
-          <span className="text-sm text-gray-500">({totalRatings})</span>
+          <Users className="w-4 h-4 text-gray-400" />
+          <span className="text-sm text-gray-600">
+            {attendees} {attendees === 1 ? 'attendee' : 'attendees'}
+          </span>
         </div>
 
-        {/* Price and CTA */}
-        <div className="flex items-center justify-between">
+        {/* Price */}
+        <div className="mb-4">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold text-blue-900">{price}</span>
             {originalPrice && originalPrice !== "Free" && (
               <span className="text-lg text-gray-400 line-through">{originalPrice}</span>
             )}
           </div>
-          <Link href={`/events/${id}`}>
-            <button className="bg-blue-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-800 transition-colors flex items-center gap-2">
-              <ExternalLink className="w-4 h-4" />
-              View Details
-            </button>
-          </Link>
         </div>
       </div>
 
       {/* Hover Overlay */}
       <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center">
         <div className="flex flex-col gap-3 px-6">
-          <Link href={`/events/${id}`} className="block">
+          <Link href={`/events/details/${slug || id}`} className="block">
             <button className="w-full bg-white text-blue-900 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg">
               View Details
             </button>

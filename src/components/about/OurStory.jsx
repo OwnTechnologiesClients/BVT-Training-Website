@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Users, Award, Ship, Anchor } from "lucide-react";
+import Link from "next/link";
 
 const TIMELINE = [
   {
@@ -123,9 +124,9 @@ export default function OurStory() {
               <p className="text-blue-900 font-bold text-lg">Join Our Continuing Legacy</p>
               <p className="text-gray-600 text-sm">Be part of the next chapter in BVT training excellence</p>
             </div>
-            <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors whitespace-nowrap shadow-lg">
+            <Link href="/courses" className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors whitespace-nowrap shadow-lg inline-block">
               Start Your Journey
-            </button>
+            </Link>
           </div>
         </div>
       </div>

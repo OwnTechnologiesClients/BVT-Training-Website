@@ -1,10 +1,94 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Users, Award, Star, BookOpen, MapPin, TrendingUp } from "lucide-react";
+import { Users, Award, Star, BookOpen, MapPin, TrendingUp, Loader2 } from "lucide-react";
 import MentorCard from "./MentorCard";
+import { getActiveInstructors } from "@/lib/api/instructors";
+import { apiRequest } from "@/lib/api";
 
-export default function MentorsSection({ mentors, showLocations = false }) {
+export default function MentorsSection({ mentors: propMentors, showLocations = false }) {
+  const [instructors, setInstructors] = useState(propMentors || []);
+  const [loading, setLoading] = useState(!propMentors || propMentors.length === 0);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Only fetch if no mentors were provided as props
+    if (propMentors && propMentors.length > 0) {
+      setInstructors(propMentors);
+      setLoading(false);
+      return;
+    }
+
+    const fetchInstructors = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await getActiveInstructors();
+        
+        if (response.success && response.data) {
+          // Transform backend instructor data to match component expectations
+          const transformedInstructors = await Promise.all(
+            response.data.map(async (instructor) => {
+              let coursesCount = 0;
+              let studentsCount = 0;
+              
+              try {
+                // Fetch courses for this instructor
+                const coursesResponse = await apiRequest(`/courses/instructor/${instructor._id}`, {
+                  method: 'GET',
+                });
+                
+                if (coursesResponse.success && coursesResponse.data) {
+                  coursesCount = coursesResponse.data.length;
+                  
+                  // Calculate total students from all courses
+                  // Sum up studentsCount from each course if available
+                  studentsCount = coursesResponse.data.reduce((total, course) => {
+                    return total + (course.studentsCount || 0);
+                  }, 0);
+                }
+              } catch (err) {
+                console.error(`Error fetching courses for instructor ${instructor._id}:`, err);
+              }
+              
+              return {
+            id: instructor._id,
+            _id: instructor._id,
+            slug: instructor.slug || instructor._id, // Use slug if available, fallback to _id
+            userId: instructor.userId,
+            name: instructor.userId 
+              ? `${instructor.userId.firstName || ''} ${instructor.userId.lastName || ''}`.trim()
+              : 'Instructor',
+            profilePic: instructor.profilePic,
+            image: instructor.profilePic,
+            bio: instructor.bio || '',
+            experience: instructor.experience || 0,
+            specializations: instructor.specializations || '',
+            department: instructor.department || '',
+            rating: instructor.rating || 5,
+            achievements: instructor.achievements || [],
+            certifications: instructor.certifications || [],
+            locations: instructor.locations || [],
+                studentsCount: studentsCount,
+                coursesCount: coursesCount,
+                workshopsCount: showLocations ? coursesCount : 0
+              };
+            })
+          );
+          
+          setInstructors(transformedInstructors);
+        }
+      } catch (err) {
+        console.error('Error fetching instructors:', err);
+        setError(err.message || 'Failed to load instructors');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInstructors();
+  }, [propMentors]);
   const stats = showLocations ? [
     { icon: Users, value: "15+", label: "Expert Instructors" },
     { icon: MapPin, value: "6+", label: "Training Locations" },
@@ -30,7 +114,7 @@ export default function MentorsSection({ mentors, showLocations = false }) {
               </span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Learn from Naval Experts
+              Learn from Expert
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               Our instructors are distinguished BVT officers with decades of real-world experience. 
@@ -65,13 +149,27 @@ export default function MentorsSection({ mentors, showLocations = false }) {
         </div>
       </div>
 
-      {/* Mentors Grid - Full Width */}
+      {/* Instructors Grid - Full Width */}
       <div className="container mx-auto px-4">
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-900" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-16">
+            <p className="text-red-600">{error}</p>
+          </div>
+        ) : instructors.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {mentors.map((mentor, index) => (
-            <MentorCard key={mentor.id} mentor={mentor} index={index} showLocations={showLocations} />
+            {instructors.map((instructor, index) => (
+              <MentorCard key={instructor.id || instructor._id} mentor={instructor} index={index} showLocations={showLocations} />
           ))}
         </div>
+        ) : (
+          <div className="text-center py-16">
+            <p className="text-gray-500">No instructors available at the moment.</p>
+          </div>
+        )}
       </div>
 
       {/* Call to Action */}

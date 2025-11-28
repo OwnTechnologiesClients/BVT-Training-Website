@@ -1,17 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Mail, Lock, User, Shield, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Shield, ArrowRight } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,20 +24,29 @@ export default function LoginPage() {
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     setIsLoading(true);
     
-    // Placeholder - no actual authentication
-    setTimeout(() => {
-      console.log("Login attempt:", formData);
+    try {
+      const result = await login(formData.email, formData.password);
+      
+      if (result.success) {
+        // Redirect to courses page on successful login
+        router.push("/courses");
+      } else {
+        setError(result.error || "Login failed. Please check your credentials.");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during login. Please try again.");
+    } finally {
       setIsLoading(false);
-      alert("Login successful! (This is a placeholder page)");
-      // Redirect to courses page
-      window.location.href = "/courses";
-    }, 1000);
+    }
   };
 
   return (
@@ -60,6 +74,13 @@ export default function LoginPage() {
           className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20"
         >
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-3 text-sm text-red-200">
+                {error}
+              </div>
+            )}
+
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white mb-2">

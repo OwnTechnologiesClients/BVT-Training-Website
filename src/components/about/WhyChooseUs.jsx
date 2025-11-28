@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle, Award, Users, Clock, Shield, Target, Star } from "lucide-react";
+import Link from "next/link";
 
 const REASONS = [
   {
@@ -176,14 +177,14 @@ export default function WhyChooseUs() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-yellow-600 text-blue-950 px-8 py-4 rounded-lg font-bold hover:bg-yellow-500 transition-colors shadow-lg flex items-center justify-center gap-2">
+                <Link href="/courses" className="bg-yellow-600 text-blue-950 px-8 py-4 rounded-lg font-bold hover:bg-yellow-500 transition-colors shadow-lg flex items-center justify-center gap-2">
                   <Award className="w-5 h-5" />
-                  Explore Programs
-                </button>
-                <button className="border-2 border-yellow-600 text-yellow-500 px-8 py-4 rounded-lg font-bold hover:bg-yellow-600 hover:text-blue-950 transition-colors flex items-center justify-center gap-2">
+                  Explore Courses
+                </Link>
+                <Link href="/contact" className="border-2 border-yellow-600 text-yellow-500 px-8 py-4 rounded-lg font-bold hover:bg-yellow-600 hover:text-blue-950 transition-colors flex items-center justify-center gap-2">
                   <Users className="w-5 h-5" />
                   Contact Us
-                </button>
+                </Link>
               </div>
             </div>
           </div>

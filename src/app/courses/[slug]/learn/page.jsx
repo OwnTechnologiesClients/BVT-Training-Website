@@ -1,220 +1,597 @@
 "use client";
 
-import { useState, use } from "react";
-import { ChevronLeft, ChevronRight, Play, Clock, CheckCircle, Circle, Lock, Menu, X, Video, FileText, Award } from "lucide-react";
+import { useState, useEffect, use, useMemo, useRef, useCallback } from "react";
+import { useRouter } from 'next/navigation';
+import { ChevronLeft, ChevronRight, Play, Clock, CheckCircle, Circle, Lock, Menu, X, Video, FileText, Award, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import VideoPlayer from "../../../../components/VideoPlayer";
+import { FloatingQueryButton } from "@/components/queries";
+import { useAuth } from "@/context/AuthContext";
+import { useCourseEnrollment } from "@/hooks/useCourseEnrollment";
+import { getCourseBySlug, getCourseStructure } from "@/lib/api/courses";
+import { markLessonComplete } from "@/lib/api/enrollment";
 
-const COURSE_CONTENT = {
-  modules: [
-    {
-      id: "getting-started",
-      title: "Getting Started",
-      completed: 0,
-      total: 5,
-      lessons: [
-        {
-          id: 1,
-          title: "Intro to BVT Training Course",
-          duration: "5:30",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "/200993-914924518.mp4",
-          textContent: {
-            introduction: "Welcome to the BVT (Basic Warfare Training) course. This comprehensive program will equip you with the fundamental knowledge and skills required for naval warfare operations.",
-            objectives: [
-              "Understand the core principles of BVT",
-              "Learn essential naval warfare concepts",
-              "Master basic operational procedures",
-              "Develop tactical thinking skills"
-            ],
-            content: "BVT Training Course provides a structured approach to learning naval warfare fundamentals. The course covers everything from basic maritime operations to advanced tactical maneuvers. You'll learn about ship systems, navigation protocols, communication procedures, and combat readiness standards.\n\nThis introductory lesson sets the foundation for your entire training journey. Pay close attention to the key concepts presented, as they will be referenced throughout the course. The material is designed to build upon itself, so each lesson prepares you for the next level of complexity.",
-            keyPoints: [
-              "BVT covers fundamental naval warfare principles",
-              "Structured learning approach with progressive complexity",
-              "Practical application of theoretical concepts",
-              "Real-world scenarios and case studies"
-            ],
-            conclusion: "By the end of this course, you'll have a solid understanding of BVT principles and be ready to apply them in real operational scenarios. Remember, consistent practice and attention to detail are key to mastering these concepts."
-          }
-        },
-        {
-          id: 2,
-          title: "Getting started with BVT Operations",
-          duration: "8:15",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "/200993-914924518.mp4",
-          textContent: {
-            introduction: "BVT Operations form the backbone of naval warfare effectiveness. This lesson introduces you to the fundamental operational procedures and protocols that every naval personnel must master.",
-            objectives: [
-              "Learn basic operational procedures",
-              "Understand command and control structures",
-              "Master communication protocols",
-              "Develop operational awareness"
-            ],
-            content: "BVT Operations encompass a wide range of activities that ensure mission success and personnel safety. These operations include standard operating procedures (SOPs), emergency protocols, communication systems, and tactical coordination.\n\nKey operational areas include:\n• Pre-mission planning and preparation\n• Real-time mission execution\n• Post-mission debriefing and analysis\n• Continuous improvement processes\n\nEach operation follows a structured approach that maximizes efficiency while maintaining the highest safety standards. Understanding these procedures is crucial for effective team coordination and mission accomplishment.",
-            keyPoints: [
-              "Standard Operating Procedures (SOPs) are essential",
-              "Communication protocols ensure coordination",
-              "Safety standards must be maintained at all times",
-              "Continuous improvement drives operational excellence"
-            ],
-            conclusion: "Mastering BVT Operations requires dedication and attention to detail. These procedures have been developed through years of experience and are designed to ensure mission success while protecting personnel and equipment."
-          }
-        },
-        {
-          id: 3,
-          title: "What is BVT Warfare",
-          duration: "12:45",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "/200993-914924518.mp4",
-          textContent: {
-            introduction: "BVT Warfare represents the comprehensive approach to naval combat operations, combining traditional naval tactics with modern technological capabilities to achieve strategic objectives.",
-            objectives: [
-              "Define BVT Warfare principles",
-              "Understand naval combat tactics",
-              "Learn strategic warfare concepts",
-              "Master tactical decision-making"
-            ],
-            content: "BVT Warfare is a sophisticated approach to naval combat that emphasizes:\n\n**Strategic Planning**: Every operation begins with comprehensive planning that considers multiple scenarios and outcomes. This includes threat assessment, resource allocation, and contingency planning.\n\n**Tactical Execution**: Once plans are established, precise tactical execution becomes critical. This involves coordination between different naval units, real-time decision making, and adaptive responses to changing conditions.\n\n**Technology Integration**: Modern BVT Warfare leverages advanced technologies including radar systems, communication networks, and precision weapons to maintain tactical superiority.\n\n**Human Element**: Despite technological advances, the human element remains central to BVT Warfare. Leadership, teamwork, and decision-making under pressure are essential skills.\n\nThe video demonstrates these principles in action, showing how BVT Warfare tactics are applied in real-world scenarios.",
-            keyPoints: [
-              "Strategic planning is the foundation of BVT Warfare",
-              "Tactical execution requires precision and coordination",
-              "Technology enhances but doesn't replace human judgment",
-              "Adaptability is key to mission success"
-            ],
-            conclusion: "BVT Warfare represents the evolution of naval combat, combining proven tactics with modern capabilities. Success requires mastery of both technical skills and strategic thinking."
-          }
-        },
-        {
-          id: 4,
-          title: "BVT FAQs - Essential Knowledge",
-          duration: "6:20",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "/200993-914924518.mp4"
-        },
-        {
-          id: 5,
-          title: "How to start your BVT Career",
-          duration: "15:30",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "/200993-914924518.mp4"
-        }
-      ]
-    },
-    {
-      id: "the-brief",
-      title: "The Brief",
-      completed: 0,
-      total: 2,
-      lessons: [
-        {
-          id: 6,
-          title: "Mission Overview",
-          duration: "10:15",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "/200993-914924518.mp4"
-        },
-        {
-          id: 7,
-          title: "Strategic Planning",
-          duration: "18:30",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "/200993-914924518.mp4"
-        }
-      ]
-    },
-    {
-      id: "operations",
-      title: "Operations & Navigation",
-      completed: 0,
-      total: 4,
-      lessons: [
-        {
-          id: 8,
-          title: "Navigation Fundamentals",
-          duration: "22:45",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "CevxZvSJLk8"
-        },
-        {
-          id: 9,
-          title: "Communication Protocols",
-          duration: "14:20",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "kffacxfA7G4"
-        },
-        {
-          id: 10,
-          title: "Emergency Procedures",
-          duration: "16:10",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "/200993-914924518.mp4"
-        },
-        {
-          id: 11,
-          title: "Team Coordination",
-          duration: "19:35",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "/200993-914924518.mp4"
-        }
-      ]
-    },
-    {
-      id: "advanced",
-      title: "Advanced Strategies",
-      completed: 0,
-      total: 3,
-      lessons: [
-        {
-          id: 12,
-          title: "Tactical Analysis",
-          duration: "25:15",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "/200993-914924518.mp4"
-        },
-        {
-          id: 13,
-          title: "Leadership in Combat",
-          duration: "20:45",
-          isCompleted: false,
-          type: "video",
-          videoSrc: "/200993-914924518.mp4"
-        },
-        {
-          id: 14,
-          title: "Final Assessment",
-          duration: "30:00",
-          isCompleted: false,
-          type: "quiz"
-        }
-      ]
-    }
-  ]
-};
 
 export default function CourseLearningPage({ params }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [expandedModules, setExpandedModules] = useState(["getting-started"]);
-  const [currentLessonId, setCurrentLessonId] = useState(1);
-  const [activeTab, setActiveTab] = useState("video"); // "video" or "text"
-
-  // Unwrap params using React.use()
+  const router = useRouter();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const resolvedParams = use(params);
-  
-  // Debug params
-  console.log("Course slug:", resolvedParams?.slug);
+  const slug = resolvedParams?.slug;
+
+  const [courseData, setCourseData] = useState(null);
+  const [courseStructure, setCourseStructure] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [expandedModules, setExpandedModules] = useState([]);
+  const [currentLessonId, setCurrentLessonId] = useState(null);
+  const [activeTab, setActiveTab] = useState("video");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [lessonTimer, setLessonTimer] = useState(0); // Timer in seconds for current lesson (1 minute = 60 seconds)
+  const [timerCompleted, setTimerCompleted] = useState(false); // Whether timer has completed for current lesson
+  const timerIntervalRef = useRef(null); // Reference to timer interval
+  const locallyCompletedLessonsRef = useRef(new Set()); // Track lessons completed locally to prevent flickering
+
+  // Get enrollment status - only check when courseData is available
+  const courseId = courseData?._id || courseData?.id;
+  const { isEnrolled, enrollment, loading: enrollmentLoading } = useCourseEnrollment(
+    isAuthenticated && courseId ? courseId : null
+  );
+
+  // Check if course is offline - block access to learning page
+  const isOffline = courseData?.isOnline === false;
+
+  // Get completed lesson IDs for quick lookup
+  // Prioritize courseStructure (immediate UI updates) over enrollment data to prevent flickering
+  const completedLessonIds = useMemo(() => {
+    const ids = new Set();
+    
+    // First, get from courseStructure (source of truth for UI)
+    if (courseStructure?.modules) {
+      courseStructure.modules.forEach(module => {
+        module.lessons?.forEach(lesson => {
+          if (lesson.isCompleted) {
+            const lessonId = (lesson._id || lesson.id)?.toString();
+            if (lessonId) {
+              ids.add(lessonId);
+            }
+          }
+        });
+      });
+    }
+    
+    // Also include locally completed lessons (from ref) - these take priority
+    locallyCompletedLessonsRef.current.forEach(lessonId => {
+      ids.add(lessonId);
+    });
+    
+    // Then add from enrollment (for lessons completed before page load)
+    // But only if not already in courseStructure or locally completed to prevent flickering
+    enrollment?.lessonsCompleted?.forEach(lc => {
+      const lessonId = lc.lessonId?.toString();
+      if (lessonId && !ids.has(lessonId)) {
+        // Only add if not already marked as completed in courseStructure or locally
+        const alreadyInStructure = courseStructure?.modules?.some(module =>
+          module.lessons?.some(lesson => {
+            const lesId = (lesson._id || lesson.id)?.toString();
+            return lesId === lessonId && lesson.isCompleted;
+          })
+        );
+        if (!alreadyInStructure && !locallyCompletedLessonsRef.current.has(lessonId)) {
+          ids.add(lessonId);
+        }
+      }
+    });
+    
+    return ids;
+  }, [courseStructure, enrollment?.lessonsCompleted]);
+
+  // Function to mark lesson as completed
+  const handleMarkLessonComplete = async (lessonId) => {
+    if (!enrollment?._id || !lessonId) {
+      return;
+    }
+
+    // Check if already completed
+    const lessonIdStr = lessonId.toString();
+    if (completedLessonIds.has(lessonIdStr)) {
+      return; // Already completed
+    }
+
+    try {
+      console.log('📝 Marking lesson as complete:', { enrollmentId: enrollment._id, lessonId });
+      
+      // Add to locally completed ref immediately to prevent flickering
+      locallyCompletedLessonsRef.current.add(lessonIdStr);
+      
+      // Update local state FIRST (optimistic update) to prevent flickering
+      setCourseStructure(prev => {
+        if (!prev || !prev.modules) return prev;
+        
+        // Check if already marked as completed to avoid duplicate updates
+        let alreadyCompleted = false;
+        prev.modules.forEach(module => {
+          module.lessons.forEach(lesson => {
+            const lessonIdToCheck = (lesson._id || lesson.id)?.toString();
+            if (lessonIdToCheck === lessonIdStr && lesson.isCompleted) {
+              alreadyCompleted = true;
+            }
+          });
+        });
+        
+        if (alreadyCompleted) {
+          return prev; // Already updated, skip
+        }
+        
+        // Build completed IDs set for lock calculation
+        const currentCompletedIds = new Set();
+        prev.modules.forEach(module => {
+          module.lessons.forEach(lesson => {
+            if (lesson.isCompleted) {
+              const lesId = (lesson._id || lesson.id)?.toString();
+              if (lesId) currentCompletedIds.add(lesId);
+            }
+          });
+        });
+        currentCompletedIds.add(lessonIdStr); // Add the newly completed lesson
+        
+        // Find current module (chapter) based on currentLessonId
+        let currentModuleIndex = -1;
+        if (currentLessonId) {
+          prev.modules.forEach((module, idx) => {
+            const hasCurrentLesson = module.lessons.some(lesson => {
+              const lessonId = (lesson._id || lesson.id)?.toString();
+              const currentId = currentLessonId?.toString();
+              return lessonId === currentId;
+            });
+            if (hasCurrentLesson) {
+              currentModuleIndex = idx;
+            }
+          });
+        }
+        
+        return {
+          ...prev,
+          modules: prev.modules.map((module, moduleIndex) => {
+            const isCurrentModule = moduleIndex === currentModuleIndex;
+            
+            // Update lessons and recalculate completion count
+            const updatedLessons = module.lessons.map((lesson, lessonIndex) => {
+              const lessonCopy = { ...lesson };
+              
+              // Mark as completed if it's the target lesson
+              const lessonIdToCheck = (lesson._id || lesson.id)?.toString();
+              if (lessonIdToCheck === lessonIdStr) {
+                lessonCopy.isCompleted = true;
+              }
+              
+              // Recalculate locks
+              if (moduleIndex === 0 && lessonIndex === 0) {
+                lessonCopy.isLocked = false;
+              } else if (isCurrentModule) {
+                lessonCopy.isLocked = false;
+              } else if (lessonIndex > 0) {
+                const previousLesson = module.lessons[lessonIndex - 1];
+                const previousLessonId = (previousLesson._id || previousLesson.id)?.toString();
+                lessonCopy.isLocked = !currentCompletedIds.has(previousLessonId);
+              } else if (lessonIndex === 0 && moduleIndex > 0) {
+                const previousModule = prev.modules[moduleIndex - 1];
+                const allPreviousLessonsCompleted = previousModule.lessons.every(les => {
+                  const lesId = (les._id || les.id)?.toString();
+                  return currentCompletedIds.has(lesId);
+                });
+                lessonCopy.isLocked = !allPreviousLessonsCompleted;
+              } else {
+                lessonCopy.isLocked = false;
+              }
+              
+              return lessonCopy;
+            });
+            
+            // Recalculate completed count for this module
+            const completedCount = updatedLessons.filter(l => l.isCompleted).length;
+            
+            return {
+              ...module,
+              lessons: updatedLessons,
+              completed: completedCount
+            };
+          })
+        };
+      });
+      
+      // Then call API (don't wait for response - UI already updated)
+      markLessonComplete(enrollment._id, lessonIdStr).then(response => {
+        if (response.success) {
+          console.log('✅ Lesson marked as complete successfully');
+        } else {
+          console.error('❌ Failed to mark lesson complete on server');
+        }
+      }).catch(error => {
+        console.error('❌ Error marking lesson complete:', error);
+      });
+    } catch (error) {
+      console.error('❌ Error in handleMarkLessonComplete:', error);
+      // Don't show error to user - they can try again
+    }
+  };
+
+  // Function to calculate if lesson is locked
+  const isLessonLocked = (lesson, moduleIndex, lessonIndex, allModules) => {
+    // First lesson of first module is never locked
+    if (moduleIndex === 0 && lessonIndex === 0) {
+      return false;
+    }
+
+    // If previous lesson in same module exists and is not completed, lock this lesson
+    if (lessonIndex > 0) {
+      const previousLesson = allModules[moduleIndex].lessons[lessonIndex - 1];
+      const previousLessonId = (previousLesson._id || previousLesson.id)?.toString();
+      if (!completedLessonIds.has(previousLessonId)) {
+        return true;
+      }
+    }
+
+    // If this is first lesson of a module, check if previous module is completed
+    if (lessonIndex === 0 && moduleIndex > 0) {
+      const previousModule = allModules[moduleIndex - 1];
+      // Check if all lessons in previous module are completed
+      const allPreviousLessonsCompleted = previousModule.lessons.every(lesson => {
+        const lessonId = (lesson._id || lesson.id)?.toString();
+        return completedLessonIds.has(lessonId);
+      });
+      if (!allPreviousLessonsCompleted) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  // Handle video progress update - just track progress, no auto-completion
+  const handleVideoProgress = useCallback((progressPercentage, currentTime, duration) => {
+    // Just a placeholder - no action needed for timer-based completion
+  }, []);
+
+  // Check access and redirect if needed
+  useEffect(() => {
+    // Don't do anything while auth is still loading
+    if (authLoading) {
+      return;
+    }
+
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      router.push(`/login?redirect=${encodeURIComponent(`/courses/${slug}/learn`)}`);
+      return;
+    }
+
+    // Block access for offline courses
+    if (courseData && isOffline) {
+      console.log('Offline course - redirecting to course details page');
+      router.push(`/courses/${slug}`);
+      return;
+    }
+
+    // Check enrollment status but don't redirect to billing
+    // Billing redirects removed as requested
+    if (!enrollmentLoading && isEnrolled) {
+      console.log('User is enrolled, allowing access:', {
+        courseId: courseData._id || courseData.id,
+        enrollment
+      });
+    } else if (!authLoading && !enrollmentLoading && courseData && isAuthenticated && !isEnrolled) {
+      console.log('User not enrolled - access will be denied (billing redirect removed):', {
+        courseId: courseData._id || courseData.id,
+        enrollment,
+        isEnrolled
+      });
+      // Don't redirect - just log. Access denied screen will show instead
+    }
+  }, [isAuthenticated, authLoading, isEnrolled, enrollmentLoading, router, slug, courseData, enrollment, isOffline]);
+
+  // Fetch course data and structure
+  useEffect(() => {
+    const fetchCourseData = async () => {
+      if (!slug) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // First, get course basic info
+        console.log('📚 Fetching course by slug:', slug);
+        const courseResponse = await getCourseBySlug(slug);
+        console.log('📚 Course response:', courseResponse);
+        
+        if (!courseResponse || !courseResponse.success || !courseResponse.data) {
+          const errorMsg = courseResponse?.message || 'Course not found';
+          console.error('📚 Course not found:', errorMsg);
+          throw new Error(errorMsg);
+        }
+
+        const course = courseResponse.data;
+        console.log('📚 Course data received:', {
+          _id: course._id,
+          id: course.id,
+          slug: course.slug,
+          title: course.title
+        });
+        setCourseData(course);
+      } catch (err) {
+        console.error('Error fetching course:', err);
+        setError(err.message || 'Failed to load course');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourseData();
+  }, [slug]);
+
+  // Fetch course structure separately once enrollment is confirmed
+  useEffect(() => {
+    const fetchCourseStructure = async () => {
+      // Don't fetch if missing prerequisites
+      if (!slug || !courseData || !isAuthenticated || enrollmentLoading) {
+        return;
+      }
+
+      // Don't fetch structure if user is not enrolled - they'll be redirected anyway
+      if (!isEnrolled) {
+        return;
+      }
+
+      try {
+        const courseId = courseData._id || courseData.id;
+        if (!courseId) return;
+
+        console.log('Fetching course structure for course:', courseId);
+        const structureResponse = await getCourseStructure(courseId);
+        
+        if (structureResponse.success && structureResponse.data) {
+          const responseData = structureResponse.data;
+          // Handle both response structures: data.structure.chapters or data.chapters
+          const structure = responseData.structure || responseData;
+          
+          console.log('Course structure received:', structure);
+              
+              // Transform backend structure (Course → Chapters → Lessons → LessonContent)
+              // to frontend format (Modules → Lessons)
+              const transformedModules = [];
+              
+              if (structure.chapters && Array.isArray(structure.chapters) && structure.chapters.length > 0) {
+                structure.chapters.forEach((chapter, chapterIndex) => {
+                  const moduleId = chapter._id || `chapter-${chapterIndex}`;
+                  const moduleLessons = [];
+
+                  if (chapter.lessons && Array.isArray(chapter.lessons) && chapter.lessons.length > 0) {
+                    chapter.lessons.forEach((lesson, lessonIndex) => {
+                      const lessonId = lesson._id || `lesson-${lessonIndex}`;
+                      
+                      // Get lesson content
+                      let videoSrc = null;
+                      let textContent = null;
+
+                      // Check for content in the new structure
+                      if (lesson.content) {
+                        // Video content
+                        if (lesson.content.video && lesson.content.video.filePath) {
+                          videoSrc = lesson.content.video.filePath;
+                        }
+                        
+                        // Document content for text - extract HTML content directly
+                        if (lesson.content.document && lesson.content.document.extractedText) {
+                          // extractedText contains HTML from rich text editor - use it directly
+                          textContent = lesson.content.document.extractedText;
+                        } else if (lesson.content.description) {
+                          // Fallback to description if no extractedText
+                          textContent = lesson.content.description;
+                        }
+                      }
+                      
+                      // Fallback to lesson description if no content object
+                      if (!textContent && lesson.description) {
+                        textContent = lesson.description;
+                      }
+
+                      // Get duration - check multiple sources
+                      let duration = lesson.duration || null;
+                      // If duration is not in lesson.duration, try to get it from content.video.duration (in seconds)
+                      if (!duration && lesson.content?.video?.duration) {
+                        const totalSeconds = lesson.content.video.duration;
+                        const minutes = Math.floor(totalSeconds / 60);
+                        const seconds = totalSeconds % 60;
+                        duration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                      }
+                      // Default to '0:00' if still no duration
+                      if (!duration) {
+                        duration = '0:00';
+                      }
+
+                      const lessonIdStr = lesson._id?.toString() || lessonId;
+                      // Check both completedLessonIds and locally completed ref to prevent flickering
+                      const isCompleted = completedLessonIds.has(lessonIdStr) || 
+                                        locallyCompletedLessonsRef.current.has(lessonIdStr);
+
+                      moduleLessons.push({
+                        id: lessonId,
+                        _id: lesson._id,
+                        title: lesson.title,
+                        duration: duration,
+                        isCompleted: isCompleted,
+                        type: lesson.type || 'video',
+                        videoSrc: videoSrc,
+                        textContent: textContent,
+                        isLocked: false // Will be calculated after all lessons are added
+                      });
+                    });
+                  }
+
+                  // Check if this chapter has completed lessons
+                  const completedInChapter = moduleLessons.filter(l => l.isCompleted).length;
+
+                  transformedModules.push({
+                    id: moduleId,
+                    _id: chapter._id,
+                    title: chapter.title || `Chapter ${chapterIndex + 1}`,
+                    completed: completedInChapter,
+                    total: moduleLessons.length,
+                    lessons: moduleLessons
+                  });
+                });
+              }
+
+              // Calculate locks for all lessons
+              // Create a Set of completed lesson IDs from the transformed modules for lock calculation
+              const currentCompletedIds = new Set();
+              transformedModules.forEach(module => {
+                module.lessons.forEach(lesson => {
+                  if (lesson.isCompleted) {
+                    const lessonId = (lesson._id || lesson.id)?.toString();
+                    if (lessonId) {
+                      currentCompletedIds.add(lessonId);
+                    }
+                  }
+                });
+              });
+              
+              // Also add enrollment completed lessons
+              enrollment?.lessonsCompleted?.forEach(lc => {
+                const lessonId = lc.lessonId?.toString();
+                if (lessonId) {
+                  currentCompletedIds.add(lessonId);
+                }
+              });
+              
+              // Also add locally completed lessons to prevent flickering
+              locallyCompletedLessonsRef.current.forEach(lessonId => {
+                currentCompletedIds.add(lessonId);
+              });
+              
+              // Find current module (chapter) based on currentLessonId if available
+              let currentModuleIndex = -1;
+              if (currentLessonId) {
+                transformedModules.forEach((module, idx) => {
+                  const hasCurrentLesson = module.lessons.some(lesson => {
+                    const lessonId = (lesson._id || lesson.id)?.toString();
+                    const currentId = currentLessonId?.toString();
+                    return lessonId === currentId;
+                  });
+                  if (hasCurrentLesson) {
+                    currentModuleIndex = idx;
+                  }
+                });
+              }
+
+              transformedModules.forEach((module, moduleIndex) => {
+                const isCurrentModule = moduleIndex === currentModuleIndex;
+                
+                module.lessons.forEach((lesson, lessonIndex) => {
+                  // First lesson of first module is never locked
+                  if (moduleIndex === 0 && lessonIndex === 0) {
+                    lesson.isLocked = false;
+                    return;
+                  }
+
+                  // Don't lock lessons in the current chapter
+                  if (isCurrentModule) {
+                    lesson.isLocked = false;
+                    return;
+                  }
+
+                  // If previous lesson in same module exists and is not completed, lock this lesson
+                  if (lessonIndex > 0) {
+                    const previousLesson = module.lessons[lessonIndex - 1];
+                    const previousLessonId = (previousLesson._id || previousLesson.id)?.toString();
+                    if (!currentCompletedIds.has(previousLessonId)) {
+                      lesson.isLocked = true;
+                      return;
+                    }
+                  }
+
+                  // If this is first lesson of a module, check if previous module is completed
+                  if (lessonIndex === 0 && moduleIndex > 0) {
+                    const previousModule = transformedModules[moduleIndex - 1];
+                    // Check if all lessons in previous module are completed
+                    const allPreviousLessonsCompleted = previousModule.lessons.every(les => {
+                      const lesId = (les._id || les.id)?.toString();
+                      return currentCompletedIds.has(lesId);
+                    });
+                    if (!allPreviousLessonsCompleted) {
+                      lesson.isLocked = true;
+                      return;
+                    }
+                  }
+
+                  lesson.isLocked = false;
+                });
+              });
+
+              setCourseStructure({ modules: transformedModules });
+
+              // Resume functionality: Find first incomplete lesson
+              let firstIncompleteLesson = null;
+              for (const module of transformedModules) {
+                for (const lesson of module.lessons) {
+                  const lessonIdStr = (lesson._id || lesson.id)?.toString();
+                  if (!completedLessonIds.has(lessonIdStr) && !lesson.isLocked) {
+                    firstIncompleteLesson = lesson;
+                    break;
+                  }
+                }
+                if (firstIncompleteLesson) break;
+              }
+
+              // Set current lesson: use first incomplete if exists, otherwise first lesson
+              const lessonToSet = firstIncompleteLesson || 
+                (transformedModules.length > 0 && transformedModules[0].lessons.length > 0 
+                  ? transformedModules[0].lessons[0] 
+                  : null);
+
+              if (lessonToSet && !currentLessonId) {
+                setCurrentLessonId(lessonToSet.id || lessonToSet._id);
+                // Expand the module containing this lesson
+                const moduleContainingLesson = transformedModules.find(m => 
+                  m.lessons.some(l => (l.id || l._id) === (lessonToSet.id || lessonToSet._id))
+                );
+                if (moduleContainingLesson) {
+                  setExpandedModules([moduleContainingLesson.id]);
+                }
+              }
+            } else {
+              console.log('No chapters found in course structure');
+            }
+          } catch (err) {
+            // Handle errors without causing logout or redirect
+            console.error('Error fetching course structure:', err);
+            
+            // Check if it's an enrollment/access error vs network error
+            const errorMessage = err.message || '';
+            const isAccessError = 
+              errorMessage.includes('enrolled') ||
+              errorMessage.includes('Access denied') ||
+              errorMessage.includes('permission') ||
+              errorMessage.includes('401') ||
+              errorMessage.includes('403') ||
+              errorMessage.includes('Unauthorized');
+            
+            // Handle access errors but don't redirect to billing
+            // Billing redirects removed as requested
+            if (isAccessError && !enrollmentLoading && !isEnrolled) {
+              console.log('Access denied - user not enrolled (billing redirect removed)');
+              // Don't redirect - access denied screen will show instead
+              return;
+            }
+            
+            // For other errors (network, server errors, missing files, etc.), just log
+            // The page will show "No content available" - don't redirect or logout
+            console.log('Structure fetch failed (may be network/server issue), showing empty state instead');
+            // Don't set error state that would block the page - missing videos are OK
+          }
+        };
+
+        fetchCourseStructure();
+  }, [slug, courseData, isAuthenticated, isEnrolled, enrollmentLoading, enrollment, router]);
 
   const toggleModule = (moduleId) => {
     setExpandedModules(prev => 
@@ -224,14 +601,21 @@ export default function CourseLearningPage({ params }) {
     );
   };
 
+  // Get modules from structure or fallback
+  const modules = courseStructure?.modules || [];
+
   // Get all lessons in order
-  const allLessons = COURSE_CONTENT.modules.flatMap(module => module.lessons);
-  const currentLesson = allLessons.find(lesson => lesson.id === currentLessonId);
-  const currentIndex = allLessons.findIndex(lesson => lesson.id === currentLessonId);
+  const allLessons = modules.flatMap(module => module.lessons || []);
+  const currentLesson = allLessons.find(lesson => 
+    lesson.id === currentLessonId || lesson._id === currentLessonId
+  );
+  const currentIndex = allLessons.findIndex(lesson => 
+    lesson.id === currentLessonId || lesson._id === currentLessonId
+  );
 
   const totalLessons = allLessons.length;
   const completedLessons = allLessons.filter(lesson => lesson.isCompleted).length;
-  const progressPercentage = (completedLessons / totalLessons) * 100;
+  const progressPercentage = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
 
   // Helper function to manage chapter transitions
   const handleChapterTransition = (newLessonId) => {
@@ -239,13 +623,17 @@ export default function CourseLearningPage({ params }) {
     if (!newLesson) return;
 
     // Find which module contains the new lesson
-    const newModule = COURSE_CONTENT.modules.find(module => 
-      module.lessons.some(lesson => lesson.id === newLessonId)
+    const newModule = modules.find(module => 
+      module.lessons?.some(lesson => 
+        lesson.id === newLessonId || lesson._id === newLessonId
+      )
     );
 
     // Find which module contains the current lesson
-    const currentModule = COURSE_CONTENT.modules.find(module => 
-      module.lessons.some(lesson => lesson.id === currentLessonId)
+    const currentModule = modules.find(module => 
+      module.lessons?.some(lesson => 
+        lesson.id === currentLessonId || lesson._id === currentLessonId
+      )
     );
 
     // If moving to a different module, collapse the old one and expand the new one
@@ -265,13 +653,32 @@ export default function CourseLearningPage({ params }) {
   };
 
   // Navigation functions
-  const goToNextLesson = () => {
-    if (currentIndex < allLessons.length - 1) {
-      const nextLesson = allLessons[currentIndex + 1];
-      if (!nextLesson.isLocked) {
-        handleChapterTransition(nextLesson.id);
-        setCurrentLessonId(nextLesson.id);
+  const goToNextLesson = async () => {
+    // Only proceed if timer is completed
+    if (!timerCompleted) {
+      console.log('⏸️ Timer not completed yet, cannot proceed');
+      return;
+    }
+
+    // Don't proceed if it's the last lesson
+    if (currentIndex >= allLessons.length - 1) {
+      console.log('⏸️ This is the last lesson, cannot proceed');
+      return;
+    }
+
+    // Mark current lesson as complete before moving to next
+    if (currentLesson && currentLessonId) {
+      const currentLessonIdStr = (currentLesson._id || currentLesson.id)?.toString();
+      if (!completedLessonIds.has(currentLessonIdStr)) {
+        await handleMarkLessonComplete(currentLessonIdStr);
       }
+    }
+
+    // Move to next lesson (even if it appears locked, we'll unlock it when we get there)
+    const nextLesson = allLessons[currentIndex + 1];
+    if (nextLesson) {
+      handleChapterTransition(nextLesson.id);
+      setCurrentLessonId(nextLesson.id);
     }
   };
 
@@ -284,13 +691,308 @@ export default function CourseLearningPage({ params }) {
   };
 
   const selectLesson = (lessonId) => {
-    const lesson = allLessons.find(l => l.id === lessonId);
-    if (!lesson.isLocked) {
+    const lesson = allLessons.find(l => l.id === lessonId || l._id === lessonId);
+    if (lesson && !lesson.isLocked) {
       handleChapterTransition(lessonId);
       setCurrentLessonId(lessonId);
     }
   };
 
+  // Set to first incomplete lesson if current lesson is not found
+  // MUST be before any conditional returns to follow Rules of Hooks
+  useEffect(() => {
+    if (!currentLesson && allLessons.length > 0) {
+      // Find first incomplete, unlocked lesson
+      const firstIncomplete = allLessons.find(lesson => {
+        const lessonIdStr = (lesson._id || lesson.id)?.toString();
+        return !completedLessonIds.has(lessonIdStr) && !lesson.isLocked;
+      });
+      
+      const lessonToSet = firstIncomplete || allLessons[0];
+      setCurrentLessonId(lessonToSet.id || lessonToSet._id);
+    }
+  }, [allLessons.length, currentLesson, completedLessonIds]);
+
+  // Recalculate locks whenever currentLessonId changes (e.g., when moving to a new chapter)
+  useEffect(() => {
+    if (!currentLessonId || !courseStructure?.modules) return;
+
+    // Recalculate locks based on current lesson
+    setCourseStructure(prev => {
+      if (!prev || !prev.modules) return prev;
+
+      // Build completed IDs set
+      const currentCompletedIds = new Set();
+      prev.modules.forEach(module => {
+        module.lessons.forEach(lesson => {
+          if (lesson.isCompleted) {
+            const lesId = (lesson._id || lesson.id)?.toString();
+            if (lesId) currentCompletedIds.add(lesId);
+          }
+        });
+      });
+      
+      // Also add locally completed lessons
+      locallyCompletedLessonsRef.current.forEach(lessonId => {
+        currentCompletedIds.add(lessonId);
+      });
+      
+      // Also add enrollment completed lessons
+      enrollment?.lessonsCompleted?.forEach(lc => {
+        const lessonId = lc.lessonId?.toString();
+        if (lessonId) {
+          currentCompletedIds.add(lessonId);
+        }
+      });
+
+      // Find current module (chapter) based on currentLessonId
+      let currentModuleIndex = -1;
+      prev.modules.forEach((module, idx) => {
+        const hasCurrentLesson = module.lessons.some(lesson => {
+          const lessonId = (lesson._id || lesson.id)?.toString();
+          const currentId = currentLessonId?.toString();
+          return lessonId === currentId;
+        });
+        if (hasCurrentLesson) {
+          currentModuleIndex = idx;
+        }
+      });
+
+      return {
+        ...prev,
+        modules: prev.modules.map((module, moduleIndex) => {
+          const isCurrentModule = moduleIndex === currentModuleIndex;
+          
+          const updatedLessons = module.lessons.map((lesson, lessonIndex) => {
+            const lessonCopy = { ...lesson };
+            
+            // Recalculate locks
+            if (moduleIndex === 0 && lessonIndex === 0) {
+              lessonCopy.isLocked = false;
+            } else if (isCurrentModule) {
+              lessonCopy.isLocked = false; // Lessons in current chapter are not locked
+            } else if (lessonIndex > 0) {
+              const previousLesson = module.lessons[lessonIndex - 1];
+              const previousLessonId = (previousLesson._id || previousLesson.id)?.toString();
+              lessonCopy.isLocked = !currentCompletedIds.has(previousLessonId);
+            } else if (lessonIndex === 0 && moduleIndex > 0) {
+              const previousModule = prev.modules[moduleIndex - 1];
+              const allPreviousLessonsCompleted = previousModule.lessons.every(les => {
+                const lesId = (les._id || les.id)?.toString();
+                return currentCompletedIds.has(lesId);
+              });
+              lessonCopy.isLocked = !allPreviousLessonsCompleted;
+            } else {
+              lessonCopy.isLocked = false;
+            }
+            
+            return lessonCopy;
+          });
+          
+          return {
+            ...module,
+            lessons: updatedLessons
+          };
+        })
+      };
+    });
+  }, [currentLessonId, enrollment?.lessonsCompleted]);
+
+  // Helper function to get timer completion key for localStorage
+  const getTimerKey = (lessonId) => {
+    if (!lessonId || !courseId) return null;
+    return `lesson-timer-${courseId}-${lessonId}`;
+  };
+
+  // Helper function to check if timer was completed for a lesson
+  const isTimerCompleted = (lessonId) => {
+    const key = getTimerKey(lessonId);
+    if (!key) return false;
+    try {
+      return localStorage.getItem(key) === 'completed';
+    } catch (e) {
+      return false;
+    }
+  };
+
+  // Helper function to mark timer as completed
+  const markTimerCompleted = (lessonId) => {
+    const key = getTimerKey(lessonId);
+    if (!key) return;
+    try {
+      localStorage.setItem(key, 'completed');
+    } catch (e) {
+      console.error('Failed to save timer completion:', e);
+    }
+  };
+
+  // Timer effect: Start 1-minute timer when lesson changes
+  useEffect(() => {
+    // Clear any existing timer
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+
+    // Reset timer when lesson changes
+    if (currentLessonId && courseId) {
+      const lessonIdStr = currentLessonId.toString();
+      
+      // Check if timer was already completed for this lesson
+      if (isTimerCompleted(lessonIdStr)) {
+        // Timer already completed - don't start it again
+        setLessonTimer(60);
+        setTimerCompleted(true);
+        console.log('✅ Timer already completed for lesson:', lessonIdStr);
+        return;
+      }
+
+      // Start new timer
+      console.log('⏱️ Starting timer for lesson:', lessonIdStr);
+      setLessonTimer(0);
+      setTimerCompleted(false);
+
+      // Start timer countdown
+      timerIntervalRef.current = setInterval(() => {
+        setLessonTimer(prev => {
+          const newTime = prev + 1;
+          console.log('⏱️ Timer:', newTime, 'seconds');
+          
+          if (newTime >= 60) {
+            // Timer completed (60 seconds = 1 minute)
+            console.log('✅ Timer completed for lesson:', lessonIdStr);
+            markTimerCompleted(lessonIdStr); // Save to localStorage
+            setTimerCompleted(true); // Mark as completed in state
+            if (timerIntervalRef.current) {
+              clearInterval(timerIntervalRef.current);
+              timerIntervalRef.current = null;
+            }
+            return 60;
+          }
+          return newTime;
+        });
+      }, 1000); // Update every second
+    }
+
+    // Cleanup on unmount or lesson change
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
+    };
+  }, [currentLessonId, courseId]);
+
+  // Error state - show early if course not found
+  if (error && !courseData) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Course Not Found</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <Link href="/courses">
+            <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-800 transition-colors">
+              Browse All Courses
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state - show early if course not found (before loading checks)
+  if (error && !courseData && !loading) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Course Not Found</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <div className="flex gap-4 justify-center">
+            <Link href="/courses">
+              <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-800 transition-colors">
+                Browse All Courses
+              </button>
+            </Link>
+            {slug && (
+              <Link href={`/courses/${slug}`}>
+                <button className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors">
+                  Back to Course
+                </button>
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state
+  if (loading || authLoading || enrollmentLoading) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-900 mx-auto mb-4" />
+          <p className="text-gray-600">Loading course content...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Access denied - not enrolled
+  // Only show this if enrollment check is complete and user is definitely not enrolled
+  if (isAuthenticated && !enrollmentLoading && !isEnrolled && courseData) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <Lock className="w-16 h-16 text-blue-900 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
+          <p className="text-gray-600 mb-6">You need to enroll in this course to access the content.</p>
+          <div className="flex gap-4 justify-center">
+            <Link href={`/courses/${slug}`}>
+              <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-800 transition-colors">
+                Back to Course
+              </button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // No content available
+  // Only show this if enrollment check is complete and user IS enrolled but has no content
+  // If user is not enrolled, they'll be redirected by the useEffect above
+  if (!enrollmentLoading && isEnrolled && (!modules.length || !allLessons.length)) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Content Available</h2>
+          <p className="text-gray-600 mb-6">This course doesn't have any content yet. Please check back later.</p>
+          <Link href={`/courses/${slug}`}>
+            <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-800 transition-colors">
+              Back to Course
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // If enrollment is still loading or we're waiting for structure, show loading
+  // This prevents showing "No content" before we know if user is enrolled
+  if (enrollmentLoading || (isEnrolled && !courseStructure && !error)) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-900 mx-auto mb-4" />
+          <p className="text-gray-600">Loading course content...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen bg-gray-50 flex overflow-hidden">
@@ -327,7 +1029,7 @@ export default function CourseLearningPage({ params }) {
 
         {/* Course Modules */}
         <div className="flex-1 overflow-y-auto p-4 min-h-0 sidebar-scroll">
-          {COURSE_CONTENT.modules.map((module) => (
+          {modules.map((module) => (
             <div key={module.id} className="mb-4">
               {/* Module Header */}
               <button
@@ -350,48 +1052,61 @@ export default function CourseLearningPage({ params }) {
               {/* Module Lessons */}
               {expandedModules.includes(module.id) && (
                 <div className="mt-2 ml-4 space-y-1">
-                  {module.lessons.map((lesson) => (
-                    <div
-                      key={lesson.id}
-                      onClick={() => selectLesson(lesson.id)}
-                      className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                        lesson.id === currentLessonId 
-                          ? 'bg-blue-50 border border-blue-200' 
-                          : lesson.isLocked 
-                          ? 'opacity-50 cursor-not-allowed'
-                          : 'hover:bg-gray-50'
-                      }`}
-                    >
-                      {/* Lesson Icon */}
-                      <div className="flex-shrink-0">
-                        {lesson.isLocked ? (
-                          <Lock className="w-4 h-4 text-gray-400" />
-                        ) : lesson.id === currentLessonId ? (
-                          <Play className="w-4 h-4 text-blue-600" />
-                        ) : lesson.isCompleted ? (
-                          <CheckCircle className="w-4 h-4 text-green-500" />
-                        ) : (
-                          <Circle className="w-4 h-4 text-gray-400" />
-                        )}
-                      </div>
+                  {module.lessons && module.lessons.length > 0 ? (
+                    module.lessons.map((lesson) => {
+                      const lessonId = lesson.id || lesson._id;
+                      const isCurrent = lessonId === currentLessonId || lesson._id === currentLessonId;
 
-                      {/* Lesson Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className={`text-sm font-medium ${
-                          lesson.id === currentLessonId ? 'text-blue-900' : 'text-gray-900'
-                        }`}>
-                          {lesson.title}
+                      return (
+                        <div
+                          key={lessonId}
+                          onClick={() => selectLesson(lessonId)}
+                          className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                            isCurrent
+                              ? 'bg-blue-50 border border-blue-200' 
+                              : lesson.isLocked 
+                              ? 'opacity-50 cursor-not-allowed'
+                              : 'hover:bg-gray-50'
+                          }`}
+                        >
+                          {/* Lesson Icon */}
+                          <div className="flex-shrink-0">
+                            {lesson.isLocked ? (
+                              <Lock className="w-4 h-4 text-gray-400" />
+                            ) : isCurrent ? (
+                              <Play className="w-4 h-4 text-blue-600" />
+                            ) : lesson.isCompleted ? (
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Circle className="w-4 h-4 text-gray-400" />
+                            )}
+                          </div>
+
+                          {/* Lesson Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className={`text-sm font-medium ${
+                              isCurrent ? 'text-blue-900' : 'text-gray-900'
+                            }`}>
+                              {lesson.title}
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                              {lesson.duration && (
+                                <>
+                                  <Clock className="w-3 h-3" />
+                                  <span>{lesson.duration}</span>
+                                </>
+                              )}
+                              {lesson.type === 'quiz' && (
+                                <span className="bg-yellow-100 text-yellow-800 px-1 rounded">Quiz</span>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <Clock className="w-3 h-3" />
-                          <span>{lesson.duration}</span>
-                          {lesson.type === 'quiz' && (
-                            <span className="bg-yellow-100 text-yellow-800 px-1 rounded">Quiz</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    })
+                  ) : (
+                    <div className="px-3 py-2 text-sm text-gray-500">No lessons in this module yet.</div>
+                  )}
                 </div>
               )}
             </div>
@@ -419,22 +1134,20 @@ export default function CourseLearningPage({ params }) {
               >
                 <Menu className="w-5 h-5" />
               </button>
-              <Link href="/courses" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+              <Link href="/dashboard" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
                 <ChevronLeft className="w-4 h-4" />
-                <span className="text-sm">Back to Courses</span>
+                <span className="text-sm">Back to Dashboard</span>
               </Link>
             </div>
             <h1 className="text-lg font-semibold text-gray-900">
-              {currentLesson?.title || "Course Learning"}
+              {courseData?.title || "Course Learning"}
             </h1>
+            {currentLesson && (
+              <div className="text-sm text-gray-600 ml-4">
+                {currentLesson.title}
+              </div>
+            )}
             <div className="flex items-center gap-2">
-              <Link 
-                href={`/courses/${resolvedParams?.slug}/test`}
-                className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-              >
-                <Award className="w-4 h-4" />
-                Tests
-              </Link>
               <button className="p-2 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5" />
               </button>
@@ -471,83 +1184,41 @@ export default function CourseLearningPage({ params }) {
         {/* Content Area */}
         <div className="flex-1 min-h-0" style={{ height: 'calc(100vh - 180px)' }}>
           {activeTab === "video" ? (
-            <div className="w-full h-full bg-black">
-              <VideoPlayer 
-                key={currentLessonId} // Force remount when lesson changes
-                videoSrc={currentLesson?.videoSrc}
-                title={currentLesson?.title || "Course Video"}
-                autoplay={false}
-                onVideoEnd={() => {
-                  // Mark lesson as completed when video ends
-                  console.log("Video ended for lesson:", currentLesson?.id);
-                }}
-                onVideoStart={() => {
-                  console.log("Video started for lesson:", currentLesson?.id);
-                }}
-              />
-            </div>
+            currentLesson?.videoSrc ? (
+              <div className="w-full h-full bg-black">
+                <VideoPlayer 
+                  key={currentLessonId} // Force remount when lesson changes
+                  videoSrc={currentLesson.videoSrc}
+                  title={currentLesson.title || "Course Video"}
+                  onProgressUpdate={handleVideoProgress}
+                  autoplay={false}
+                  onVideoEnd={() => {
+                    // Video ended - timer will handle completion when it reaches 1 minute
+                    // No auto-completion on video end
+                  }}
+                  onVideoStart={() => {
+                    // Video started - timer is already running
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                <div className="text-center text-white">
+                  <Video className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <p className="text-lg mb-2">No video available</p>
+                  <p className="text-sm text-gray-400">This lesson doesn't have a video yet.</p>
+                </div>
+              </div>
+            )
           ) : (
             <div className="w-full h-full bg-white overflow-y-auto sidebar-scroll">
               <div className="p-8 max-w-4xl mx-auto">
                 {currentLesson?.textContent ? (
-                  <div className="space-y-8">
-                    {/* Introduction */}
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-4">Introduction</h2>
-                      <p className="text-gray-700 leading-relaxed">{currentLesson.textContent.introduction}</p>
-                    </div>
-
-                    {/* Learning Objectives */}
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-4">Learning Objectives</h2>
-                      <ul className="space-y-2">
-                        {currentLesson.textContent.objectives.map((objective, index) => (
-                          <li key={index} className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                            <span className="text-gray-700">{objective}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Main Content */}
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-4">Lesson Content</h2>
-                      <div className="prose prose-lg max-w-none">
-                        {currentLesson.textContent.content.split('\n').map((paragraph, index) => (
-                          paragraph.trim() && (
-                            <div key={index} className="text-gray-700 leading-relaxed mb-4">
-                              {paragraph.split(/(\*\*.*?\*\*)/).map((part, partIndex) => {
-                                if (part.startsWith('**') && part.endsWith('**')) {
-                                  return <strong key={partIndex}>{part.slice(2, -2)}</strong>;
-                                }
-                                return part;
-                              })}
-                            </div>
-                          )
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Key Points */}
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Points</h2>
-                      <ul className="space-y-2">
-                        {currentLesson.textContent.keyPoints.map((point, index) => (
-                          <li key={index} className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
-                            <span className="text-gray-700">{point}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Conclusion */}
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-4">Conclusion</h2>
-                      <p className="text-gray-700 leading-relaxed">{currentLesson.textContent.conclusion}</p>
-                    </div>
-                  </div>
+                  // Render HTML content directly from rich text editor
+                  <div 
+                    className="rich-text-content"
+                    dangerouslySetInnerHTML={{ __html: currentLesson.textContent }}
+                  />
                 ) : (
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center text-gray-500">
@@ -584,17 +1255,54 @@ export default function CourseLearningPage({ params }) {
               <div className="text-sm text-gray-500">
                 {currentIndex + 1} of {totalLessons}
               </div>
-              <button 
-                onClick={goToNextLesson}
-                disabled={currentIndex === totalLessons - 1 || allLessons[currentIndex + 1]?.isLocked}
-                className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
-                  currentIndex === totalLessons - 1 || allLessons[currentIndex + 1]?.isLocked
-                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                    : 'bg-blue-900 text-white hover:bg-blue-800'
-                }`}
-              >
-                Next Lesson
-              </button>
+              
+              {/* Timer Display - only show if not on last lesson */}
+              {currentIndex < totalLessons - 1 && !timerCompleted && lessonTimer < 60 && (
+                <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-lg border border-blue-200">
+                  <Clock className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-900">
+                    {Math.max(0, 60 - lessonTimer)}s
+                  </span>
+                </div>
+              )}
+              
+              {/* Show Next Lesson button only if not on last lesson */}
+              {currentIndex < totalLessons - 1 ? (
+                <button 
+                  onClick={goToNextLesson}
+                  disabled={!timerCompleted}
+                  className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                    !timerCompleted
+                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                      : 'bg-blue-900 text-white hover:bg-blue-800'
+                  }`}
+                >
+                  {!timerCompleted
+                    ? `Next Lesson (${Math.max(0, 60 - lessonTimer)}s)` 
+                    : 'Next Lesson'}
+                </button>
+              ) : (
+                <Link
+                  href={`/courses/${resolvedParams?.slug}/test`}
+                  onClick={async (e) => {
+                    // Mark final lesson as complete when going to tests
+                    // (No timer requirement for final lesson since there's no next lesson)
+                    if (currentLesson && currentLessonId) {
+                      const currentLessonIdStr = (currentLesson._id || currentLesson.id)?.toString();
+                      if (!completedLessonIds.has(currentLessonIdStr)) {
+                        e.preventDefault(); // Prevent navigation temporarily
+                        await handleMarkLessonComplete(currentLessonIdStr);
+                        // Navigate after marking complete
+                        router.push(`/courses/${resolvedParams?.slug}/test`);
+                      }
+                    }
+                  }}
+                  className="px-6 py-2 rounded-lg font-semibold transition-colors bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
+                >
+                  <Award className="w-4 h-4" />
+                  Go to Tests
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -607,6 +1315,14 @@ export default function CourseLearningPage({ params }) {
           onClick={() => setIsSidebarOpen(false)}
         ></div>
       )}
+
+      {/* Floating Query Button */}
+      <FloatingQueryButton
+        courseId={resolvedParams?.slug || "course-1"}
+        courseTitle="Navigation Systems & GPS"
+        lessonId={currentLessonId}
+        lessonTitle={currentLesson?.title || "Current Lesson"}
+      />
     </div>
   );
 }

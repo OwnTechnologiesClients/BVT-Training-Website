@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, User, Shield, ArrowRight, Phone, Briefcase, MapPin } from "lucide-react";
+import { studentRegister } from "@/lib/api/auth";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -21,6 +24,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -28,31 +32,61 @@ export default function RegisterPage() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     
+    // Client-side validation
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+      setError("Passwords don't match!");
+      return;
+    }
+    
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long!");
       return;
     }
     
     if (!formData.agreeToTerms) {
-      alert("Please agree to the terms and conditions!");
+      setError("Please agree to the terms and conditions!");
       return;
     }
     
     setIsLoading(true);
     
-    // Placeholder - no actual authentication
-    setTimeout(() => {
-      console.log("Registration attempt:", formData);
+    try {
+      // Map form data to backend structure
+      const registrationData = {
+        email: formData.email,
+        password: formData.password,
+        fullName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
+        phone: formData.phone || undefined,
+        rank: formData.rank || undefined,
+        branch: formData.experience || undefined, // Using experience as branch
+        address: formData.location ? {
+          city: formData.location,
+          country: "India" // Default country
+        } : undefined,
+      };
+
+      const response = await studentRegister(registrationData);
+      
+      if (response.success) {
+        // Show success message and redirect to login
+        alert("Registration successful! Please login to continue.");
+        router.push("/login");
+      } else {
+        setError(response.message || "Registration failed. Please try again.");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during registration. Please try again.");
+    } finally {
       setIsLoading(false);
-      alert("Registration successful! (This is a placeholder page)");
-      // Redirect to courses page
-      window.location.href = "/courses";
-    }, 1000);
+    }
   };
 
   const ranks = [
@@ -97,6 +131,13 @@ export default function RegisterPage() {
           className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20"
         >
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-3 text-sm text-red-200">
+                {error}
+              </div>
+            )}
+
             {/* Personal Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>

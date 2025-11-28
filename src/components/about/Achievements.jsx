@@ -169,9 +169,6 @@ export default function Achievements() {
                 <p className="text-gray-600 text-sm">Award-winning training programs since 1973</p>
               </div>
             </div>
-            <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors whitespace-nowrap shadow-lg">
-              View All Awards
-            </button>
           </div>
         </div>
       </div>

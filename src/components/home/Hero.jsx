@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Ship, Anchor, Award, Users } from "lucide-react";
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 
 export default function Hero() {
   const videoRef = useRef(null);
@@ -90,7 +91,7 @@ export default function Hero() {
             
             <p className="text-lg md:text-xl text-white max-w-2xl mx-auto">
               Advance your career in the BVT forces with our comprehensive vocational 
-              training programs. From technical skills to leadership development, we provide 
+              training courses. From technical skills to leadership development, we provide 
               the education you need to succeed.
             </p>
 
@@ -101,23 +102,25 @@ export default function Hero() {
               transition={{ delay: 0.3, duration: 0.6 }}
               className="flex flex-wrap justify-center gap-4 pt-4"
             >
-              <button className="group bg-yellow-600 text-blue-950 px-8 py-4 rounded-lg font-bold hover:bg-yellow-500 transition-all hover:scale-105 shadow-lg flex items-center gap-2">
+              {/* <button className="group bg-yellow-600 text-blue-950 px-8 py-4 rounded-lg font-bold hover:bg-yellow-500 transition-all hover:scale-105 shadow-lg flex items-center gap-2">
                 <Ship className="w-5 h-5" />
-                View All Programs
+                View All Courses
                 <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-              </button>
+              </button> */}
+              <Link href="/courses">
               <button className="border-2 border-yellow-600 text-yellow-500 px-8 py-4 rounded-lg font-bold hover:bg-yellow-600 hover:text-blue-950 transition-all hover:scale-105 backdrop-blur-sm">
                 Enrollment Info
               </button>
+              </Link>
             </motion.div>
 
             {/* Stats Row */}
             <div className="grid grid-cols-3 gap-6 pt-8 max-w-2xl mx-auto">
               {[
                 { icon: Users, value: "8,500+", label: "Active Trainees" },
-                { icon: Award, value: "400+", label: "Programs" },
+                { icon: Award, value: "400+", label: "Courses" },
                 { icon: Anchor, value: "95%", label: "Success Rate" }
               ].map((stat, index) => {
                 const Icon = stat.icon;

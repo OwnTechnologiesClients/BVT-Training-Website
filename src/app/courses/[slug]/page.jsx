@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from "framer-motion";
 import { 
@@ -15,11 +16,19 @@ import {
   Share2,
   Calendar,
   User,
-  Tag
+  Tag,
+  Loader2,
+  ShoppingCart,
+  Lock
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useCourseEnrollment } from "@/hooks/useCourseEnrollment";
+import { getCourseBySlug } from "@/lib/api/courses";
+import { getAllCourses } from "@/lib/api/courses";
+import { getImageUrl } from "@/lib/utils/imageUtils";
 
-// Sample course data
-const COURSE_DATA = {
+// Sample course data (fallback)
+const FALLBACK_COURSE_DATA = {
   id: 1,
   title: "Advanced Naval Warfare Strategies",
   slug: "advanced-BVT-warfare-strategies",
@@ -103,7 +112,7 @@ By the end of this course, you'll have the expertise to lead complex BVT operati
   }
 };
 
-const RELATED_COURSES = [
+const FALLBACK_RELATED_COURSES = [
   {
     id: 2,
     title: "Submarine Command Operations",
@@ -132,9 +141,108 @@ const RELATED_COURSES = [
   }
 ];
 
-export default function CourseDetailsPage() {
+export default function CourseDetailsPage({ params }) {
+  const router = useRouter();
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  const resolvedParams = use(params);
+  const slug = resolvedParams?.slug;
+
+  const [courseData, setCourseData] = useState(null);
+  const [relatedCourses, setRelatedCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("info");
-  const [expandedSections, setExpandedSections] = useState(["Getting Started"]);
+  const [expandedSections, setExpandedSections] = useState([]);
+  const [curriculum, setCurriculum] = useState([]);
+
+  // Get enrollment status (only for authenticated users)
+  // This won't block the page load if user is not authenticated
+  // Extract courseId from courseData when available
+  const courseId = courseData?._id || courseData?.id;
+  const { isEnrolled, enrollment, loading: enrollmentLoading } = useCourseEnrollment(
+    isAuthenticated && courseId ? courseId : null
+  );
+  
+  // Debug: Log enrollment status
+  useEffect(() => {
+    if (courseId && isAuthenticated) {
+      console.log('📚 Enrollment check:', {
+        courseId,
+        isEnrolled,
+        enrollmentStatus: enrollment?.status,
+        enrollment
+      });
+    }
+  }, [courseId, isAuthenticated, isEnrolled, enrollment]);
+
+  // Fetch course data
+  useEffect(() => {
+    const fetchCourse = async () => {
+      if (!slug) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await getCourseBySlug(slug);
+
+        if (response.success && response.data) {
+          const course = response.data;
+          setCourseData(course);
+          
+          // Debug: Log course data to see what we're getting
+          console.log('Course data received:', course);
+          console.log('Course chapters:', course.chapters);
+          
+          // Expand first section if curriculum exists
+          if (course.curriculum && course.curriculum.length > 0) {
+            setExpandedSections([course.curriculum[0].section || course.curriculum[0].title]);
+            setCurriculum(course.curriculum);
+          } else if (course.chapters && Array.isArray(course.chapters)) {
+            // If backend returns chapters, transform to curriculum format
+            const transformedCurriculum = course.chapters.map((chapter, index) => ({
+              section: chapter.title || `Chapter ${index + 1}`,
+              lessons: chapter.lessons || []
+            }));
+            console.log('Transformed curriculum:', transformedCurriculum);
+            setCurriculum(transformedCurriculum);
+            if (transformedCurriculum.length > 0) {
+              setExpandedSections([transformedCurriculum[0].section]);
+            }
+          } else {
+            console.log('No curriculum or chapters found in course data');
+          }
+
+          // Fetch related courses (same category)
+          if (course.category) {
+            try {
+              const relatedResponse = await getAllCourses({ 
+                category: course.category._id || course.category,
+                limit: 4 
+              });
+              if (relatedResponse.success && relatedResponse.data) {
+                // Filter out current course
+                const filtered = relatedResponse.data.filter(c => 
+                  c._id !== course._id && c.id !== course.id
+                );
+                setRelatedCourses(filtered.slice(0, 3));
+              }
+            } catch (err) {
+              console.error('Error fetching related courses:', err);
+            }
+          }
+        } else {
+          setError('Course not found');
+        }
+      } catch (err) {
+        console.error('Error fetching course:', err);
+        setError(err.message || 'Failed to load course');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourse();
+  }, [slug]);
 
   const toggleSection = (sectionTitle) => {
     setExpandedSections(prev => 
@@ -143,6 +251,120 @@ export default function CourseDetailsPage() {
         : [...prev, sectionTitle]
     );
   };
+
+  const handleCTAClick = () => {
+    if (!courseData) return;
+
+    if (!isAuthenticated) {
+      // Redirect to login with return URL
+      router.push(`/login?redirect=${encodeURIComponent(`/courses/${slug}`)}`);
+      return;
+    }
+
+    // Check if course is offline
+    const isOffline = courseData.isOnline === false;
+
+    if (isEnrolled) {
+      if (isOffline) {
+        // Offline courses don't have learning pages
+        // Message will be shown in the UI instead
+        return;
+      }
+      // Go to learning page for online courses
+      router.push(`/courses/${slug}/learn`);
+    } else {
+      // User not enrolled - redirect to billing page
+      router.push(`/courses/${slug}/billing`);
+    }
+  };
+
+  // Loading state - don't wait for enrollment check, only wait for course data
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-900 mx-auto mb-4" />
+          <p className="text-gray-600">Loading course...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !courseData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">📚</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Course Not Found</h2>
+          <p className="text-gray-600 mb-6">{error || 'The course you are looking for does not exist.'}</p>
+          <Link href="/courses">
+            <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-800 transition-colors">
+              Browse All Courses
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Get instructor info
+  const instructor = courseData.instructor?.userId || courseData.instructor || {};
+  const instructorName = instructor.firstName && instructor.lastName 
+    ? `${instructor.firstName} ${instructor.lastName}`
+    : instructor.name || 'Instructor';
+  // Get instructor profilePic from instructor model (not userId) and convert to full URL
+  const instructorImageUrl = courseData.instructor?.profilePic 
+    ? getImageUrl(courseData.instructor.profilePic)
+    : 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
+  // Get instructor bio from instructor model
+  const instructorBio = courseData.instructor?.bio || null;
+  
+  // Get category name
+  const categoryName = courseData.category?.name || courseData.category || 'Uncategorized';
+  
+  // Format date
+  const lastUpdated = courseData.updatedAt 
+    ? new Date(courseData.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    : new Date(courseData.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  // Determine CTA button
+  const getCTAButton = () => {
+    const isOffline = courseData.isOnline === false;
+
+    if (!isAuthenticated) {
+      return {
+        text: courseData.price ? `Buy Course - $${courseData.price}` : 'Buy Course',
+        icon: <ShoppingCart className="w-5 h-5 mr-2" />,
+        action: handleCTAClick
+      };
+    }
+
+    // Check if user is enrolled (status can be 'active', 'completed', or just enrolled)
+    if (isEnrolled) {
+      // For offline courses, show enrollment message instead of learning button
+      if (isOffline) {
+        return null; // Return null to show custom message instead
+      }
+      const progress = enrollment?.progress || 0;
+      return {
+        text: progress > 0 ? 'Continue Learning' : 'Start Learning',
+        icon: <Play className="w-5 h-5 mr-2" />,
+        action: handleCTAClick
+      };
+    }
+
+    return {
+      text: courseData.price ? `Buy Course - $${courseData.price}` : 'Enroll Now',
+      icon: <ShoppingCart className="w-5 h-5 mr-2" />,
+      action: handleCTAClick
+    };
+  };
+
+  const ctaButton = getCTAButton();
+  const displayCurriculum = curriculum.length > 0 ? curriculum : [];
+  const learningOutcomes = courseData.learningObjectives || [];
+  const materials = courseData.materials || [];
 
 
   return (
@@ -158,60 +380,84 @@ export default function CourseDetailsPage() {
                 <div className="bg-gradient-to-br from-blue-50 via-white to-gray-50 p-8 rounded-2xl mb-8">
                   {/* Breadcrumb */}
                   <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-                    <span>Courses</span>
+                    <Link href="/courses" className="hover:text-blue-900">Courses</Link>
                     <span>/</span>
-                    <span className="text-blue-900">{COURSE_DATA.category}</span>
+                    <span className="text-blue-900">{categoryName}</span>
                     <span>/</span>
-                    <span className="text-blue-900">{COURSE_DATA.title}</span>
+                    <span className="text-blue-900">{courseData.title}</span>
                   </div>
 
                   {/* Category Badge */}
                   <div className="inline-block bg-blue-100 text-blue-900 px-3 py-1 rounded-full text-sm font-medium mb-4">
-                    {COURSE_DATA.category}
+                    {categoryName}
                   </div>
                   
                   {/* Course Title */}
                   <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
-                    {COURSE_DATA.title}
+                    {courseData.title}
                   </h1>
 
                   {/* Course Metadata */}
                   <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-6">
-                    <div className="flex items-center gap-3">
-                      <img src={COURSE_DATA.instructor.image} alt={COURSE_DATA.instructor.name} className="w-10 h-10 rounded-full object-cover" />
-                      <div>
-                        <span className="text-gray-500">Teacher</span>
-                        <div className="font-medium text-gray-900">{COURSE_DATA.instructor.name}</div>
+                    {instructorName && (
+                      <div className="flex items-center gap-3">
+                        <img 
+                          src={instructorImageUrl} 
+                          alt={instructorName} 
+                          className="w-10 h-10 rounded-full object-cover"
+                          onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
+                          }}
+                        />
+                        <div>
+                          <span className="text-gray-500">Teacher</span>
+                          <div className="font-medium text-gray-900">{instructorName}</div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                     
-                    <div className="flex items-center gap-3">
-                      <Tag className="w-4 h-4 text-gray-400" />
-                      <div>
-                        <span className="text-gray-500">Category</span>
-                        <div className="font-medium text-gray-900">{COURSE_DATA.category}</div>
+                    {categoryName && (
+                      <div className="flex items-center gap-3">
+                        <Tag className="w-4 h-4 text-gray-400" />
+                        <div>
+                          <span className="text-gray-500">Category</span>
+                          <div className="font-medium text-gray-900">{categoryName}</div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                     
-                    <div className="flex items-center gap-3">
-                      <Calendar className="w-4 h-4 text-gray-400" />
-                      <div>
-                        <span className="text-gray-500">Last Updated</span>
-                        <div className="font-medium text-gray-900">{COURSE_DATA.lastUpdated}</div>
+                    {lastUpdated && (
+                      <div className="flex items-center gap-3">
+                        <Calendar className="w-4 h-4 text-gray-400" />
+                        <div>
+                          <span className="text-gray-500">Last Updated</span>
+                          <div className="font-medium text-gray-900">{lastUpdated}</div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                     
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        ))}
+                    {courseData.rating && (
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star 
+                              key={i} 
+                              className={`w-4 h-4 ${
+                                i < Math.floor(courseData.rating) 
+                                  ? 'fill-yellow-400 text-yellow-400' 
+                                  : 'text-gray-300'
+                              }`} 
+                            />
+                          ))}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">{courseData.rating.toFixed(1)}</div>
+                          <div className="text-gray-500 text-xs">
+                            ({courseData.studentsCount || courseData.totalRatings || 0} {courseData.studentsCount || courseData.totalRatings ? 'students' : 'reviews'})
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-medium text-gray-900">{COURSE_DATA.rating}</div>
-                        <div className="text-gray-500 text-xs">({COURSE_DATA.totalRatings} reviews)</div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
@@ -246,42 +492,46 @@ export default function CourseDetailsPage() {
                     <section id="about-course">
                       <h2 className="text-2xl font-bold text-gray-900 mb-4">About Course</h2>
                       <p className="text-gray-600 leading-relaxed whitespace-pre-line">
-                        {COURSE_DATA.description}
+                        {courseData.description || 'No description available.'}
                       </p>
-                      <button className="text-blue-900 font-medium mt-2">Show More</button>
                     </section>
 
                     {/* What Will You Learn */}
-                    <section>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-6">What Will You Learn?</h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {COURSE_DATA.learningOutcomes.map((outcome, index) => (
-                          <div key={index} className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-blue-900 rounded-full mt-2 flex-shrink-0"></div>
-                            <span className="text-gray-600">{outcome}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
+                    {learningOutcomes.length > 0 && (
+                      <section>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6">What Will You Learn?</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {learningOutcomes.map((outcome, index) => (
+                            <div key={index} className="flex items-start gap-3">
+                              <div className="w-2 h-2 bg-blue-900 rounded-full mt-2 flex-shrink-0"></div>
+                              <span className="text-gray-600">{outcome}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
 
                     {/* Material Includes */}
-                    <section>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-6">Material Includes</h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {COURSE_DATA.materials.map((material, index) => (
-                          <div key={index} className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-blue-900 rounded-full mt-2 flex-shrink-0"></div>
-                            <span className="text-gray-600">{material}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
+                    {materials.length > 0 && (
+                      <section>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Material Includes</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {materials.map((material, index) => (
+                            <div key={index} className="flex items-start gap-3">
+                              <div className="w-2 h-2 bg-blue-900 rounded-full mt-2 flex-shrink-0"></div>
+                              <span className="text-gray-600">{material}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
 
                     {/* Course Curriculum */}
-                    <section>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Curriculum</h2>
-                      <div className="space-y-4">
-                        {COURSE_DATA.curriculum.map((section, index) => (
+                    {displayCurriculum.length > 0 && (
+                      <section>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Curriculum</h2>
+                        <div className="space-y-4">
+                          {displayCurriculum.map((section, index) => (
                           <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
                             <button
                               onClick={() => toggleSection(section.section)}
@@ -297,57 +547,68 @@ export default function CourseDetailsPage() {
                             
                             {expandedSections.includes(section.section) && (
                               <div className="bg-white">
-                                {section.lessons.map((lesson, lessonIndex) => (
-                                  <div key={lessonIndex} className="border-t border-gray-100 px-6 py-4 flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                      <Play className="w-4 h-4 text-gray-400" />
-                                      <span className="text-gray-900">{lesson.title}</span>
+                                {section.lessons && section.lessons.length > 0 ? (
+                                  section.lessons.map((lesson, lessonIndex) => (
+                                    <div key={lessonIndex} className="border-t border-gray-100 px-6 py-4 flex items-center justify-between">
+                                      <div className="flex items-center gap-3">
+                                        <Play className="w-4 h-4 text-gray-400" />
+                                        <span className="text-gray-900">{lesson.title}</span>
+                                      </div>
+                                      <div className="flex items-center gap-3">
+                                        {lesson.duration && (
+                                          <span className="text-sm text-gray-500">{lesson.duration}</span>
+                                        )}
+                                        {!isEnrolled && (
+                                          <Lock className="w-4 h-4 text-gray-400" />
+                                        )}
+                                      </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                      <span className="text-sm text-gray-500">{lesson.duration}</span>
-                                      <div className="w-4 h-4 text-gray-400">👁</div>
-                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="px-6 py-4 text-gray-500 text-sm">
+                                    No lessons in this section yet.
                                   </div>
-                                ))}
+                                )}
                               </div>
                             )}
                           </div>
                         ))}
                       </div>
                     </section>
+                    )}
 
                     {/* Your Instructors */}
-                    <section>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Instructors</h2>
-                      <div className="flex items-start gap-6">
-                        <img 
-                          src={COURSE_DATA.instructor.image} 
-                          alt={COURSE_DATA.instructor.name}
-                          className="w-20 h-20 rounded-full object-cover"
-                        />
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-gray-900 mb-2">{COURSE_DATA.instructor.name}</h3>
-                          <p className="text-blue-900 font-medium mb-4">{COURSE_DATA.instructor.title}</p>
-                          
-                          <div className="flex items-center gap-6 mb-4 text-sm">
-                            <div className="flex items-center gap-1">
-                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                              <span className="font-medium">{COURSE_DATA.instructor.rating} Rating</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <BookOpen className="w-4 h-4" />
-                              <span>{COURSE_DATA.instructor.courses} Courses</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Users className="w-4 h-4" />
-                              <span>{COURSE_DATA.instructor.students} Students</span>
-                            </div>
+                    {instructorName && (
+                      <section>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Instructors</h2>
+                        <div className="flex items-start gap-6">
+                          <img 
+                            src={instructorImageUrl} 
+                            alt={instructorName}
+                            className="w-20 h-20 rounded-full object-cover"
+                            onError={(e) => {
+                              e.target.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
+                            }}
+                          />
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">{instructorName}</h3>
+                            {instructor.email && (
+                              <p className="text-blue-900 font-medium mb-3">{instructor.email}</p>
+                            )}
+                            
+                            {instructorBio && (
+                              <div className="text-gray-700 mb-4 leading-relaxed whitespace-pre-wrap">
+                                {instructorBio}
+                              </div>
+                            )}
+                            
+                            {!instructorBio && (
+                              <p className="text-gray-500 text-sm italic">No biography available.</p>
+                            )}
                           </div>
-                          
-                          <p className="text-gray-600 leading-relaxed">{COURSE_DATA.instructor.bio}</p>
                         </div>
-                      </div>
-                    </section>
+                      </section>
+                    )}
 
                     {/* Ratings & Reviews */}
                     <section>
@@ -376,8 +637,8 @@ export default function CourseDetailsPage() {
                     {/* Course Thumbnail */}
                     <div className="relative">
                       <img 
-                        src={COURSE_DATA.image} 
-                        alt={COURSE_DATA.title}
+                        src={courseData.image || 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=800&h=600&fit=crop'} 
+                        alt={courseData.title}
                         className="w-full h-56 object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -390,36 +651,95 @@ export default function CourseDetailsPage() {
 
                     {/* Course Details */}
                     <div className="p-6">
-                      <Link href={`/courses/${COURSE_DATA.slug}/learn`}>
-                        <button className="w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors mb-6 shadow-md">
-                          Start Learning
+                      {ctaButton ? (
+                        <button 
+                          onClick={ctaButton.action}
+                          className="w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors mb-6 shadow-md flex items-center justify-center"
+                          disabled={enrollmentLoading}
+                        >
+                          {enrollmentLoading ? (
+                            <>
+                              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                              Loading...
+                            </>
+                          ) : (
+                            <>
+                              {ctaButton.icon}
+                              {ctaButton.text}
+                            </>
+                          )}
                         </button>
-                      </Link>
+                      ) : (
+                        // Offline course enrolled message
+                        <div className="w-full bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
+                          <div className="flex items-start gap-3">
+                            <div className="flex-shrink-0 mt-0.5">
+                              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-blue-900 font-semibold mb-1">You have enrolled for this course</p>
+                              <p className="text-blue-700 text-sm">Check your mail for further instructions.</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="space-y-4 mb-6">
-                        <div className="flex items-center justify-between py-2">
-                          <div className="flex items-center gap-3">
-                            <Play className="w-5 h-5 text-blue-900" />
-                            <span className="text-gray-700 font-medium">Lectures</span>
+                        {(courseData.lessons || courseData.lectures) && (
+                          <div className="flex items-center justify-between py-2">
+                            <div className="flex items-center gap-3">
+                              <Play className="w-5 h-5 text-blue-900" />
+                              <span className="text-gray-700 font-medium">Lectures</span>
+                            </div>
+                            <span className="font-bold text-gray-900">{courseData.lessons || courseData.lectures}</span>
                           </div>
-                          <span className="font-bold text-gray-900">{COURSE_DATA.lectures}</span>
-                        </div>
+                        )}
                         
-                        <div className="flex items-center justify-between py-2">
-                          <div className="flex items-center gap-3">
-                            <Award className="w-5 h-5 text-blue-900" />
-                            <span className="text-gray-700 font-medium">Skill Level</span>
+                        {courseData.level && (
+                          <div className="flex items-center justify-between py-2">
+                            <div className="flex items-center gap-3">
+                              <Award className="w-5 h-5 text-blue-900" />
+                              <span className="text-gray-700 font-medium">Skill Level</span>
+                            </div>
+                            <span className="font-bold text-gray-900">{courseData.level}</span>
                           </div>
-                          <span className="font-bold text-gray-900">{COURSE_DATA.skillLevel}</span>
-                        </div>
+                        )}
                         
-                        <div className="flex items-center justify-between py-2">
-                          <div className="flex items-center gap-3">
-                            <Award className="w-5 h-5 text-blue-900" />
-                            <span className="text-gray-700 font-medium">Certificate</span>
+                        {courseData.duration && (
+                          <div className="flex items-center justify-between py-2">
+                            <div className="flex items-center gap-3">
+                              <Clock className="w-5 h-5 text-blue-900" />
+                              <span className="text-gray-700 font-medium">Duration</span>
+                            </div>
+                            <span className="font-bold text-gray-900">{courseData.duration}</span>
                           </div>
-                          <span className="font-bold text-green-600">Yes</span>
-                        </div>
+                        )}
+                        
+                        {courseData.certificate !== undefined && (
+                          <div className="flex items-center justify-between py-2">
+                            <div className="flex items-center gap-3">
+                              <Award className="w-5 h-5 text-blue-900" />
+                              <span className="text-gray-700 font-medium">Certificate</span>
+                            </div>
+                            <span className={`font-bold ${courseData.certificate ? 'text-green-600' : 'text-gray-400'}`}>
+                              {courseData.certificate ? 'Yes' : 'No'}
+                            </span>
+                          </div>
+                        )}
+
+                        {courseData.price && (
+                          <div className="flex items-center justify-between py-2 border-t border-gray-200 pt-2">
+                            <span className="text-gray-700 font-medium">Price</span>
+                            <div className="text-right">
+                              {courseData.originalPrice && courseData.originalPrice > courseData.price && (
+                                <span className="text-sm text-gray-500 line-through mr-2">${courseData.originalPrice}</span>
+                              )}
+                              <span className="text-2xl font-bold text-blue-900">${courseData.price}</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex items-center gap-3 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">
@@ -443,67 +763,107 @@ export default function CourseDetailsPage() {
             <p className="text-lg text-gray-500">10,000+ unique online course list designs</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {RELATED_COURSES.map((course) => (
-              <div key={course.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105">
-                {/* Course Image */}
-                <div className="relative">
-                  <img src={course.image} alt={course.title} className="w-full h-48 object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  
-                  {/* Category Badge */}
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-blue-100 text-blue-900 px-3 py-1 rounded-full text-xs font-medium">
-                      {course.category}
-                    </span>
-                  </div>
-                  
-                  {/* Rating */}
-                  <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm px-2 py-1 rounded flex items-center gap-1">
-                    <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                    <span className="text-sm font-bold text-gray-900">{course.rating}</span>
-                  </div>
-                </div>
-                
-                {/* Course Content */}
-                <div className="p-6">
-                  {/* Instructor */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <img src={course.instructorImage} alt={course.instructor} className="w-8 h-8 rounded-full object-cover" />
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{course.instructor}</div>
-                      <div className="text-xs text-gray-500">Instructor</div>
+          {relatedCourses.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {relatedCourses.map((course) => {
+                const courseId = course._id || course.id;
+                const courseSlug = course.slug || courseId;
+                const courseTitle = course.title || 'Untitled Course';
+                const courseImage = course.image || 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop';
+                const courseCategory = course.category?.name || course.category || 'Uncategorized';
+                const instructor = course.instructor?.userId || course.instructor || {};
+                const instructorName = instructor.firstName && instructor.lastName 
+                  ? `${instructor.firstName} ${instructor.lastName}`
+                  : instructor.name || 'Instructor';
+                // Get instructor profilePic from instructor model (not userId) and convert to full URL
+                const instructorImage = course.instructor?.profilePic 
+                  ? getImageUrl(course.instructor.profilePic)
+                  : 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
+
+                return (
+                  <div key={courseId} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    {/* Course Image */}
+                    <div className="relative">
+                      <img src={courseImage} alt={courseTitle} className="w-full h-48 object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      
+                      {/* Category Badge */}
+                      <div className="absolute top-3 left-3">
+                        <span className="bg-blue-100 text-blue-900 px-3 py-1 rounded-full text-xs font-medium">
+                          {courseCategory}
+                        </span>
+                      </div>
+                      
+                      {/* Rating */}
+                      {course.rating && (
+                        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm px-2 py-1 rounded flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                          <span className="text-sm font-bold text-gray-900">{course.rating.toFixed(1)}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Course Content */}
+                    <div className="p-6">
+                      {/* Instructor */}
+                      {instructorName && (
+                        <div className="flex items-center gap-3 mb-3">
+                          <img src={instructorImage} alt={instructorName} className="w-8 h-8 rounded-full object-cover" />
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{instructorName}</div>
+                            <div className="text-xs text-gray-500">Instructor</div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Course Title */}
+                      <h3 className="font-bold text-gray-900 mb-3 line-clamp-2 text-lg">{courseTitle}</h3>
+                      
+                      {/* Course Stats */}
+                      <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
+                        {(course.lessons || course.lectures) && (
+                          <div className="flex items-center gap-1">
+                            <BookOpen className="w-4 h-4" />
+                            <span>{course.lessons || course.lectures} Lessons</span>
+                          </div>
+                        )}
+                        {course.studentsCount && (
+                          <div className="flex items-center gap-1">
+                            <Users className="w-4 h-4" />
+                            <span>{course.studentsCount} Students</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Price and CTA */}
+                      <div className="flex items-center justify-between">
+                        {course.price ? (
+                          <>
+                            <div className="text-2xl font-bold text-gray-900">${course.price}</div>
+                            <Link href={`/courses/${courseSlug}`}>
+                              <button className="bg-blue-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-800 transition-colors">
+                                View Course
+                              </button>
+                            </Link>
+                          </>
+                        ) : (
+                          <Link href={`/courses/${courseSlug}`} className="w-full">
+                            <button className="w-full bg-blue-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-800 transition-colors">
+                              View Course
+                            </button>
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  
-                  {/* Course Title */}
-                  <h3 className="font-bold text-gray-900 mb-3 line-clamp-2 text-lg">{course.title}</h3>
-                  
-                  {/* Course Stats */}
-                  <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <BookOpen className="w-4 h-4" />
-                      <span>{course.lessons} Lessons</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      <span>{course.students} Students</span>
-                    </div>
-                  </div>
-                  
-                  {/* Price and CTA */}
-                  <div className="flex items-center justify-between">
-                    <div className="text-2xl font-bold text-gray-900">${course.price}</div>
-                    <Link href={`/courses/${course.slug}/learn`}>
-                      <button className="bg-blue-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-800 transition-colors">
-                        Start Learning
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-gray-500">
+              No related courses found.
+            </div>
+          )}
         </div>
       </section>
     </div>

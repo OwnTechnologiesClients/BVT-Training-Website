@@ -42,7 +42,15 @@ export default function AboutHero() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                <button 
+                  onClick={() => {
+                    const teamSection = document.getElementById('leadership-team');
+                    if (teamSection) {
+                      teamSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                >
                   <Users className="w-5 h-5" />
                   Meet Our Team
                 </button>

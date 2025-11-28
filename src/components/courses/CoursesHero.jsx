@@ -13,6 +13,10 @@ const iconMap = {
 };
 
 export default function CoursesHero({ content }) {
+  if (!content) {
+    return null;
+  }
+
   return (
     <section className="relative bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white py-20 overflow-hidden">
       {/* Background Image Overlay */}
@@ -45,18 +49,22 @@ export default function CoursesHero({ content }) {
               {/* Title and Subtitle */}
               <div>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
-                  {content.title}
+                  {content.title || 'Naval Training Programs'}
                 </h1>
-                <p className="text-xl text-blue-100 mb-6 leading-relaxed">
-                  {content.subtitle}
-                </p>
-                <p className="text-lg text-blue-200 leading-relaxed">
-                  {content.description}
-                </p>
+                {content.subtitle && (
+                  <p className="text-xl text-blue-100 mb-6 leading-relaxed">
+                    {content.subtitle}
+                  </p>
+                )}
+                {content.description && (
+                  <p className="text-lg text-blue-200 leading-relaxed">
+                    {content.description}
+                  </p>
+                )}
               </div>
 
               {/* Stats */}
-              {content.stats && (
+              {content.stats && content.stats.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   {content.stats.map((stat, index) => (
                     <motion.div
@@ -80,47 +88,53 @@ export default function CoursesHero({ content }) {
               {/* CTAs */}
               {content.cta && (
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-yellow-500 text-blue-950 px-8 py-4 rounded-xl font-bold text-lg hover:bg-yellow-400 transition-colors shadow-lg flex items-center justify-center gap-2"
-                  >
-                    {content.cta.primary}
-                    <ArrowRight className="w-5 h-5" />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-950 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Play className="w-5 h-5" />
-                    {content.cta.secondary}
-                  </motion.button>
+                  {content.cta.primary && (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="bg-yellow-500 text-blue-950 px-8 py-4 rounded-xl font-bold text-lg hover:bg-yellow-400 transition-colors shadow-lg flex items-center justify-center gap-2"
+                    >
+                      {content.cta.primary}
+                      <ArrowRight className="w-5 h-5" />
+                    </motion.button>
+                  )}
+                  {content.cta.secondary && (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-950 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Play className="w-5 h-5" />
+                      {content.cta.secondary}
+                    </motion.button>
+                  )}
                 </div>
               )}
 
               {/* Features */}
-              <div className="flex flex-wrap gap-3">
-                {content.features.map((feature, index) => {
-                  const IconComponent = iconMap[feature.icon];
-                  return (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
-                      className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20"
-                    >
-                      {IconComponent && typeof IconComponent === 'string' ? (
-                        <span className="text-lg">{IconComponent}</span>
-                      ) : (
-                        IconComponent && <IconComponent className="w-4 h-4" />
-                      )}
-                      <span className="text-sm font-medium">{feature.text}</span>
-                    </motion.div>
-                  );
-                })}
-              </div>
+              {content.features && content.features.length > 0 && (
+                <div className="flex flex-wrap gap-3">
+                  {content.features.map((feature, index) => {
+                    const IconComponent = iconMap[feature.icon];
+                    return (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
+                        className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20"
+                      >
+                        {IconComponent && typeof IconComponent === 'string' ? (
+                          <span className="text-lg">{IconComponent}</span>
+                        ) : (
+                          IconComponent && <IconComponent className="w-4 h-4" />
+                        )}
+                        <span className="text-sm font-medium">{feature.text}</span>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
             </motion.div>
 
             {/* Right Column - Badges/Highlights */}
@@ -130,7 +144,7 @@ export default function CoursesHero({ content }) {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="space-y-6"
             >
-              {content.badges && (
+              {content.badges && content.badges.length > 0 && (
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                   <h3 className="text-xl font-bold mb-4 text-center">Why Choose Our Training?</h3>
                   <div className="space-y-3">

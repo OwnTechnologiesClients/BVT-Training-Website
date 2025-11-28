@@ -8,7 +8,8 @@ const VideoPlayer = ({
   title = "Video Player", 
   autoplay = false,
   onVideoEnd = null,
-  onVideoStart = null
+  onVideoStart = null,
+  onProgressUpdate = null // Callback for progress tracking: (progressPercentage, currentTime, duration) => void
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -49,7 +50,15 @@ const VideoPlayer = ({
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
+      const newCurrentTime = videoRef.current.currentTime;
+      const newDuration = videoRef.current.duration;
+      setCurrentTime(newCurrentTime);
+      
+      // Call progress update callback if provided
+      if (onProgressUpdate && newDuration > 0) {
+        const progressPercentage = (newCurrentTime / newDuration) * 100;
+        onProgressUpdate(progressPercentage, newCurrentTime, newDuration);
+      }
     }
   };
 

@@ -3,27 +3,33 @@
 const COMPANIES = [
   {
     name: "US Navy",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg/200px-Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg.png"
+    logo: "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=150&h=80&fit=crop",
+    fallback: "https://via.placeholder.com/150x80/1e3a8a/ffffff?text=US+Navy"
   },
   {
     name: "BVT Academy",
-    logo: "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=150&h=80&fit=crop"
+    logo: "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=150&h=80&fit=crop",
+    fallback: "https://via.placeholder.com/150x80/1e40af/ffffff?text=BVT+Academy"
   },
   {
     name: "Fleet Command",
-    logo: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=150&h=80&fit=crop"
+    logo: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=150&h=80&fit=crop",
+    fallback: "https://via.placeholder.com/150x80/1e3a8a/ffffff?text=Fleet+Command"
   },
   {
     name: "Coast Guard",
-    logo: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=150&h=80&fit=crop"
+    logo: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=150&h=80&fit=crop",
+    fallback: "https://via.placeholder.com/150x80/1e40af/ffffff?text=Coast+Guard"
   },
   {
     name: "BVT Reserve",
-    logo: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=150&h=80&fit=crop"
+    logo: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=150&h=80&fit=crop",
+    fallback: "https://via.placeholder.com/150x80/1e3a8a/ffffff?text=BVT+Reserve"
   },
   {
     name: "Maritime Admin",
-    logo: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=150&h=80&fit=crop"
+    logo: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=150&h=80&fit=crop",
+    fallback: "https://via.placeholder.com/150x80/1e40af/ffffff?text=Maritime+Admin"
   },
 ];
 
@@ -50,6 +56,12 @@ export default function TrustedCompanies() {
                 src={company.logo}
                 alt={company.name}
                 className="max-w-full max-h-full object-contain"
+                onError={(e) => {
+                  if (e.target.src !== company.fallback) {
+                    e.target.src = company.fallback;
+                  }
+                }}
+                loading="lazy"
               />
             </div>
           ))}

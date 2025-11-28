@@ -5,17 +5,20 @@ import { Calendar, Clock, MapPin, Users, ChevronRight, Star, ChevronLeft } from 
 import { useState, useRef } from "react";
 import { SAMPLE_EVENTS } from "./EventCard";
 
-export default function EventsTimeline({ selectedTimeframe, onTimeframeChange }) {
+export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, events = [] }) {
   const scrollContainerRef = useRef(null);
   
+  // Use provided events or fallback to SAMPLE_EVENTS
+  const displayEvents = events.length > 0 ? events : SAMPLE_EVENTS;
+  
   const timeframes = [
-    { id: "upcoming", label: "Upcoming", count: SAMPLE_EVENTS.filter(e => new Date(e.date) >= new Date()).length },
-    { id: "this-month", label: "This Month", count: SAMPLE_EVENTS.filter(e => {
+    { id: "upcoming", label: "Upcoming", count: displayEvents.filter(e => new Date(e.date) >= new Date()).length },
+    { id: "this-month", label: "This Month", count: displayEvents.filter(e => {
       const eventDate = new Date(e.date);
       const now = new Date();
       return eventDate.getMonth() === now.getMonth() && eventDate.getFullYear() === now.getFullYear();
     }).length },
-    { id: "past", label: "Past Events", count: SAMPLE_EVENTS.filter(e => new Date(e.date) < new Date()).length }
+    { id: "past", label: "Past Events", count: displayEvents.filter(e => new Date(e.date) < new Date()).length }
   ];
 
   const scroll = (direction) => {
@@ -30,6 +33,12 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange })
   };
 
   const getFilteredEvents = () => {
+    // If events are provided from props, use them (already filtered by parent)
+    if (events.length > 0) {
+      return events;
+    }
+
+    // Otherwise, use SAMPLE_EVENTS with filtering
     const now = new Date();
     switch (selectedTimeframe) {
       case "upcoming":
@@ -46,6 +55,21 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange })
     }
   };
 
+  const filteredEvents = getFilteredEvents();
+  
+  // Handle empty state
+  if (filteredEvents.length === 0) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No events found in this timeframe.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return {
@@ -55,8 +79,6 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange })
       weekday: date.toLocaleDateString('en-US', { weekday: 'short' })
     };
   };
-
-  const events = getFilteredEvents();
 
   return (
     <section className="py-16 bg-gray-50">
@@ -130,8 +152,8 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange })
               <div className="absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 pointer-events-none"></div>
 
               {/* Events */}
-              {events.map((event, index) => {
-                  const dateInfo = formatDate(event.date);
+              {filteredEvents.map((event, index) => {
+                  const dateInfo = formatDate(event.date || event.startDate || new Date());
                   
                   return (
                     <motion.div
@@ -215,7 +237,7 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange })
                               </div>
                               <div className="flex items-center gap-2 text-xs text-gray-500">
                                 <Users className="w-3 h-3" />
-                                <span>{event.attendees}/{event.maxAttendees} attendees</span>
+                                <span>{event.attendees?.length || 0}/{event.capacity || 0} attendees</span>
                               </div>
                             </div>
 
@@ -249,7 +271,7 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange })
           </div>
 
           {/* Scroll Hint */}
-          {events.length > 3 && (
+          {filteredEvents.length > 3 && (
             <div className="text-center mt-6">
               <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
                 <ChevronLeft className="w-4 h-4" />

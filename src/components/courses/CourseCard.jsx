@@ -3,26 +3,31 @@
 import { motion } from "framer-motion";
 import { Clock, Users, Star, BookOpen, Award, MapPin } from "lucide-react";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/utils/imageUtils";
 
 export default function CourseCard({ course, index }) {
+  const courseId = course.id || course._id;
   const {
-    id,
-    title,
-    description,
-    instructor,
-    duration,
-    level,
-    rating,
-    studentsCount,
-    image,
-    price,
-    category,
-    isFeatured,
-    location,
-    lessons,
-    certificate,
+    title = 'Untitled Course',
+    description = '',
+    instructor = 'Instructor',
+    duration = 'N/A',
+    level = 'Beginner',
+    studentsCount = 0,
+    image = 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop',
+    price = 0,
+    category = 'Uncategorized',
+    isFeatured = false,
+    location = 'Online',
+    lessons = 0,
+    certificate = false,
     slug
   } = course;
+  
+  const imageUrl = getImageUrl(image);
+
+  // Get slug from course
+  const courseSlug = slug || courseId;
 
   return (
     <motion.div
@@ -35,12 +40,12 @@ export default function CourseCard({ course, index }) {
       {/* Hover Overlay */}
       <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center">
         <div className="flex flex-col gap-3 px-6">
-          <Link href={`/courses/${slug || id}`} className="block">
+          <Link href={`/courses/${courseSlug}`} className="block">
             <button className="w-full bg-white text-blue-900 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg">
               View Details
             </button>
           </Link>
-          <Link href={`/courses/${slug || id}/learn`} className="block">
+          <Link href={`/courses/${courseSlug}/learn`} className="block">
             <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors shadow-lg">
               Start Learning
             </button>
@@ -53,9 +58,12 @@ export default function CourseCard({ course, index }) {
         {/* Course Image - Full Height Left Side */}
         <div className="relative w-52 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
           <img 
-            src={image}
+            src={imageUrl}
             alt={title}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            onError={(e) => {
+              e.target.src = 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop';
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           
@@ -69,12 +77,6 @@ export default function CourseCard({ course, index }) {
             }`}>
               {level}
             </span>
-          </div>
-
-          {/* Rating */}
-          <div className="absolute bottom-2 right-2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded flex items-center gap-1">
-            <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-            <span className="text-sm font-bold text-gray-900">{rating}</span>
           </div>
         </div>
 

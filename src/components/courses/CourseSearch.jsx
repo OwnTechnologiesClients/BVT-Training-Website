@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 export default function CourseSearch({ 
   searchContent, 
-  sampleCourses, 
+  sampleCourses = [], 
   onSearchResults, 
   onFilterChange 
 }) {
@@ -112,7 +112,7 @@ export default function CourseSearch({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={searchContent.placeholder}
+                placeholder={searchContent?.placeholder || "Search courses..."}
                 className="w-full pl-12 pr-4 py-4 rounded-xl bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
               />
             </div>
@@ -131,22 +131,26 @@ export default function CourseSearch({
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {searchContent.filters.map((filter) => (
-              <button
-                key={filter.id}
-                onClick={() => setSelectedFilter(filter.id)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  selectedFilter === filter.id
-                    ? "bg-blue-900 text-white shadow-lg"
-                    : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
-                }`}
-              >
-                {filter.label}
-                <span className="ml-2 text-xs opacity-75">({filter.count})</span>
-              </button>
-            ))}
-          </div>
+          {searchContent?.filters && searchContent.filters.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {searchContent.filters.map((filter) => (
+                <button
+                  key={filter.id}
+                  onClick={() => setSelectedFilter(filter.id)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    selectedFilter === filter.id
+                      ? "bg-blue-900 text-white shadow-lg"
+                      : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+                  }`}
+                >
+                  {filter.label}
+                  {filter.count !== undefined && (
+                    <span className="ml-2 text-xs opacity-75">({filter.count})</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Advanced Filters */}
           {showFilters && (
@@ -169,45 +173,49 @@ export default function CourseSearch({
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Categories or Locations */}
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-3">
-                    {searchContent.locations ? "Training Locations" : "Categories"}
-                  </h4>
-                  <div className="space-y-2">
-                    {(searchContent.locations || searchContent.categories).map((item) => (
-                      <label key={item} className="flex items-center gap-3 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedCategories.includes(item)}
-                          onChange={() => toggleCategory(item)}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-700">{item}</span>
-                      </label>
-                    ))}
+                {(searchContent?.locations || searchContent?.categories) && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-3">
+                      {searchContent.locations ? "Training Locations" : "Categories"}
+                    </h4>
+                    <div className="space-y-2">
+                      {(searchContent.locations || searchContent.categories || []).map((item) => (
+                        <label key={item} className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={selectedCategories.includes(item)}
+                            onChange={() => toggleCategory(item)}
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700">{item}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Duration */}
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-3">
-                    {searchContent.locations ? "Workshop Duration" : "Duration"}
-                  </h4>
-                  <div className="space-y-2">
-                    {searchContent.durationFilters.map((duration) => (
-                      <label key={duration} className="flex items-center gap-3 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="duration"
-                          checked={selectedDuration === duration}
-                          onChange={() => setSelectedDuration(duration)}
-                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-700">{duration}</span>
-                      </label>
-                    ))}
+                {searchContent?.durationFilters && searchContent.durationFilters.length > 0 && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-3">
+                      {searchContent.locations ? "Workshop Duration" : "Duration"}
+                    </h4>
+                    <div className="space-y-2">
+                      {searchContent.durationFilters.map((duration) => (
+                        <label key={duration} className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="duration"
+                            checked={selectedDuration === duration}
+                            onChange={() => setSelectedDuration(duration)}
+                            className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700">{duration}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Additional Filters */}
                 <div>
@@ -220,13 +228,13 @@ export default function CourseSearch({
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input type="checkbox" className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
                       <span className="text-sm text-gray-700">
-                        {searchContent.locations ? "Hands-on Equipment" : "Online Available"}
+                        {searchContent?.locations ? "Hands-on Equipment" : "Online Available"}
                       </span>
                     </label>
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input type="checkbox" className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
                       <span className="text-sm text-gray-700">
-                        {searchContent.locations ? "Accommodation Available" : "Hands-on Training"}
+                        {searchContent?.locations ? "Accommodation Available" : "Hands-on Training"}
                       </span>
                     </label>
                   </div>
@@ -277,7 +285,7 @@ export default function CourseSearch({
               <option>Newest First</option>
               <option>Highest Rated</option>
               <option>Shortest Duration</option>
-              {searchContent.locations && <option>By Location</option>}
+              {searchContent?.locations && <option>By Location</option>}
             </select>
           </div>
         </div>

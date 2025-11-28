@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Star, Quote, ThumbsUp } from "lucide-react";
+import Link from "next/link";
 
 const FEEDBACKS = [
   {
@@ -137,9 +138,11 @@ export default function StudentsFeedback() {
               <p className="text-yellow-500 font-bold text-lg">Join 8,500+ Successful Graduates</p>
               <p className="text-blue-200 text-sm">Start your BVT training journey today</p>
             </div>
+            <Link href="/courses">
             <button className="bg-yellow-600 text-blue-950 px-6 py-3 rounded-lg font-bold hover:bg-yellow-500 transition-colors whitespace-nowrap">
-              View Success Stories
+                Explore Courses
             </button>
+            </Link>
           </div>
         </div>
       </div>

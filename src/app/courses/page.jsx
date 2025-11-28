@@ -1,26 +1,181 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { Loader2, AlertCircle } from "lucide-react";
+import { getImageUrl } from "@/lib/utils/imageUtils";
 import {
   CoursesHero,
-  CourseSearch,
   CourseTabs,
   FeaturedCourses,
   MentorsSection,
   OnlineCourseCategories
 } from "@/components/courses";
-import {
-  ONLINE_HERO_CONTENT,
-  ONLINE_SEARCH_CONTENT,
-  ONLINE_COURSE_TABS,
-  ONLINE_COURSES_DATA,
-  ONLINE_FEATURED_COURSES,
-  ONLINE_MENTORS_DATA
-} from "@/data/onlineCourses";
+import { getAllCourses, getFeaturedCourses } from "@/lib/api/courses";
 
 export default function CoursesPage() {
+  const [courses, setCourses] = useState([]);
+  const [featuredCourses, setFeaturedCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [activeFilters, setActiveFilters] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+
+  // Fetch courses from backend
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch online courses (isOnline: true)
+        const coursesResponse = await getAllCourses({ 
+          page: 1, 
+          limit: 50,
+          status: 'active',
+          isOnline: 'true'
+        });
+
+        if (coursesResponse.success && coursesResponse.data) {
+          // Filter online courses (isOnline: true) - backend should already filter, but filter again as fallback
+          const onlineCourses = coursesResponse.data.filter(course => course.isOnline === true);
+          
+          // Transform backend data to match frontend format
+          const transformedCourses = onlineCourses.map(course => {
+            // Debug: Log instructor data to see what we're getting
+            if (course.instructor) {
+              console.log('Course:', course.title, 'Instructor data:', {
+                profilePic: course.instructor.profilePic,
+                instructor: course.instructor
+              });
+            }
+            
+            return {
+            id: course._id || course.id,
+            _id: course._id,
+            title: course.title,
+            description: course.description || '',
+            instructor: course.instructor?.userId?.firstName && course.instructor?.userId?.lastName
+              ? `${course.instructor.userId.firstName} ${course.instructor.userId.lastName}`
+              : course.instructor?.name || 'Instructor',
+            instructorImage: course.instructor?.profilePic || null,
+            duration: course.duration || 'N/A',
+            level: course.level || 'Beginner',
+            rating: course.rating || 0,
+            studentsCount: course.studentsCount || 0,
+            image: getImageUrl(course.image),
+            price: course.price || 0,
+            originalPrice: course.originalPrice,
+            category: course.category?.name || course.category || 'Uncategorized',
+            isFeatured: course.isFeatured || false,
+            location: course.location || 'Online',
+            lessons: course.lessons || course.lectures || 0,
+            certificate: course.certificate || false,
+            slug: course.slug || course._id || course.id,
+            badge: course.isFeatured ? 'Featured' : 'Popular',
+            learningObjectives: course.learningObjectives || [],
+            skills: course.learningObjectives || []
+          };
+          });
+
+          setCourses(transformedCourses);
+          
+          // Check if there are more pages
+          if (coursesResponse.pagination) {
+            setHasMore(
+              coursesResponse.pagination.page < coursesResponse.pagination.totalPages
+            );
+          }
+        }
+
+        // Fetch featured online courses
+        try {
+          const featuredResponse = await getFeaturedCourses();
+          if (featuredResponse.success && featuredResponse.data) {
+            // Filter only online courses
+            const onlineFeatured = featuredResponse.data.filter(course => course.isOnline === true);
+            const transformedFeatured = onlineFeatured.map(course => ({
+              id: course._id || course.id,
+              _id: course._id,
+              title: course.title,
+              description: course.description || '',
+              instructor: course.instructor?.userId?.firstName && course.instructor?.userId?.lastName
+                ? `${course.instructor.userId.firstName} ${course.instructor.userId.lastName}`
+                : course.instructor?.name || 'Instructor',
+              instructorImage: course.instructor?.profilePic || null,
+              duration: course.duration || 'N/A',
+              level: course.level || 'Beginner',
+              rating: course.rating || 0,
+              studentsCount: course.studentsCount || 0,
+              image: getImageUrl(course.image),
+              price: course.price || 0,
+              category: course.category?.name || course.category || 'Uncategorized',
+              isFeatured: true,
+              lessons: course.lessons || course.lectures || 0,
+              certificate: course.certificate || false,
+              slug: course.slug || course._id || course.id,
+              badge: 'Featured',
+              learningObjectives: course.learningObjectives || [],
+              skills: course.learningObjectives || []
+            }));
+            setFeaturedCourses(transformedFeatured);
+          }
+        } catch (err) {
+          console.error('Error fetching featured courses:', err);
+          // Don't fail the whole page if featured courses fail
+        }
+      } catch (err) {
+        console.error('Error fetching courses:', err);
+        setError(err.message || 'Failed to load courses');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  // Generate tabs based on actual course data
+  const generateTabs = () => {
+    const tabs = [
+      { id: 'all', label: 'All Courses', count: courses.length }
+    ];
+
+    // Add category tabs
+    const categories = [...new Set(courses.map(c => c.category))].filter(Boolean);
+    categories.forEach(category => {
+      const count = courses.filter(c => c.category === category).length;
+      if (count > 0) {
+        tabs.push({ id: category.toLowerCase().replace(/\s+/g, '-'), label: category, count });
+      }
+    });
+
+    // Add level tabs
+    const levels = ['Beginner', 'Intermediate', 'Advanced'];
+    levels.forEach(level => {
+      const count = courses.filter(c => c.level === level).length;
+      if (count > 0) {
+        tabs.push({ id: level.toLowerCase(), label: level, count });
+      }
+    });
+
+    // Add featured tab
+    const featuredCount = courses.filter(c => c.isFeatured).length;
+    if (featuredCount > 0) {
+      tabs.push({ id: 'featured', label: 'Featured', count: featuredCount });
+    }
+
+    // Add certified tab
+    const certifiedCount = courses.filter(c => c.certificate).length;
+    if (certifiedCount > 0) {
+      tabs.push({ id: 'certified', label: 'Certified', count: certifiedCount });
+    }
+
+    return tabs;
+  };
+
+  const tabs = generateTabs();
 
   const handleSearchResults = useCallback((results) => {
     setSearchResults(results);
@@ -30,23 +185,61 @@ export default function CoursesPage() {
     setActiveFilters(filters);
   }, []);
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-900 mx-auto mb-4" />
+          <p className="text-gray-600">Loading courses...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error && courses.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Courses</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-blue-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-800 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <CoursesHero content={ONLINE_HERO_CONTENT} />
-      <CourseSearch 
-        searchContent={ONLINE_SEARCH_CONTENT}
-        sampleCourses={ONLINE_COURSES_DATA}
-        onSearchResults={handleSearchResults} 
-        onFilterChange={handleFilterChange} 
-      />
+      <CoursesHero content={null} />
       <CourseTabs 
-        tabs={ONLINE_COURSE_TABS}
-        courses={ONLINE_COURSES_DATA}
+        tabs={tabs}
+        courses={courses}
         searchResults={searchResults} 
-        activeFilters={activeFilters} 
+        activeFilters={activeFilters}
+        onSearchChange={(query) => {
+          if (query) {
+            const results = courses.filter(course =>
+              course.title?.toLowerCase().includes(query.toLowerCase()) ||
+              course.category?.toLowerCase().includes(query.toLowerCase())
+            );
+            setSearchResults(results);
+          } else {
+            setSearchResults(null);
+          }
+        }}
       />
-      <FeaturedCourses courses={ONLINE_FEATURED_COURSES} />
-      <MentorsSection mentors={ONLINE_MENTORS_DATA} showLocations={false} />
+      {featuredCourses.length > 0 && (
+        <FeaturedCourses courses={featuredCourses} />
+      )}
+      <MentorsSection mentors={[]} showLocations={false} />
       <OnlineCourseCategories />
     </>
   );

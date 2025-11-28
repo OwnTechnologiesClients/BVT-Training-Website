@@ -1,56 +1,107 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Users, ArrowRight, Clock } from "lucide-react";
+import { Calendar, MapPin, Users, ArrowRight, Clock, Loader2 } from "lucide-react";
+import { getUpcomingEvents } from "@/lib/api/events";
+import Link from "next/link";
 
-const EVENTS = [
-  {
-    title: "Naval Career Advancement Workshop",
-    desc: "Discover pathways for advancement in your BVT career with guidance from senior officers and career counselors.",
-    buttonLabel: "Register Now",
-    color: "from-blue-800 to-blue-950",
-    date: "March 15, 2025",
-    time: "09:00 AM",
-    location: "Naval Training Center",
-    seats: "45 seats left",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop"
-  },
-  {
-    title: "Maritime Technology Expo 2025",
-    desc: "Explore the latest BVT technologies, equipment demonstrations, and hands-on training opportunities.",
-    buttonLabel: "Register Now",
-    color: "from-blue-700 to-blue-900",
-    date: "March 22, 2025",
-    time: "10:00 AM",
-    location: "Convention Hall A",
-    seats: "120 seats left",
-    image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop"
-  },
-  {
-    title: "Leadership in Naval Operations",
-    desc: "Join our seminar with experienced commanders. Learn leadership strategies and best practices for maritime command.",
-    buttonLabel: "Reserve Seat",
-    color: "from-slate-700 to-slate-900",
-    date: "April 5, 2025",
-    time: "02:00 PM",
-    location: "Command Training Room",
-    seats: "30 seats left",
-    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=300&fit=crop"
-  },
-  {
-    title: "Safety Standards & Emergency Response",
-    desc: "Critical training on the latest safety protocols, emergency procedures, and crisis management at sea.",
-    buttonLabel: "Reserve Seat",
-    color: "from-indigo-800 to-indigo-950",
-    date: "April 12, 2025",
-    time: "11:00 AM",
-    location: "Safety Training Facility",
-    seats: "60 seats left",
-    image: "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop"
-  },
-];
+// Format date helper
+const formatDate = (dateString) => {
+  if (!dateString) return 'TBA';
+  const date = new Date(dateString);
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+};
+
+// Format time helper
+const formatTime = (dateString) => {
+  if (!dateString) return 'TBA';
+  const date = new Date(dateString);
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+};
+
+// Get default image based on index
+const getEventImage = (index) => {
+  const images = [
+    "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop",
+    "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+    "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=300&fit=crop",
+    "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop"
+  ];
+  return images[index % images.length];
+};
 
 export default function Events() {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await getUpcomingEvents({ 
+          limit: 4
+        });
+        
+        if (response.success && response.data) {
+          // Filter out draft events
+          const transformedEvents = response.data
+            .filter(event => event.status !== 'draft') // Exclude draft events
+            .map((event, index) => {
+            // Calculate registered attendees count
+            const registeredAttendees = Array.isArray(event.attendees) ? event.attendees.length : 0;
+            const maxAttendees = event.maxAttendees || 100;
+            
+            // Format location
+            let location = 'TBA';
+            if (event.isOnline) {
+              location = 'Online';
+            } else if (event.location) {
+              location = event.location;
+            }
+            
+            // Format time
+            let eventTime = 'TBA';
+            if (event.startTime && event.endTime) {
+              eventTime = `${event.startTime} - ${event.endTime}`;
+            } else if (event.startTime) {
+              eventTime = event.startTime;
+            }
+            
+            return {
+            id: event._id || event.id,
+              _id: event._id,
+            title: event.title || event.name,
+            description: event.description || '',
+              eventDate: event.startDate,
+              endDate: event.endDate,
+              eventTime: eventTime,
+              location: location,
+              maxAttendees: maxAttendees,
+              registeredAttendees: registeredAttendees,
+            image: event.eventImage || getEventImage(index),
+              slug: event.slug || event._id || event.id, // Use slug if available, fallback to _id
+              buttonLabel: "View Details",
+              isOnline: event.isOnline || false,
+              cost: event.cost || 0
+            };
+          });
+          
+          setEvents(transformedEvents);
+        }
+      } catch (err) {
+        console.error('Error fetching events:', err);
+        setError(err.message || 'Failed to load events');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
   return (
     <section className="py-20 px-8 bg-gray-50 relative overflow-hidden">
       {/* Simple Background Decoration */}
@@ -73,8 +124,25 @@ export default function Events() {
         </p>
       </div>
 
-      <div className="container mx-auto grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4 relative z-10">
-        {EVENTS.map((event, idx) => (
+      {loading ? (
+        <div className="container mx-auto flex items-center justify-center min-h-[400px] relative z-10">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-900" />
+        </div>
+      ) : error && events.length === 0 ? (
+        <div className="container mx-auto text-center relative z-10">
+          <p className="text-red-600">Unable to load events. Please try again later.</p>
+        </div>
+      ) : events.length > 0 ? (
+        <div className="container mx-auto grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4 relative z-10">
+          {events.map((event, idx) => {
+            const seatsLeft = event.maxAttendees - event.registeredAttendees;
+            const formattedDate = formatDate(event.eventDate);
+            const formattedTime = formatTime(event.eventDate || event.eventTime);
+            const dateParts = formattedDate.split(' ');
+            const day = dateParts[1]?.replace(',', '') || '';
+            const month = dateParts[0] || '';
+            
+            return (
           <motion.div
             key={idx}
             initial={{ opacity: 0, y: 30 }}
@@ -94,18 +162,10 @@ export default function Events() {
 
               {/* Date Badge */}
               <div className="absolute top-4 left-4 bg-yellow-600 text-blue-950 px-4 py-2 rounded-lg shadow-lg">
-                <div className="text-2xl font-bold leading-none">{event.date.split(' ')[1].replace(',', '')}</div>
-                <div className="text-xs font-semibold uppercase">{event.date.split(' ')[0]}</div>
+                <div className="text-2xl font-bold leading-none">{day}</div>
+                <div className="text-xs font-semibold uppercase">{month}</div>
               </div>
-
-              {/* Seats Left Badge */}
-              <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-                <div className="flex items-center gap-1">
-                  <Users className="w-3 h-3 text-blue-900" />
-                  <span className="text-xs font-bold text-blue-900">{event.seats}</span>
-                </div>
-              </div>
-
+              
               {/* Center Number */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-white/20 text-8xl font-bold">
@@ -116,51 +176,68 @@ export default function Events() {
 
             {/* Event Content */}
             <div className="p-6 flex-1 flex flex-col">
-              <a
-                href="#"
+              <Link
+                href={`/events/details/${event.slug}`}
                 className="text-gray-900 transition-colors hover:text-blue-900"
               >
                 <h3 className="mb-3 text-xl font-bold leading-tight">
                   {event.title}
                 </h3>
-              </a>
+              </Link>
               
-              <p className="mb-6 font-normal text-gray-600 flex-1">
-                {event.desc}
+              <p className="mb-6 font-normal text-gray-600 flex-1 line-clamp-3">
+                {event.description || 'Join us for this exciting event!'}
               </p>
 
               {/* Event Details */}
               <div className="space-y-2 mb-6">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Clock className="w-4 h-4 text-blue-900" />
-                  <span>{event.time}</span>
+                  <span>{event.eventTime || formattedTime}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <MapPin className="w-4 h-4 text-blue-900" />
                   <span>{event.location}</span>
                 </div>
+                {event.cost !== undefined && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <span className="font-semibold text-blue-900">
+                      {event.cost === 0 ? 'Free' : `$${event.cost}`}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Button */}
-              <button className="w-full bg-gradient-to-r from-blue-900 to-blue-950 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-800 hover:to-blue-900 hover:scale-105 transition-all shadow-lg flex items-center justify-center gap-2 group">
-                {event.buttonLabel}
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+              <Link href={`/events/details/${event.slug}`}>
+                <button className="w-full bg-gradient-to-r from-blue-900 to-blue-950 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-800 hover:to-blue-900 hover:scale-105 transition-all shadow-lg flex items-center justify-center gap-2 group">
+                  {event.buttonLabel}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
             </div>
           </motion.div>
-        ))}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="container mx-auto text-center relative z-10">
+          <p className="text-gray-600">No upcoming events at the moment.</p>
+        </div>
+      )}
 
       {/* Call to Action */}
       <div className="text-center mt-16 relative z-10">
         <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white px-8 py-6 rounded-2xl shadow-xl border border-gray-200">
           <div className="text-left">
             <p className="text-blue-900 font-bold text-lg">Don't see an event for you?</p>
-            <p className="text-gray-600 text-sm">Subscribe to get notified about future events</p>
+            <p className="text-gray-600 text-sm">View all upcoming events and seminars</p>
           </div>
-          <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors whitespace-nowrap shadow-lg">
-            Subscribe Now
-          </button>
+          <Link href="/events">
+            <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors whitespace-nowrap shadow-lg">
+              View All Events
+            </button>
+          </Link>
         </div>
       </div>
     </section>
