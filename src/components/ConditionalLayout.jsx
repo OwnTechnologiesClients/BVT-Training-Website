@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import FloatingInquiryButton from "./FloatingInquiryButton";
 
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
@@ -23,6 +24,7 @@ export default function ConditionalLayout({ children }) {
       <Navbar />
       <main>{children}</main>
       <Footer />
+      <FloatingInquiryButton />
     </>
   );
 }
