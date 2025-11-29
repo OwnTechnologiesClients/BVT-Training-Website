@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Play, Users, Award, Clock, Star, Sparkles, ArrowRight, BookOpen, TrendingUp } from "lucide-react";
+import { Play, Users, Award, Clock, Star, Sparkles, ArrowRight, BookOpen, TrendingUp, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function CoursesHero({ content }) {
@@ -140,6 +140,7 @@ export default function CoursesHero({ content }) {
                 {feature.icon === "Clock" && <Clock className="w-4 h-4 text-yellow-400" />}
                 {feature.icon === "Users" && <Users className="w-4 h-4 text-yellow-400" />}
                 {feature.icon === "Award" && <Award className="w-4 h-4 text-yellow-400" />}
+                {feature.icon === "MapPin" && <MapPin className="w-4 h-4 text-yellow-400" />}
                 <span className="text-sm font-medium text-white">{feature.text}</span>
               </motion.div>
             ))}
