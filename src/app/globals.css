@@ -359,3 +359,13 @@ body {
 .rich-text-content table tr:nth-child(even) {
   background-color: #f9fafb;
 }
+
+/* Gradient animation for hero text */
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
