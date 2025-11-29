@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { ChevronDown, ChevronUp, HelpCircle, BookOpen, Users, Award, Clock } from "lucide-react";
+import { ChevronDown, ChevronUp, HelpCircle, BookOpen, Users, Award, Clock, Sparkles, ArrowRight } from "lucide-react";
 
 export default function ContactFAQ() {
   const [openItems, setOpenItems] = useState(new Set());
@@ -11,7 +11,7 @@ export default function ContactFAQ() {
     {
       icon: BookOpen,
       title: "Program Information",
-      color: "blue",
+      color: "from-blue-500 to-blue-600",
       questions: [
         {
           question: "What types of training programs do you offer?",
@@ -34,7 +34,7 @@ export default function ContactFAQ() {
     {
       icon: Users,
       title: "Enrollment & Support",
-      color: "green",
+      color: "from-green-500 to-green-600",
       questions: [
         {
           question: "How do I enroll in a training program?",
@@ -57,7 +57,7 @@ export default function ContactFAQ() {
     {
       icon: Award,
       title: "Certification & Career",
-      color: "purple",
+      color: "from-purple-500 to-purple-600",
       questions: [
         {
           question: "Do you provide industry-recognized certifications?",
@@ -80,7 +80,7 @@ export default function ContactFAQ() {
     {
       icon: Clock,
       title: "Schedule & Logistics",
-      color: "orange",
+      color: "from-orange-500 to-orange-600",
       questions: [
         {
           question: "What are the typical class schedules?",
@@ -115,44 +115,55 @@ export default function ContactFAQ() {
     });
   };
 
-  const getColorClasses = (color) => {
-    const colorMap = {
-      blue: "from-blue-500 to-blue-600",
-      green: "from-green-500 to-green-600",
-      purple: "from-purple-500 to-purple-600",
-      orange: "from-orange-500 to-orange-600"
-    };
-    return colorMap[color] || "from-blue-500 to-blue-600";
-  };
-
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-16">
+    <section className="relative py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          {/* Section Header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            className="text-center mb-12 lg:mb-16"
           >
-            <div className="inline-flex items-center gap-2 bg-blue-600/10 px-4 py-2 rounded-full border border-blue-600/20 mb-4">
-              <HelpCircle className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-semibold text-blue-600 uppercase tracking-wide">
-                Frequently Asked Questions
-              </span>
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                whileInView={{ scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="relative"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-6 h-6 text-blue-950" />
+                </div>
+              </motion.div>
+              <div className="bg-blue-100 px-4 py-2 rounded-full border border-blue-200">
+                <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">FAQ</span>
+              </div>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Got Questions? We Have Answers
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
+                Got Questions?
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+                We Have Answers
+              </span>
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <div className="h-1 w-24 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto mb-6"></div>
+            <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Find answers to common questions about our training programs, enrollment process, 
               and support services.
             </p>
           </motion.div>
-        </div>
 
-        <div className="max-w-4xl mx-auto">
+          {/* FAQ Categories */}
           {faqCategories.map((category, categoryIndex) => {
             const Icon = category.icon;
             return (
@@ -162,14 +173,18 @@ export default function ContactFAQ() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: categoryIndex * 0.1, duration: 0.5 }}
-                className="mb-8"
+                className="mb-8 lg:mb-12"
               >
                 {/* Category Header */}
-                <div className="flex items-center gap-3 mb-6">
-                  <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${getColorClasses(category.color)} flex items-center justify-center`}>
-                    <Icon className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">{category.title}</h3>
+                <div className="flex items-center gap-4 mb-6">
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
+                    transition={{ duration: 0.3 }}
+                    className={`w-12 h-12 lg:w-14 lg:h-14 rounded-xl bg-gradient-to-r ${category.color} flex items-center justify-center shadow-lg`}
+                  >
+                    <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
+                  </motion.div>
+                  <h3 className="text-2xl lg:text-3xl font-bold text-gray-900">{category.title}</h3>
                 </div>
 
                 {/* FAQ Items */}
@@ -179,23 +194,30 @@ export default function ContactFAQ() {
                     const isOpen = openItems.has(key);
                     
                     return (
-                      <div
+                      <motion.div
                         key={questionIndex}
-                        className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: questionIndex * 0.05 }}
+                        whileHover={{ scale: 1.01 }}
+                        className="group bg-white rounded-xl lg:rounded-2xl shadow-lg border-2 border-gray-200 hover:border-yellow-400 overflow-hidden transition-all"
                       >
-                        <button
+                        <motion.button
                           onClick={() => toggleItem(categoryIndex, questionIndex)}
-                          className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                          className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 transition-all"
                         >
-                          <h4 className="text-lg font-semibold text-gray-900 pr-4">
+                          <h4 className="text-base lg:text-lg font-bold text-gray-900 pr-4 flex-1">
                             {faq.question}
                           </h4>
-                          {isOpen ? (
-                            <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                          ) : (
-                            <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                          )}
-                        </button>
+                          <motion.div
+                            animate={{ rotate: isOpen ? 180 : 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="flex-shrink-0"
+                          >
+                            <ChevronDown className={`w-5 h-5 text-gray-500 ${isOpen ? 'text-yellow-600' : ''}`} />
+                          </motion.div>
+                        </motion.button>
                         
                         {isOpen && (
                           <motion.div
@@ -203,14 +225,15 @@ export default function ContactFAQ() {
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="px-6 pb-4"
+                            className="px-6 pb-5"
                           >
-                            <p className="text-gray-600 leading-relaxed">
+                            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-4"></div>
+                            <p className="text-gray-600 leading-relaxed text-sm lg:text-base">
                               {faq.answer}
                             </p>
                           </motion.div>
                         )}
-                      </div>
+                      </motion.div>
                     );
                   })}
                 </div>
@@ -220,27 +243,42 @@ export default function ContactFAQ() {
 
           {/* Still Have Questions */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-16 text-center"
+            className="mt-12 lg:mt-16 text-center"
           >
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
-              <h3 className="text-2xl font-bold mb-4">
-                Still Have Questions?
-              </h3>
-              <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-                Can't find the answer you're looking for? Our support team is here to help 
-                with any additional questions or concerns.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                  Contact Support
-                </button>
-                <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
-                  Schedule Consultation
-                </button>
+            <div className="bg-gradient-to-r from-blue-900 to-blue-950 rounded-2xl lg:rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden border-2 border-yellow-400/30">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-4 left-4 w-32 h-32 border-2 border-yellow-500 rounded-full"></div>
+                <div className="absolute bottom-4 right-4 w-24 h-24 border-2 border-yellow-500 rounded-full"></div>
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-2xl lg:text-3xl font-bold mb-4">Still Have Questions?</h3>
+                <p className="text-blue-100 mb-6 max-w-2xl mx-auto text-base lg:text-lg leading-relaxed">
+                  Can't find the answer you're looking for? Our support team is here to help 
+                  with any additional questions or concerns.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-8 py-3 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2 mx-auto sm:mx-0"
+                  >
+                    Contact Support
+                    <ArrowRight className="w-5 h-5" />
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="border-2 border-white text-white px-8 py-3 rounded-xl font-bold hover:bg-white hover:text-blue-900 transition-all"
+                  >
+                    Schedule Consultation
+                  </motion.button>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -249,5 +287,3 @@ export default function ContactFAQ() {
     </section>
   );
 }
-
-

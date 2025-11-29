@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MapPin, Phone, Mail, Clock, Navigation, Car } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Navigation, Car, ArrowRight, Sparkles } from "lucide-react";
 
 export default function ContactMap() {
   const locations = [
@@ -36,61 +36,95 @@ export default function ContactMap() {
   ];
 
   return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-12">
+    <section className="relative py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            className="text-center mb-12 lg:mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Visit Our Locations
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                whileInView={{ scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="relative"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-6 h-6 text-blue-950" />
+                </div>
+              </motion.div>
+              <div className="bg-blue-100 px-4 py-2 rounded-full border border-blue-200">
+                <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">Our Locations</span>
+              </div>
+            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
+                Visit Our Locations
+              </span>
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <div className="h-1 w-24 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto mb-6"></div>
+            <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Find our training centers across the country. Each location offers 
               comprehensive facilities and expert instructors.
             </p>
           </motion.div>
-        </div>
 
-        <div className="max-w-7xl mx-auto">
           {/* Map Placeholder */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative h-96 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl mb-12 overflow-hidden"
+            className="relative h-96 lg:h-[500px] bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 rounded-2xl lg:rounded-3xl mb-12 overflow-hidden border-2 border-blue-200"
           >
             {/* Map Background Pattern */}
             <div className="absolute inset-0 opacity-20">
-              <div className="absolute top-10 left-10 w-32 h-32 border-2 border-blue-400 rounded-full"></div>
-              <div className="absolute bottom-10 right-10 w-24 h-24 border-2 border-blue-400 rounded-full"></div>
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 border border-blue-400 rounded-full"></div>
+              <div className="absolute top-10 left-10 w-32 h-32 border-2 border-blue-600 rounded-full"></div>
+              <div className="absolute bottom-10 right-10 w-24 h-24 border-2 border-blue-600 rounded-full"></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 border border-blue-600 rounded-full"></div>
             </div>
 
             {/* Map Content */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-blue-900 mb-2">Interactive Map</h3>
-                <p className="text-blue-700 mb-4">Click on markers to view location details</p>
-                <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  className="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl"
+                >
+                  <MapPin className="w-10 h-10 lg:w-12 lg:h-12 text-white" />
+                </motion.div>
+                <h3 className="text-2xl lg:text-3xl font-bold text-blue-900 mb-2">Interactive Map</h3>
+                <p className="text-blue-700 mb-4 text-base lg:text-lg">Click on markers to view location details</p>
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-6 py-3 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg"
+                >
                   Open Full Map
-                </button>
+                </motion.button>
               </div>
             </div>
 
             {/* Location Markers */}
             {locations.map((location, index) => (
-              <div
+              <motion.div
                 key={index}
-                className={`absolute w-4 h-4 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-125 transition-transform ${
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4 + index * 0.1 }}
+                whileHover={{ scale: 1.3 }}
+                className={`absolute w-6 h-6 rounded-full border-4 border-white shadow-xl cursor-pointer ${
                   location.isMain ? 'bg-red-500' : 'bg-blue-500'
                 }`}
                 style={{
@@ -103,7 +137,7 @@ export default function ContactMap() {
           </motion.div>
 
           {/* Location Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {locations.map((location, index) => (
               <motion.div
                 key={index}
@@ -111,116 +145,146 @@ export default function ContactMap() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
-                className={`bg-white rounded-2xl shadow-lg border-2 p-6 hover:shadow-xl transition-all duration-300 ${
-                  location.isMain ? 'border-blue-500' : 'border-gray-100'
+                whileHover={{ y: -8, scale: 1.02 }}
+                className={`group relative bg-white rounded-2xl lg:rounded-3xl shadow-lg border-2 p-6 lg:p-8 hover:shadow-2xl transition-all duration-300 overflow-hidden ${
+                  location.isMain ? 'border-yellow-400' : 'border-gray-200 hover:border-yellow-400'
                 }`}
               >
-                {/* Location Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      location.isMain ? 'bg-blue-600' : 'bg-gray-600'
-                    }`}>
-                      <MapPin className="w-5 h-5 text-white" />
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute top-2 right-2 w-16 h-16 border border-blue-600 rounded-full"></div>
+                </div>
+
+                <div className="relative z-10">
+                  {/* Location Header */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <motion.div
+                        whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
+                        transition={{ duration: 0.3 }}
+                        className={`w-12 h-12 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center shadow-lg ${
+                          location.isMain ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' : 'bg-gradient-to-r from-blue-500 to-blue-600'
+                        }`}
+                      >
+                        <MapPin className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
+                      </motion.div>
+                      <div>
+                        <h3 className="text-lg lg:text-xl font-bold text-gray-900">{location.name}</h3>
+                        {location.isMain && (
+                          <span className="text-xs bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-2 py-1 rounded-full font-bold">
+                            Main Location
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-900">{location.name}</h3>
-                      {location.isMain && (
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                          Main Location
-                        </span>
-                      )}
+                  </div>
+
+                  {/* Location Details */}
+                  <div className="space-y-4 mb-6">
+                    <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
+                      <MapPin className="w-4 h-4 text-blue-900 mt-1 flex-shrink-0" />
+                      <div>
+                        <div className="text-xs text-blue-700 font-medium mb-1">Address</div>
+                        <div className="text-sm text-gray-900 font-semibold">{location.address}</div>
+                      </div>
                     </div>
+
+                    <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-green-50 to-green-100 rounded-lg">
+                      <Phone className="w-4 h-4 text-green-900 mt-1 flex-shrink-0" />
+                      <div>
+                        <div className="text-xs text-green-700 font-medium mb-1">Phone</div>
+                        <div className="text-sm text-gray-900 font-semibold">{location.phone}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg">
+                      <Mail className="w-4 h-4 text-purple-900 mt-1 flex-shrink-0" />
+                      <div>
+                        <div className="text-xs text-purple-700 font-medium mb-1">Email</div>
+                        <div className="text-sm text-gray-900 font-semibold">{location.email}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg">
+                      <Clock className="w-4 h-4 text-orange-900 mt-1 flex-shrink-0" />
+                      <div>
+                        <div className="text-xs text-orange-700 font-medium mb-1">Hours</div>
+                        <div className="text-sm text-gray-900 font-semibold">{location.hours}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg">
+                      <Car className="w-4 h-4 text-gray-900 mt-1 flex-shrink-0" />
+                      <div>
+                        <div className="text-xs text-gray-700 font-medium mb-1">Parking</div>
+                        <div className="text-sm text-gray-900 font-semibold">{location.parking}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-2">
+                    <motion.button
+                      whileHover={{ scale: 1.05, x: 5 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 py-3 px-4 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2"
+                    >
+                      Get Directions
+                      <ArrowRight className="w-4 h-4" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-full border-2 border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-bold hover:bg-gray-50 transition-all"
+                    >
+                      Schedule Visit
+                    </motion.button>
                   </div>
                 </div>
 
-                {/* Location Details */}
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-4 h-4 text-gray-400 mt-1" />
-                    <div>
-                      <div className="text-sm text-gray-500">Address</div>
-                      <div className="text-gray-900 font-medium">{location.address}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <Phone className="w-4 h-4 text-gray-400 mt-1" />
-                    <div>
-                      <div className="text-sm text-gray-500">Phone</div>
-                      <div className="text-gray-900 font-medium">{location.phone}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <Mail className="w-4 h-4 text-gray-400 mt-1" />
-                    <div>
-                      <div className="text-sm text-gray-500">Email</div>
-                      <div className="text-gray-900 font-medium">{location.email}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <Clock className="w-4 h-4 text-gray-400 mt-1" />
-                    <div>
-                      <div className="text-sm text-gray-500">Hours</div>
-                      <div className="text-gray-900 font-medium">{location.hours}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <Navigation className="w-4 h-4 text-gray-400 mt-1" />
-                    <div>
-                      <div className="text-sm text-gray-500">Coordinates</div>
-                      <div className="text-gray-900 font-medium text-xs">{location.coordinates}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <Car className="w-4 h-4 text-gray-400 mt-1" />
-                    <div>
-                      <div className="text-sm text-gray-500">Parking</div>
-                      <div className="text-gray-900 font-medium">{location.parking}</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="mt-6 space-y-2">
-                  <button className="w-full bg-blue-900 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-800 transition-colors">
-                    Get Directions
-                  </button>
-                  <button className="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors">
-                    Schedule Visit
-                  </button>
-                </div>
+                {/* Decorative Corner */}
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </motion.div>
             ))}
           </div>
 
           {/* Additional Info */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-16 text-center"
+            className="mt-12 lg:mt-16 text-center"
           >
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
-              <h3 className="text-2xl font-bold mb-4">
-                Planning Your Visit?
-              </h3>
-              <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-                All our locations are equipped with state-of-the-art training facilities, 
-                comfortable accommodations, and experienced instructors.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                  Download Campus Map
-                </button>
-                <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
-                  Virtual Tour
-                </button>
+            <div className="bg-gradient-to-r from-blue-900 to-blue-950 rounded-2xl lg:rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden border-2 border-yellow-400/30">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-4 left-4 w-32 h-32 border-2 border-yellow-500 rounded-full"></div>
+                <div className="absolute bottom-4 right-4 w-24 h-24 border-2 border-yellow-500 rounded-full"></div>
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-2xl lg:text-3xl font-bold mb-4">Planning Your Visit?</h3>
+                <p className="text-blue-100 mb-6 max-w-2xl mx-auto text-base lg:text-lg leading-relaxed">
+                  All our locations are equipped with state-of-the-art training facilities, 
+                  comfortable accommodations, and experienced instructors.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-8 py-3 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg"
+                  >
+                    Download Campus Map
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="border-2 border-white text-white px-8 py-3 rounded-xl font-bold hover:bg-white hover:text-blue-900 transition-all"
+                  >
+                    Virtual Tour
+                  </motion.button>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -229,5 +293,3 @@ export default function ContactMap() {
     </section>
   );
 }
-
-
