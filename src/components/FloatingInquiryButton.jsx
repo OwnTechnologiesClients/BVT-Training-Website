@@ -30,7 +30,7 @@ export default function FloatingInquiryButton() {
           onClick={() => setIsModalOpen(true)}
           whileHover={{ scale: 1.1, y: -5 }}
           whileTap={{ scale: 0.95 }}
-          className="relative bg-gradient-to-br from-yellow-500 to-yellow-600 text-blue-950 rounded-full p-4 shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300 flex items-center justify-center group border-2 border-white/20"
+          className="relative bg-gradient-to-br from-yellow-500 to-yellow-600 text-blue-950 rounded-full p-4 shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300 flex items-center justify-center group border-2 border-white/20 cursor-pointer"
           aria-label="Submit Inquiry"
         >
           <MessageCircle className="w-6 h-6" />

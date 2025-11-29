@@ -210,7 +210,7 @@ export default function Navbar() {
                 />
               </Link>
               <div className="relative group">
-                <button className={`px-5 py-2.5 font-semibold rounded-xl transition-all duration-300 flex items-center gap-2 ${
+                <button className={`px-5 py-2.5 font-semibold rounded-xl transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                   isCoursesActive 
                     ? 'text-blue-950 bg-gradient-to-r from-blue-100 to-blue-50 shadow-md' 
                     : 'text-gray-700 hover:text-blue-950 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100'
@@ -301,7 +301,7 @@ export default function Navbar() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
+                    className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:shadow-xl transition-all duration-300 relative overflow-hidden group cursor-pointer"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                     <User className="w-4 h-4 relative z-10" />
@@ -332,7 +332,7 @@ export default function Navbar() {
                         </Link>
                         <button
                           onClick={handleLogout}
-                          className="w-full text-left px-5 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-600 transition-all duration-200 flex items-center gap-3 font-medium group/item"
+                          className="w-full text-left px-5 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-600 transition-all duration-200 flex items-center gap-3 font-medium group/item cursor-pointer"
                         >
                           <LogOut className="w-4 h-4 group-hover/item:translate-x-1 transition-transform" />
                           Logout
@@ -346,7 +346,7 @@ export default function Navbar() {
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="hidden md:block bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-white px-6 py-2.5 rounded-xl font-bold hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
+                    className="hidden md:block bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-white px-6 py-2.5 rounded-xl font-bold hover:shadow-xl transition-all duration-300 relative overflow-hidden group cursor-pointer"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                     <span className="relative z-10 flex items-center gap-2">
@@ -361,7 +361,7 @@ export default function Navbar() {
               <motion.button 
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-3 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded-xl transition-all duration-300 shadow-md"
+                className="lg:hidden p-3 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded-xl transition-all duration-300 shadow-md cursor-pointer"
               >
                 {isMobileMenuOpen ? (
                   <X className="w-6 h-6 text-blue-950" />
@@ -480,7 +480,7 @@ export default function Navbar() {
                     <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
                       <motion.button 
                         whileTap={{ scale: 0.95 }}
-                        className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white px-6 py-4 rounded-xl font-bold hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                        className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white px-6 py-4 rounded-xl font-bold hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <User className="w-5 h-5" />
                         Dashboard
@@ -489,7 +489,7 @@ export default function Navbar() {
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       onClick={handleLogout}
-                      className="w-full bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 px-6 py-4 rounded-xl font-bold hover:from-gray-300 hover:to-gray-400 transition-all flex items-center justify-center gap-2"
+                      className="w-full bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 px-6 py-4 rounded-xl font-bold hover:from-gray-300 hover:to-gray-400 transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <LogOut className="w-5 h-5" />
                       Logout
@@ -499,7 +499,7 @@ export default function Navbar() {
                   <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
                     <motion.button 
                       whileTap={{ scale: 0.95 }}
-                      className="mt-2 mx-5 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-white px-6 py-4 rounded-xl font-bold hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                      className="mt-2 mx-5 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-white px-6 py-4 rounded-xl font-bold hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <Sparkles className="w-5 h-5" />
                       Enroll Now

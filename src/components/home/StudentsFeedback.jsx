@@ -263,7 +263,7 @@ export default function StudentsFeedback() {
                 <motion.button
                   whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(234, 179, 8, 0.4)" }}
                   whileTap={{ scale: 0.95 }}
-                  className="group relative bg-gradient-to-r from-yellow-500 to-yellow-400 text-blue-950 px-10 py-4 rounded-xl font-bold text-lg hover:from-yellow-400 hover:to-yellow-300 transition-all duration-300 shadow-xl overflow-hidden"
+                  className="group relative bg-gradient-to-r from-yellow-500 to-yellow-400 text-blue-950 px-10 py-4 rounded-xl font-bold text-lg hover:from-yellow-400 hover:to-yellow-300 transition-all duration-300 shadow-xl overflow-hidden cursor-pointer"
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                   <span className="relative z-10 flex items-center gap-3">

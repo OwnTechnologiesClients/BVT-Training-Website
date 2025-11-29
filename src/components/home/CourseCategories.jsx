@@ -227,7 +227,7 @@ export default function CourseCategories() {
                   whileHover={canGoPrevious ? { scale: 1.15, x: -5 } : {}}
                   whileTap={canGoPrevious ? { scale: 0.95 } : {}}
                   className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 lg:-translate-x-8 z-30 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-5 lg:p-6 rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hidden lg:flex items-center justify-center border-4 border-white group ${
-                    !canGoPrevious ? 'opacity-50 cursor-not-allowed' : ''
+                    !canGoPrevious ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                   }`}
                   aria-label="Previous categories"
                 >
@@ -241,7 +241,7 @@ export default function CourseCategories() {
                   whileHover={canGoNext ? { scale: 1.15, x: 5 } : {}}
                   whileTap={canGoNext ? { scale: 0.95 } : {}}
                   className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 lg:translate-x-8 z-30 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-5 lg:p-6 rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hidden lg:flex items-center justify-center border-4 border-white group ${
-                    !canGoNext ? 'opacity-50 cursor-not-allowed' : ''
+                    !canGoNext ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                   }`}
                   aria-label="Next categories"
                 >
@@ -436,7 +436,7 @@ export default function CourseCategories() {
                   whileHover={{ scale: canGoPrevious ? 1.15 : 1, x: canGoPrevious ? -3 : 0 }}
                   whileTap={{ scale: canGoPrevious ? 0.9 : 1 }}
                   className={`p-4 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-xl border-4 border-white transition-all ${
-                    !canGoPrevious ? 'opacity-40 cursor-not-allowed' : ''
+                    !canGoPrevious ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
                   }`}
                 >
                   <ChevronLeft className="w-7 h-7" />
@@ -448,7 +448,7 @@ export default function CourseCategories() {
                   whileHover={{ scale: canGoNext ? 1.15 : 1, x: canGoNext ? 3 : 0 }}
                   whileTap={{ scale: canGoNext ? 0.9 : 1 }}
                   className={`p-4 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-xl border-4 border-white transition-all ${
-                    !canGoNext ? 'opacity-40 cursor-not-allowed' : ''
+                    !canGoNext ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
                   }`}
                 >
                   <ChevronRight className="w-7 h-7" />
@@ -471,7 +471,7 @@ export default function CourseCategories() {
             <motion.button
               whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(37, 99, 235, 0.3)" }}
               whileTap={{ scale: 0.95 }}
-              className="group relative bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white px-10 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 transition-all duration-300 shadow-xl overflow-hidden"
+              className="group relative bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white px-10 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 transition-all duration-300 shadow-xl overflow-hidden cursor-pointer"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
               <span className="relative z-10 flex items-center gap-3">

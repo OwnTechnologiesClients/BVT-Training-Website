@@ -330,7 +330,7 @@ export default function Footer() {
           exit={{ opacity: 0, scale: 0 }}
           whileHover={{ scale: 1.1, y: -5 }}
           whileTap={{ scale: 0.95 }}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-xl shadow-2xl flex items-center justify-center transition-all duration-300 z-50 bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 border-2 border-white/20 hover:border-white/40"
+          className="fixed bottom-6 right-6 w-14 h-14 rounded-xl shadow-2xl flex items-center justify-center transition-all duration-300 z-50 bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 border-2 border-white/20 hover:border-white/40 cursor-pointer"
           aria-label="Scroll to top"
         >
           <motion.div

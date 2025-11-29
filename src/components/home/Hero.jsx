@@ -221,7 +221,7 @@ export default function Hero() {
                 <motion.button 
                   whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(234, 179, 8, 0.4)" }}
                   whileTap={{ scale: 0.95 }}
-                  className="group relative bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-blue-950 px-5 sm:px-6 md:px-8 lg:px-10 py-2.5 sm:py-3 md:py-4 rounded-xl font-bold text-xs sm:text-sm md:text-base lg:text-lg hover:shadow-2xl transition-all duration-300 flex items-center gap-2 sm:gap-3 overflow-hidden"
+                  className="group relative bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-blue-950 px-5 sm:px-6 md:px-8 lg:px-10 py-2.5 sm:py-3 md:py-4 rounded-xl font-bold text-xs sm:text-sm md:text-base lg:text-lg hover:shadow-2xl transition-all duration-300 flex items-center gap-2 sm:gap-3 overflow-hidden cursor-pointer"
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                   <Ship className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 relative z-10 group-hover:rotate-12 transition-transform" />
@@ -233,7 +233,7 @@ export default function Hero() {
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="group relative border-2 border-yellow-500 bg-yellow-500/10 backdrop-blur-md text-yellow-400 px-5 sm:px-6 md:px-8 lg:px-10 py-2.5 sm:py-3 md:py-4 rounded-xl font-bold text-xs sm:text-sm md:text-base lg:text-lg hover:bg-yellow-500/20 hover:border-yellow-400 transition-all duration-300 flex items-center gap-2 sm:gap-3 shadow-lg"
+                  className="group relative border-2 border-yellow-500 bg-yellow-500/10 backdrop-blur-md text-yellow-400 px-5 sm:px-6 md:px-8 lg:px-10 py-2.5 sm:py-3 md:py-4 rounded-xl font-bold text-xs sm:text-sm md:text-base lg:text-lg hover:bg-yellow-500/20 hover:border-yellow-400 transition-all duration-300 flex items-center gap-2 sm:gap-3 shadow-lg cursor-pointer"
                 >
                   <Play className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 group-hover:scale-125 transition-transform" />
                   <span>Watch Video</span>
