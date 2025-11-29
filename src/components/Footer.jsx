@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { Phone, Mail, ChevronRight, ArrowUp, Facebook, Twitter, Linkedin, Youtube, Sparkles, Award, MapPin, Clock } from 'lucide-react';
+import { Phone, Mail, ChevronRight, ArrowUp, Facebook, Twitter, Linkedin, Youtube, Sparkles, Award, MapPin, Clock, Code2, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Footer() {
@@ -269,6 +269,41 @@ export default function Footer() {
                 <span>Naval & Maritime Excellence</span>
               </motion.div>
             </div>
+          </div>
+        </div>
+
+        {/* Built By Section */}
+        <div className="relative z-10 py-4 border-t border-white/5 bg-gradient-to-r from-transparent via-white/3 to-transparent">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-3"
+            >
+              <div className="flex items-center gap-2 text-xs lg:text-sm opacity-70">
+                <Code2 className="w-4 h-4 text-yellow-400" />
+                <span>Built with excellence by</span>
+              </div>
+              <motion.a
+                href="https://owntechnologies.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 group"
+              >
+                <span className="font-bold text-sm lg:text-base bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent group-hover:from-yellow-300 group-hover:to-yellow-500 transition-all">
+                  OwnTechnologies.in
+                </span>
+                <ExternalLink className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-yellow-400 group-hover:text-yellow-300 transition-colors" />
+              </motion.a>
+              <div className="text-xs lg:text-sm opacity-60">
+                <span>|</span>
+                <span className="ml-2">Premium Web Solutions & Digital Innovation</span>
+              </div>
+            </motion.div>
           </div>
         </div>
       </footer>
