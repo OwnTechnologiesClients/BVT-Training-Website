@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Navigation, Car, ArrowRight, Sparkles } from "lucide-react";
 
 export default function ContactMap() {
-  const locations = [
+  const allLocations = [
     {
       name: "Main Training Center",
       address: "123 BVT Base Road, San Diego, CA 92101",
@@ -34,6 +34,9 @@ export default function ContactMap() {
       parking: "On-site parking"
     }
   ];
+
+  // Filter to show only main training center
+  const locations = allLocations.filter(location => location.isMain === true);
 
   return (
     <section className="relative py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
@@ -69,13 +72,13 @@ export default function ContactMap() {
             </div>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
-                Visit Our Locations
+                Visit Our Training Center
               </span>
             </h2>
             <div className="h-1 w-24 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto mb-6"></div>
             <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Find our training centers across the country. Each location offers 
-              comprehensive facilities and expert instructors.
+              Our main training center offers comprehensive facilities and expert instructors 
+              to help you succeed in your BVT career journey.
             </p>
           </motion.div>
 
@@ -115,29 +118,27 @@ export default function ContactMap() {
               </div>
             </div>
 
-            {/* Location Markers */}
-            {locations.map((location, index) => (
+            {/* Location Marker */}
+            {locations.length > 0 && (
               <motion.div
-                key={index}
                 initial={{ scale: 0 }}
                 whileInView={{ scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.4 + index * 0.1 }}
+                transition={{ delay: 0.4 }}
                 whileHover={{ scale: 1.3 }}
-                className={`absolute w-6 h-6 rounded-full border-4 border-white shadow-xl cursor-pointer ${
-                  location.isMain ? 'bg-red-500' : 'bg-blue-500'
-                }`}
+                className="absolute w-6 h-6 rounded-full border-4 border-white shadow-xl cursor-pointer bg-red-500"
                 style={{
-                  top: `${20 + index * 25}%`,
-                  left: `${30 + index * 15}%`
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)'
                 }}
-                title={location.name}
+                title={locations[0].name}
               />
-            ))}
+            )}
           </motion.div>
 
           {/* Location Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 gap-6 lg:gap-8 max-w-2xl mx-auto">
             {locations.map((location, index) => (
               <motion.div
                 key={index}
