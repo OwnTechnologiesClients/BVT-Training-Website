@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { Loader2, AlertCircle } from "lucide-react";
 import {
   EventsHero,
@@ -161,26 +162,32 @@ export default function EventsPage() {
       <EventsHero />
       <EventTypes />
       {selectedTheme && (
-        <div className="bg-blue-50 border-b border-blue-200 py-4">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-blue-900 to-blue-950 border-b-2 border-yellow-400/30 py-6"
+        >
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Showing events for: <span className="text-blue-600">{selectedTheme.name}</span>
+                <h3 className="text-lg lg:text-xl font-bold text-white mb-1">
+                  Showing events for: <span className="text-yellow-400">{selectedTheme.name}</span>
                 </h3>
                 {selectedTheme.description && (
-                  <p className="text-sm text-gray-600 mt-1">{selectedTheme.description}</p>
+                  <p className="text-sm text-blue-200">{selectedTheme.description}</p>
                 )}
               </div>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => window.location.href = '/events'}
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
+                className="bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white px-6 py-2 rounded-xl font-bold hover:bg-white/20 transition-all"
               >
                 Clear filter
-              </button>
+              </motion.button>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
       <EventsTimeline 
         selectedTimeframe={selectedTimeframe} 
