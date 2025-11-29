@@ -1,189 +1,167 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Play, Users, Award, Clock, MapPin, Wrench, Star, CheckCircle, ArrowRight } from "lucide-react";
-
-const iconMap = {
-  Globe: "🌐",
-  Clock: Clock,
-  Users: Users,
-  Award: Award,
-  MapPin: MapPin,
-  Wrench: Wrench
-};
+import { Play, Users, Award, Clock, Star, Sparkles, ArrowRight, BookOpen, TrendingUp } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function CoursesHero({ content }) {
-  if (!content) {
-    return null;
-  }
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Default content if none provided
+  const defaultContent = {
+    title: "Online Training Courses",
+    subtitle: "Master BVT Skills with Expert-Led Online Programs",
+    description: "Access world-class naval training from anywhere. Learn at your own pace with comprehensive video courses, interactive content, and expert instruction.",
+    stats: [
+      { number: "400+", label: "Online Courses" },
+      { number: "8.5K+", label: "Active Students" },
+      { number: "95%", label: "Success Rate" },
+      { number: "24/7", label: "Access" }
+    ],
+    features: [
+      { icon: "Clock", text: "Self-Paced Learning" },
+      { icon: "Users", text: "Expert Instructors" },
+      { icon: "Award", text: "Certificates" }
+    ]
+  };
+
+  const heroContent = content || defaultContent;
 
   return (
-    <section className="relative bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white py-20 overflow-hidden">
-      {/* Background Image Overlay */}
-      {content.backgroundImage && (
-        <div className="absolute inset-0 opacity-10">
-          <img
-            src={content.backgroundImage}
-            alt="Naval Training"
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
-      
-      <div className="relative container mx-auto px-4">
+    <section className="relative min-h-[70vh] lg:min-h-[80vh] w-full overflow-hidden bg-gradient-to-br from-blue-950 via-blue-900 to-blue-950">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-500/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+
+      {/* Content */}
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left Column - Content */}
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-3 mb-6"
+          >
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-8"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="relative"
             >
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-yellow-500/20 backdrop-blur-sm px-4 py-2 rounded-full border border-yellow-500/30">
-                <Star className="w-4 h-4 text-yellow-400" />
-                <span className="text-sm font-medium text-yellow-200">Premier Naval Training</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Sparkles className="w-6 h-6 text-blue-950" />
               </div>
-
-              {/* Title and Subtitle */}
-              <div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
-                  {content.title || 'Naval Training Programs'}
-                </h1>
-                {content.subtitle && (
-                  <p className="text-xl text-blue-100 mb-6 leading-relaxed">
-                    {content.subtitle}
-                  </p>
-                )}
-                {content.description && (
-                  <p className="text-lg text-blue-200 leading-relaxed">
-                    {content.description}
-                  </p>
-                )}
-              </div>
-
-              {/* Stats */}
-              {content.stats && content.stats.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  {content.stats.map((stat, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
-                      className="text-center"
-                    >
-                      <div className="text-3xl md:text-4xl font-bold text-yellow-400 mb-1">
-                        {stat.number}
-                      </div>
-                      <div className="text-sm text-blue-200">
-                        {stat.label}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-
-              {/* CTAs */}
-              {content.cta && (
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {content.cta.primary && (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-yellow-500 text-blue-950 px-8 py-4 rounded-xl font-bold text-lg hover:bg-yellow-400 transition-colors shadow-lg flex items-center justify-center gap-2"
-                    >
-                      {content.cta.primary}
-                      <ArrowRight className="w-5 h-5" />
-                    </motion.button>
-                  )}
-                  {content.cta.secondary && (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-950 transition-colors flex items-center justify-center gap-2"
-                    >
-                      <Play className="w-5 h-5" />
-                      {content.cta.secondary}
-                    </motion.button>
-                  )}
-                </div>
-              )}
-
-              {/* Features */}
-              {content.features && content.features.length > 0 && (
-                <div className="flex flex-wrap gap-3">
-                  {content.features.map((feature, index) => {
-                    const IconComponent = iconMap[feature.icon];
-                    return (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
-                        className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20"
-                      >
-                        {IconComponent && typeof IconComponent === 'string' ? (
-                          <span className="text-lg">{IconComponent}</span>
-                        ) : (
-                          IconComponent && <IconComponent className="w-4 h-4" />
-                        )}
-                        <span className="text-sm font-medium">{feature.text}</span>
-                      </motion.div>
-                    );
-                  })}
-                </div>
+              {isMounted && (
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  className="absolute -top-1 -right-1"
+                >
+                  <Award className="w-5 h-5 text-yellow-400" />
+                </motion.div>
               )}
             </motion.div>
+            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+              <span className="text-sm font-semibold text-yellow-400 uppercase tracking-wide">Premier Naval Training</span>
+            </div>
+          </motion.div>
 
-            {/* Right Column - Badges/Highlights */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="space-y-6"
-            >
-              {content.badges && content.badges.length > 0 && (
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                  <h3 className="text-xl font-bold mb-4 text-center">Why Choose Our Training?</h3>
-                  <div className="space-y-3">
-                    {content.badges.map((badge, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.4 + index * 0.1, duration: 0.3 }}
-                        className="flex items-center gap-3"
-                      >
-                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
-                        <span className="text-blue-100">{badge}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              )}
+          {/* Main Heading */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-tight"
+          >
+            {heroContent.title || 'Online Training Courses'}
+            <br />
+            <span className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent">
+              {heroContent.subtitle || 'Master BVT Skills'}
+            </span>
+          </motion.h1>
 
-              {/* Trust Indicators */}
-              <div className="text-center space-y-4">
-                <div className="flex items-center justify-center gap-2 text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-current" />
-                  ))}
-                  <span className="ml-2 text-white font-medium">4.8/5 Average Rating</span>
-                </div>
-                <p className="text-blue-200 text-sm">
-                  Trusted by 15,000+ BVT professionals worldwide
-                </p>
-              </div>
-            </motion.div>
-          </div>
+          {/* Description */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg lg:text-xl xl:text-2xl text-blue-100 mb-8 leading-relaxed max-w-3xl"
+          >
+            {heroContent.description || "Access world-class naval training from anywhere. Learn at your own pace with comprehensive video courses, interactive content, and expert instruction."}
+          </motion.p>
+
+          {/* Stats Grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 mb-12"
+          >
+            {(heroContent.stats || defaultContent.stats).map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
+                whileHover={{ y: -8, scale: 1.05 }}
+                className="group relative bg-white/10 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-white/20 hover:border-yellow-400/50 hover:bg-white/15 transition-all"
+              >
+                <div className="text-2xl lg:text-3xl xl:text-4xl font-bold text-white mb-2">{stat.number}</div>
+                <div className="text-xs lg:text-sm text-blue-100 font-medium">{stat.label}</div>
+                
+                {/* Decorative Corner */}
+                <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Features */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="flex flex-wrap gap-3"
+          >
+            {(heroContent.features || defaultContent.features).map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6 + index * 0.1, duration: 0.3 }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 hover:border-yellow-400/50 transition-all"
+              >
+                {feature.icon === "Clock" && <Clock className="w-4 h-4 text-yellow-400" />}
+                {feature.icon === "Users" && <Users className="w-4 h-4 text-yellow-400" />}
+                {feature.icon === "Award" && <Award className="w-4 h-4 text-yellow-400" />}
+                <span className="text-sm font-medium text-white">{feature.text}</span>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </div>
 
-      {/* Decorative Elements */}
-      <div className="absolute top-10 right-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-10 left-10 w-24 h-24 bg-blue-400/10 rounded-full blur-2xl"></div>
+      {/* Floating Elements */}
+      {isMounted && (
+        <>
+          <motion.div
+            animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-20 right-10 w-20 h-20 bg-yellow-400/10 rounded-full blur-xl"
+          ></motion.div>
+          <motion.div
+            animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute bottom-20 left-10 w-24 h-24 bg-blue-400/10 rounded-full blur-xl"
+          ></motion.div>
+        </>
+      )}
     </section>
   );
 }
