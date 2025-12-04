@@ -359,3 +359,27 @@ body {
 .rich-text-content table tr:nth-child(even) {
   background-color: #f9fafb;
 }
+
+/* Gradient animation for hero text */
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Global button cursor pointer */
+button,
+[role="button"],
+.motion-button,
+a[href] {
+  cursor: pointer;
+}
+
+button:disabled,
+button[disabled],
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}

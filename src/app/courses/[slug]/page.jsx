@@ -4,13 +4,13 @@ import { useState, useEffect, use } from "react";
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from "framer-motion";
-import { 
-  Star, 
-  Clock, 
-  Users, 
-  Award, 
-  Play, 
-  ChevronDown, 
+import {
+  Star,
+  Clock,
+  Users,
+  Award,
+  Play,
+  ChevronDown,
   ChevronUp,
   BookOpen,
   Share2,
@@ -19,7 +19,11 @@ import {
   Tag,
   Loader2,
   ShoppingCart,
-  Lock
+  Lock,
+  Sparkles,
+  ArrowRight,
+  CheckCircle2,
+  FileText
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useCourseEnrollment } from "@/hooks/useCourseEnrollment";
@@ -162,7 +166,7 @@ export default function CourseDetailsPage({ params }) {
   const { isEnrolled, enrollment, loading: enrollmentLoading } = useCourseEnrollment(
     isAuthenticated && courseId ? courseId : null
   );
-  
+
   // Debug: Log enrollment status
   useEffect(() => {
     if (courseId && isAuthenticated) {
@@ -188,11 +192,11 @@ export default function CourseDetailsPage({ params }) {
         if (response.success && response.data) {
           const course = response.data;
           setCourseData(course);
-          
+
           // Debug: Log course data to see what we're getting
           console.log('Course data received:', course);
           console.log('Course chapters:', course.chapters);
-          
+
           // Expand first section if curriculum exists
           if (course.curriculum && course.curriculum.length > 0) {
             setExpandedSections([course.curriculum[0].section || course.curriculum[0].title]);
@@ -215,13 +219,13 @@ export default function CourseDetailsPage({ params }) {
           // Fetch related courses (same category)
           if (course.category) {
             try {
-              const relatedResponse = await getAllCourses({ 
+              const relatedResponse = await getAllCourses({
                 category: course.category._id || course.category,
-                limit: 4 
+                limit: 4
               });
               if (relatedResponse.success && relatedResponse.data) {
                 // Filter out current course
-                const filtered = relatedResponse.data.filter(c => 
+                const filtered = relatedResponse.data.filter(c =>
                   c._id !== course._id && c.id !== course.id
                 );
                 setRelatedCourses(filtered.slice(0, 3));
@@ -245,8 +249,8 @@ export default function CourseDetailsPage({ params }) {
   }, [slug]);
 
   const toggleSection = (sectionTitle) => {
-    setExpandedSections(prev => 
-      prev.includes(sectionTitle) 
+    setExpandedSections(prev =>
+      prev.includes(sectionTitle)
         ? prev.filter(s => s !== sectionTitle)
         : [...prev, sectionTitle]
     );
@@ -310,21 +314,21 @@ export default function CourseDetailsPage({ params }) {
 
   // Get instructor info
   const instructor = courseData.instructor?.userId || courseData.instructor || {};
-  const instructorName = instructor.firstName && instructor.lastName 
+  const instructorName = instructor.firstName && instructor.lastName
     ? `${instructor.firstName} ${instructor.lastName}`
     : instructor.name || 'Instructor';
   // Get instructor profilePic from instructor model (not userId) and convert to full URL
-  const instructorImageUrl = courseData.instructor?.profilePic 
+  const instructorImageUrl = courseData.instructor?.profilePic
     ? getImageUrl(courseData.instructor.profilePic)
     : 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
   // Get instructor bio from instructor model
   const instructorBio = courseData.instructor?.bio || null;
-  
+
   // Get category name
   const categoryName = courseData.category?.name || courseData.category || 'Uncategorized';
-  
+
   // Format date
-  const lastUpdated = courseData.updatedAt 
+  const lastUpdated = courseData.updatedAt
     ? new Date(courseData.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     : new Date(courseData.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -367,145 +371,181 @@ export default function CourseDetailsPage({ params }) {
   const materials = courseData.materials || [];
 
 
+  const courseImage = getImageUrl(courseData.image) || 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=800&h=600&fit=crop';
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       {/* Hero Section */}
-      <section className="bg-white py-12">
-        <div className="container mx-auto px-4">
+      <section className="relative py-8 lg:py-12 overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
               {/* Main Content */}
               <div className="lg:col-span-2">
                 {/* Course Header with Gradient */}
-                <div className="bg-gradient-to-br from-blue-50 via-white to-gray-50 p-8 rounded-2xl mb-8">
-                  {/* Breadcrumb */}
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-                    <Link href="/courses" className="hover:text-blue-900">Courses</Link>
-                    <span>/</span>
-                    <span className="text-blue-900">{categoryName}</span>
-                    <span>/</span>
-                    <span className="text-blue-900">{courseData.title}</span>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="bg-white rounded-2xl lg:rounded-3xl shadow-xl border-2 border-gray-200 p-6 lg:p-8 mb-6 lg:mb-8 relative overflow-hidden"
+                >
+                  {/* Background Pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <div className="absolute top-2 right-2 w-16 h-16 border border-blue-600 rounded-full"></div>
                   </div>
 
-                  {/* Category Badge */}
-                  <div className="inline-block bg-blue-100 text-blue-900 px-3 py-1 rounded-full text-sm font-medium mb-4">
-                    {categoryName}
-                  </div>
-                  
-                  {/* Course Title */}
-                  <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
-                    {courseData.title}
-                  </h1>
+                  <div className="relative z-10">
+                    {/* Breadcrumb */}
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+                      <Link href="/courses" className="hover:text-blue-900 font-medium transition-colors">Courses</Link>
+                      <span>/</span>
+                      <span className="text-blue-900 font-medium">{categoryName}</span>
+                      <span>/</span>
+                      <span className="text-blue-900 font-bold">{courseData.title}</span>
+                    </div>
 
-                  {/* Course Metadata */}
-                  <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-6">
-                    {instructorName && (
-                      <div className="flex items-center gap-3">
-                        <img 
-                          src={instructorImageUrl} 
-                          alt={instructorName} 
-                          className="w-10 h-10 rounded-full object-cover"
-                          onError={(e) => {
-                            e.target.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
-                          }}
-                        />
-                        <div>
-                          <span className="text-gray-500">Teacher</span>
-                          <div className="font-medium text-gray-900">{instructorName}</div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {categoryName && (
-                      <div className="flex items-center gap-3">
-                        <Tag className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <span className="text-gray-500">Category</span>
-                          <div className="font-medium text-gray-900">{categoryName}</div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {lastUpdated && (
-                      <div className="flex items-center gap-3">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <span className="text-gray-500">Last Updated</span>
-                          <div className="font-medium text-gray-900">{lastUpdated}</div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {courseData.rating && (
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`w-4 h-4 ${
-                                i < Math.floor(courseData.rating) 
-                                  ? 'fill-yellow-400 text-yellow-400' 
-                                  : 'text-gray-300'
-                              }`} 
-                            />
-                          ))}
-                        </div>
-                        <div>
-                          <div className="font-medium text-gray-900">{courseData.rating.toFixed(1)}</div>
-                          <div className="text-gray-500 text-xs">
-                            ({courseData.studentsCount || courseData.totalRatings || 0} {courseData.studentsCount || courseData.totalRatings ? 'students' : 'reviews'})
+                    {/* Category Badge */}
+                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-4 py-2 rounded-full text-sm font-bold mb-4 shadow-lg">
+                      <Sparkles className="w-4 h-4" />
+                      {categoryName}
+                    </div>
+
+                    {/* Course Title */}
+                    <h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-6 leading-tight">
+                      <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
+                        {courseData.title}
+                      </span>
+                    </h1>
+
+                    {/* Course Metadata */}
+                    <div className="flex flex-wrap items-center gap-4 lg:gap-6 text-sm mb-6 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200">
+                      {instructorName && (
+                        <div className="flex items-center gap-3">
+                          <motion.img
+                            whileHover={{ scale: 1.1 }}
+                            src={instructorImageUrl}
+                            alt={instructorName}
+                            className="w-12 h-12 rounded-full object-cover border-2 border-yellow-400 shadow-lg"
+                            onError={(e) => {
+                              e.target.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
+                            }}
+                          />
+                          <div>
+                            <span className="text-blue-700 text-xs font-medium">Instructor</span>
+                            <div className="font-bold text-gray-900">{instructorName}</div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+
+                      {lastUpdated && (
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-blue-900" />
+                          <div>
+                            <span className="text-blue-700 text-xs font-medium">Updated</span>
+                            <div className="font-bold text-gray-900 text-xs">{lastUpdated}</div>
+                          </div>
+                        </div>
+                      )}
+
+                      {courseData.rating && (
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-0.5">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${i < Math.floor(courseData.rating)
+                                    ? 'fill-yellow-400 text-yellow-400'
+                                    : 'text-gray-300'
+                                  }`}
+                              />
+                            ))}
+                          </div>
+                          <div>
+                            <div className="font-bold text-gray-900">{courseData.rating.toFixed(1)}</div>
+                            <div className="text-blue-700 text-xs">
+                              ({courseData.studentsCount || courseData.totalRatings || 0} reviews)
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Navigation Tabs */}
-                <div className="flex border-b border-gray-200 mb-8">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.6 }}
+                  className="flex gap-2 mb-8 bg-white rounded-xl p-2 shadow-lg border-2 border-gray-200"
+                >
                   <button
                     onClick={() => setActiveTab("info")}
-                    className={`px-6 py-3 font-medium transition-colors ${
-                      activeTab === "info"
-                        ? "text-blue-900 border-b-2 border-blue-900"
-                        : "text-gray-600 hover:text-gray-900"
-                    }`}
+                    className={`flex-1 px-6 py-3 font-bold rounded-lg transition-all ${activeTab === "info"
+                        ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 shadow-lg"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      }`}
                   >
                     Course Info
                   </button>
                   <button
                     onClick={() => setActiveTab("reviews")}
-                    className={`px-6 py-3 font-medium transition-colors ${
-                      activeTab === "reviews"
-                        ? "text-blue-900 border-b-2 border-blue-900"
-                        : "text-gray-600 hover:text-gray-900"
-                    }`}
+                    className={`flex-1 px-6 py-3 font-bold rounded-lg transition-all ${activeTab === "reviews"
+                        ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 shadow-lg"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      }`}
                   >
                     Reviews
                   </button>
-                </div>
+                </motion.div>
 
                 {/* Tab Content */}
                 {activeTab === "info" && (
-                  <div className="space-y-12">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.6 }}
+                    className="space-y-8 lg:space-y-12"
+                  >
                     {/* About Course */}
-                    <section id="about-course">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-4">About Course</h2>
-                      <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                    <section id="about-course" className="bg-white rounded-2xl lg:rounded-3xl shadow-lg border-2 border-gray-200 p-6 lg:p-8">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <FileText className="w-6 h-6 text-white" />
+                        </div>
+                        <h2 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">About Course</h2>
+                      </div>
+                      <p className="text-gray-600 leading-relaxed whitespace-pre-line text-base lg:text-lg">
                         {courseData.description || 'No description available.'}
                       </p>
                     </section>
 
                     {/* What Will You Learn */}
                     {learningOutcomes.length > 0 && (
-                      <section>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">What Will You Learn?</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <section className="bg-white rounded-2xl lg:rounded-3xl shadow-lg border-2 border-gray-200 p-6 lg:p-8">
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <Award className="w-6 h-6 text-white" />
+                          </div>
+                          <h2 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">What Will You Learn?</h2>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {learningOutcomes.map((outcome, index) => (
-                            <div key={index} className="flex items-start gap-3">
-                              <div className="w-2 h-2 bg-blue-900 rounded-full mt-2 flex-shrink-0"></div>
-                              <span className="text-gray-600">{outcome}</span>
-                            </div>
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, x: -20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: index * 0.05 }}
+                              className="flex items-start gap-3 p-3 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200"
+                            >
+                              <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                              <span className="text-gray-700 font-medium">{outcome}</span>
+                            </motion.div>
                           ))}
                         </div>
                       </section>
@@ -513,14 +553,26 @@ export default function CourseDetailsPage({ params }) {
 
                     {/* Material Includes */}
                     {materials.length > 0 && (
-                      <section>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Material Includes</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <section className="bg-white rounded-2xl lg:rounded-3xl shadow-lg border-2 border-gray-200 p-6 lg:p-8">
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <BookOpen className="w-6 h-6 text-white" />
+                          </div>
+                          <h2 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">Material Includes</h2>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {materials.map((material, index) => (
-                            <div key={index} className="flex items-start gap-3">
-                              <div className="w-2 h-2 bg-blue-900 rounded-full mt-2 flex-shrink-0"></div>
-                              <span className="text-gray-600">{material}</span>
-                            </div>
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, x: -20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: index * 0.05 }}
+                              className="flex items-start gap-3 p-3 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border border-purple-200"
+                            >
+                              <CheckCircle2 className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                              <span className="text-gray-700 font-medium">{material}</span>
+                            </motion.div>
                           ))}
                         </div>
                       </section>
@@ -528,80 +580,108 @@ export default function CourseDetailsPage({ params }) {
 
                     {/* Course Curriculum */}
                     {displayCurriculum.length > 0 && (
-                      <section>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Curriculum</h2>
+                      <section className="bg-white rounded-2xl lg:rounded-3xl shadow-lg border-2 border-gray-200 p-6 lg:p-8">
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <BookOpen className="w-6 h-6 text-white" />
+                          </div>
+                          <h2 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">Course Curriculum</h2>
+                        </div>
                         <div className="space-y-4">
                           {displayCurriculum.map((section, index) => (
-                          <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
-                            <button
-                              onClick={() => toggleSection(section.section)}
-                              className="w-full px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between"
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, y: 20 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: index * 0.1 }}
+                              className="border-2 border-gray-200 rounded-xl overflow-hidden hover:border-yellow-400 transition-all"
                             >
-                              <h3 className="font-medium text-gray-900">{section.section}</h3>
-                              {expandedSections.includes(section.section) ? (
-                                <ChevronUp className="w-5 h-5 text-gray-500" />
-                              ) : (
-                                <ChevronDown className="w-5 h-5 text-gray-500" />
-                              )}
-                            </button>
-                            
-                            {expandedSections.includes(section.section) && (
-                              <div className="bg-white">
-                                {section.lessons && section.lessons.length > 0 ? (
-                                  section.lessons.map((lesson, lessonIndex) => (
-                                    <div key={lessonIndex} className="border-t border-gray-100 px-6 py-4 flex items-center justify-between">
-                                      <div className="flex items-center gap-3">
-                                        <Play className="w-4 h-4 text-gray-400" />
-                                        <span className="text-gray-900">{lesson.title}</span>
+                              <button
+                                onClick={() => toggleSection(section.section)}
+                                className="w-full px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all flex items-center justify-between"
+                              >
+                                <h3 className="font-bold text-gray-900 text-lg">{section.section}</h3>
+                                <motion.div
+                                  animate={{ rotate: expandedSections.includes(section.section) ? 180 : 0 }}
+                                  transition={{ duration: 0.3 }}
+                                >
+                                  <ChevronDown className="w-5 h-5 text-blue-900" />
+                                </motion.div>
+                              </button>
+
+                              {expandedSections.includes(section.section) && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: "auto" }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{ duration: 0.3 }}
+                                  className="bg-white"
+                                >
+                                  {section.lessons && section.lessons.length > 0 ? (
+                                    section.lessons.map((lesson, lessonIndex) => (
+                                      <div key={lessonIndex} className="border-t border-gray-100 px-6 py-4 flex items-center justify-between hover:bg-blue-50 transition-colors">
+                                        <div className="flex items-center gap-3">
+                                          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                                            <Play className="w-4 h-4 text-white" />
+                                          </div>
+                                          <span className="text-gray-900 font-medium">{lesson.title}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                          {lesson.duration && (
+                                            <span className="text-sm text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded">{lesson.duration}</span>
+                                          )}
+                                          {!isEnrolled && (
+                                            <Lock className="w-4 h-4 text-gray-400" />
+                                          )}
+                                        </div>
                                       </div>
-                                      <div className="flex items-center gap-3">
-                                        {lesson.duration && (
-                                          <span className="text-sm text-gray-500">{lesson.duration}</span>
-                                        )}
-                                        {!isEnrolled && (
-                                          <Lock className="w-4 h-4 text-gray-400" />
-                                        )}
-                                      </div>
+                                    ))
+                                  ) : (
+                                    <div className="px-6 py-4 text-gray-500 text-sm">
+                                      No lessons in this section yet.
                                     </div>
-                                  ))
-                                ) : (
-                                  <div className="px-6 py-4 text-gray-500 text-sm">
-                                    No lessons in this section yet.
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </section>
+                                  )}
+                                </motion.div>
+                              )}
+                            </motion.div>
+                          ))}
+                        </div>
+                      </section>
                     )}
 
                     {/* Your Instructors */}
                     {instructorName && (
-                      <section>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Instructors</h2>
-                        <div className="flex items-start gap-6">
-                          <img 
-                            src={instructorImageUrl} 
+                      <section className="bg-white rounded-2xl lg:rounded-3xl shadow-lg border-2 border-gray-200 p-6 lg:p-8">
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <User className="w-6 h-6 text-white" />
+                          </div>
+                          <h2 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">Your Instructor</h2>
+                        </div>
+                        <div className="flex items-start gap-6 p-6 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl border border-indigo-200">
+                          <motion.img
+                            whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+                            transition={{ duration: 0.3 }}
+                            src={instructorImageUrl}
                             alt={instructorName}
-                            className="w-20 h-20 rounded-full object-cover"
+                            className="w-24 h-24 rounded-full object-cover border-4 border-yellow-400 shadow-xl"
                             onError={(e) => {
                               e.target.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
                             }}
                           />
                           <div className="flex-1">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">{instructorName}</h3>
+                            <h3 className="text-2xl font-bold text-gray-900 mb-2">{instructorName}</h3>
                             {instructor.email && (
                               <p className="text-blue-900 font-medium mb-3">{instructor.email}</p>
                             )}
-                            
+
                             {instructorBio && (
-                              <div className="text-gray-700 mb-4 leading-relaxed whitespace-pre-wrap">
+                              <div className="text-gray-700 mb-4 leading-relaxed whitespace-pre-wrap text-base">
                                 {instructorBio}
                               </div>
                             )}
-                            
+
                             {!instructorBio && (
                               <p className="text-gray-500 text-sm italic">No biography available.</p>
                             )}
@@ -611,67 +691,91 @@ export default function CourseDetailsPage({ params }) {
                     )}
 
                     {/* Ratings & Reviews */}
-                    <section>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-6">Ratings & Reviews</h2>
+                    <section className="bg-white rounded-2xl lg:rounded-3xl shadow-lg border-2 border-gray-200 p-6 lg:p-8">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <Star className="w-6 h-6 text-white" />
+                        </div>
+                        <h2 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">Ratings & Reviews</h2>
+                      </div>
                       <div className="text-center py-12">
                         <div className="text-6xl mb-4">📮</div>
-                        <p className="text-gray-500 text-lg">No Review Yet</p>
+                        <p className="text-gray-500 text-lg font-medium">No Review Yet</p>
                       </div>
                     </section>
 
-                  </div>
+                  </motion.div>
                 )}
 
                 {activeTab === "reviews" && (
-                  <div className="text-center py-12">
-                    <div className="text-6xl mb-4">📮</div>
-                    <p className="text-gray-500 text-lg">No Review Yet</p>
-                  </div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.6 }}
+                    className="bg-white rounded-2xl lg:rounded-3xl shadow-lg border-2 border-gray-200 p-6 lg:p-8"
+                  >
+                    <div className="text-center py-12">
+                      <div className="text-6xl mb-4">📮</div>
+                      <p className="text-gray-500 text-lg font-medium">No Review Yet</p>
+                    </div>
+                  </motion.div>
                 )}
               </div>
 
               {/* Sticky Sidebar */}
               <div className="lg:col-span-1">
-                <div className="sticky top-6">
-                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                <motion.div
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2, duration: 0.6 }}
+                  className="sticky top-6"
+                >
+                  <div className="bg-white rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden border-2 border-gray-200 hover:border-yellow-400 transition-all">
                     {/* Course Thumbnail */}
-                    <div className="relative">
-                      <img 
-                        src={courseData.image || 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=800&h=600&fit=crop'} 
+                    <div className="relative h-56 lg:h-64 overflow-hidden">
+                      <img
+                        src={courseImage}
                         alt={courseData.title}
-                        className="w-full h-56 object-cover"
+                        className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                      <button className="absolute inset-0 flex items-center justify-center">
-                        <div className="bg-white/90 backdrop-blur-sm rounded-full p-4 hover:bg-white transition-colors">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="absolute inset-0 flex items-center justify-center"
+                      >
+                        <div className="bg-white/90 backdrop-blur-sm rounded-full p-4 hover:bg-white transition-colors shadow-xl">
                           <Play className="w-8 h-8 text-blue-900" />
                         </div>
-                      </button>
+                      </motion.button>
                     </div>
 
                     {/* Course Details */}
                     <div className="p-6">
                       {ctaButton ? (
-                        <button 
+                        <motion.button
+                          whileHover={{ scale: 1.05, y: -2 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={ctaButton.action}
-                          className="w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors mb-6 shadow-md flex items-center justify-center"
+                          className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 py-4 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all mb-6 shadow-lg flex items-center justify-center gap-2"
                           disabled={enrollmentLoading}
                         >
                           {enrollmentLoading ? (
                             <>
-                              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                              <Loader2 className="w-5 h-5 animate-spin" />
                               Loading...
                             </>
                           ) : (
                             <>
                               {ctaButton.icon}
                               {ctaButton.text}
+                              <ArrowRight className="w-5 h-5" />
                             </>
                           )}
-                        </button>
+                        </motion.button>
                       ) : (
                         // Offline course enrolled message
-                        <div className="w-full bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
+                        <div className="w-full bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-4 mb-6">
                           <div className="flex items-start gap-3">
                             <div className="flex-shrink-0 mt-0.5">
                               <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -679,76 +783,88 @@ export default function CourseDetailsPage({ params }) {
                               </svg>
                             </div>
                             <div className="flex-1">
-                              <p className="text-blue-900 font-semibold mb-1">You have enrolled for this course</p>
+                              <p className="text-blue-900 font-bold mb-1">You have enrolled for this course</p>
                               <p className="text-blue-700 text-sm">Check your mail for further instructions.</p>
                             </div>
                           </div>
                         </div>
                       )}
 
-                      <div className="space-y-4 mb-6">
+                      <div className="space-y-3 mb-6 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200">
                         {(courseData.lessons || courseData.lectures) && (
                           <div className="flex items-center justify-between py-2">
                             <div className="flex items-center gap-3">
-                              <Play className="w-5 h-5 text-blue-900" />
-                              <span className="text-gray-700 font-medium">Lectures</span>
+                              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg">
+                                <Play className="w-5 h-5 text-white" />
+                              </div>
+                              <span className="text-gray-700 font-bold">Lectures</span>
                             </div>
-                            <span className="font-bold text-gray-900">{courseData.lessons || courseData.lectures}</span>
+                            <span className="font-bold text-gray-900 text-lg">{courseData.lessons || courseData.lectures}</span>
                           </div>
                         )}
-                        
+
                         {courseData.level && (
                           <div className="flex items-center justify-between py-2">
                             <div className="flex items-center gap-3">
-                              <Award className="w-5 h-5 text-blue-900" />
-                              <span className="text-gray-700 font-medium">Skill Level</span>
+                              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center shadow-lg">
+                                <Award className="w-5 h-5 text-white" />
+                              </div>
+                              <span className="text-gray-700 font-bold">Skill Level</span>
                             </div>
-                            <span className="font-bold text-gray-900">{courseData.level}</span>
+                            <span className="font-bold text-gray-900 text-lg">{courseData.level}</span>
                           </div>
                         )}
-                        
+
                         {courseData.duration && (
                           <div className="flex items-center justify-between py-2">
                             <div className="flex items-center gap-3">
-                              <Clock className="w-5 h-5 text-blue-900" />
-                              <span className="text-gray-700 font-medium">Duration</span>
+                              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                                <Clock className="w-5 h-5 text-white" />
+                              </div>
+                              <span className="text-gray-700 font-bold">Duration</span>
                             </div>
-                            <span className="font-bold text-gray-900">{courseData.duration}</span>
+                            <span className="font-bold text-gray-900 text-lg">{courseData.duration}</span>
                           </div>
                         )}
-                        
+
                         {courseData.certificate !== undefined && (
                           <div className="flex items-center justify-between py-2">
                             <div className="flex items-center gap-3">
-                              <Award className="w-5 h-5 text-blue-900" />
-                              <span className="text-gray-700 font-medium">Certificate</span>
+                              <div className={`w-10 h-10 bg-gradient-to-r ${courseData.certificate ? 'from-green-500 to-green-600' : 'from-gray-400 to-gray-500'} rounded-lg flex items-center justify-center shadow-lg`}>
+                                <Award className="w-5 h-5 text-white" />
+                              </div>
+                              <span className="text-gray-700 font-bold">Certificate</span>
                             </div>
-                            <span className={`font-bold ${courseData.certificate ? 'text-green-600' : 'text-gray-400'}`}>
+                            <span className={`font-bold text-lg ${courseData.certificate ? 'text-green-600' : 'text-gray-400'}`}>
                               {courseData.certificate ? 'Yes' : 'No'}
                             </span>
                           </div>
                         )}
 
                         {courseData.price && (
-                          <div className="flex items-center justify-between py-2 border-t border-gray-200 pt-2">
-                            <span className="text-gray-700 font-medium">Price</span>
+                          <div className="flex items-center justify-between py-3 border-t-2 border-blue-200 pt-3 mt-2">
+                            <span className="text-gray-700 font-bold text-lg">Price</span>
                             <div className="text-right">
                               {courseData.originalPrice && courseData.originalPrice > courseData.price && (
                                 <span className="text-sm text-gray-500 line-through mr-2">${courseData.originalPrice}</span>
                               )}
-                              <span className="text-2xl font-bold text-blue-900">${courseData.price}</span>
+                              <span className="text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">${courseData.price}</span>
                             </div>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="w-full flex items-center justify-center gap-3 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer p-3 bg-gray-50 rounded-xl hover:bg-gray-100 border-2 border-gray-200"
+                      >
                         <Share2 className="w-5 h-5" />
-                        <span className="font-medium">Share this course</span>
-                      </div>
+                        <span className="font-bold">Share this course</span>
+                      </motion.button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
             </div>
           </div>
@@ -756,106 +872,162 @@ export default function CourseDetailsPage({ params }) {
       </section>
 
       {/* Related Courses - Full Width */}
-      <section id="related-courses" className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Related Courses</h2>
-            <p className="text-lg text-gray-500">10,000+ unique online course list designs</p>
-          </div>
-          
+      <section id="related-courses" className="relative py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12 lg:mb-16"
+          >
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                whileInView={{ scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="relative"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-6 h-6 text-blue-950" />
+                </div>
+              </motion.div>
+              <div className="bg-blue-100 px-4 py-2 rounded-full border border-blue-200">
+                <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">Related Courses</span>
+              </div>
+            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
+                Related Courses
+              </span>
+            </h2>
+            <div className="h-1 w-24 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto mb-6"></div>
+            <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Explore more courses that might interest you
+            </p>
+          </motion.div>
+
           {relatedCourses.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {relatedCourses.map((course) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              {relatedCourses.map((course, index) => {
                 const courseId = course._id || course.id;
                 const courseSlug = course.slug || courseId;
                 const courseTitle = course.title || 'Untitled Course';
-                const courseImage = course.image || 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop';
+                const courseImage = getImageUrl(course.image) || 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop';
                 const courseCategory = course.category?.name || course.category || 'Uncategorized';
                 const instructor = course.instructor?.userId || course.instructor || {};
-                const instructorName = instructor.firstName && instructor.lastName 
+                const instructorName = instructor.firstName && instructor.lastName
                   ? `${instructor.firstName} ${instructor.lastName}`
                   : instructor.name || 'Instructor';
                 // Get instructor profilePic from instructor model (not userId) and convert to full URL
-                const instructorImage = course.instructor?.profilePic 
+                const instructorImage = course.instructor?.profilePic
                   ? getImageUrl(course.instructor.profilePic)
                   : 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
 
                 return (
-                  <div key={courseId} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105">
+                  <motion.div
+                    key={courseId}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -8, scale: 1.02 }}
+                    className="group relative bg-white rounded-2xl lg:rounded-3xl shadow-lg border-2 border-gray-200 hover:border-yellow-400 overflow-hidden hover:shadow-2xl transition-all duration-300"
+                  >
                     {/* Course Image */}
-                    <div className="relative">
-                      <img src={courseImage} alt={courseTitle} className="w-full h-48 object-cover" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                      
+                    <div className="relative h-48 overflow-hidden">
+                      <img src={courseImage} alt={courseTitle} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+
                       {/* Category Badge */}
-                      <div className="absolute top-3 left-3">
-                        <span className="bg-blue-100 text-blue-900 px-3 py-1 rounded-full text-xs font-medium">
+                      <div className="absolute top-4 left-4">
+                        <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
                           {courseCategory}
                         </span>
                       </div>
-                      
+
                       {/* Rating */}
                       {course.rating && (
-                        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm px-2 py-1 rounded flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                        <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">
+                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                           <span className="text-sm font-bold text-gray-900">{course.rating.toFixed(1)}</span>
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Course Content */}
-                    <div className="p-6">
+                    <div className="p-5 lg:p-6">
                       {/* Instructor */}
                       {instructorName && (
-                        <div className="flex items-center gap-3 mb-3">
-                          <img src={instructorImage} alt={instructorName} className="w-8 h-8 rounded-full object-cover" />
+                        <div className="flex items-center gap-3 mb-4">
+                          <img src={instructorImage} alt={instructorName} className="w-10 h-10 rounded-full object-cover border-2 border-yellow-400" />
                           <div>
-                            <div className="text-sm font-medium text-gray-900">{instructorName}</div>
+                            <div className="text-sm font-bold text-gray-900">{instructorName}</div>
                             <div className="text-xs text-gray-500">Instructor</div>
                           </div>
                         </div>
                       )}
-                      
+
                       {/* Course Title */}
-                      <h3 className="font-bold text-gray-900 mb-3 line-clamp-2 text-lg">{courseTitle}</h3>
-                      
+                      <Link href={`/courses/${courseSlug}`}>
+                        <h3 className="font-bold text-gray-900 mb-4 line-clamp-2 text-lg lg:text-xl hover:text-blue-900 transition-colors cursor-pointer">{courseTitle}</h3>
+                      </Link>
+
                       {/* Course Stats */}
-                      <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-4 mb-4 text-sm text-gray-600 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
                         {(course.lessons || course.lectures) && (
-                          <div className="flex items-center gap-1">
-                            <BookOpen className="w-4 h-4" />
-                            <span>{course.lessons || course.lectures} Lessons</span>
+                          <div className="flex items-center gap-1.5">
+                            <BookOpen className="w-4 h-4 text-blue-900" />
+                            <span className="font-medium">{course.lessons || course.lectures} Lessons</span>
                           </div>
                         )}
                         {course.studentsCount && (
-                          <div className="flex items-center gap-1">
-                            <Users className="w-4 h-4" />
-                            <span>{course.studentsCount} Students</span>
+                          <div className="flex items-center gap-1.5">
+                            <Users className="w-4 h-4 text-blue-900" />
+                            <span className="font-medium">{course.studentsCount} Students</span>
                           </div>
                         )}
                       </div>
-                      
+
                       {/* Price and CTA */}
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                         {course.price ? (
                           <>
-                            <div className="text-2xl font-bold text-gray-900">${course.price}</div>
+                            <div className="text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">${course.price}</div>
                             <Link href={`/courses/${courseSlug}`}>
-                              <button className="bg-blue-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-800 transition-colors">
+                              <motion.button
+                                whileHover={{ scale: 1.05, x: 5 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-6 py-2 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center gap-2"
+                              >
                                 View Course
-                              </button>
+                                <ArrowRight className="w-4 h-4" />
+                              </motion.button>
                             </Link>
                           </>
                         ) : (
                           <Link href={`/courses/${courseSlug}`} className="w-full">
-                            <button className="w-full bg-blue-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-800 transition-colors">
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-6 py-2 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2"
+                            >
                               View Course
-                            </button>
+                              <ArrowRight className="w-4 h-4" />
+                            </motion.button>
                           </Link>
                         )}
                       </div>
                     </div>
-                  </div>
+
+                    {/* Decorative Corner */}
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  </motion.div>
                 );
               })}
             </div>

@@ -211,9 +211,27 @@ export default function OfflineCoursesPage() {
     );
   }
 
+  // Offline courses hero content
+  const offlineHeroContent = {
+    title: "Offline Training Workshops",
+    subtitle: "Hands-On Learning at BVT Facilities",
+    description: "Experience immersive, hands-on training at our state-of-the-art BVT facilities. Learn from expert instructors with real equipment and practical exercises.",
+    stats: [
+      { number: "50+", label: "Workshop Programs" },
+      { number: "1.2K+", label: "Trained Professionals" },
+      { number: "6+", label: "Training Locations" },
+      { number: "98%", label: "Satisfaction Rate" }
+    ],
+    features: [
+      { icon: "MapPin", text: "Multiple Locations" },
+      { icon: "Users", text: "Expert Instructors" },
+      { icon: "Award", text: "Certificates" }
+    ]
+  };
+
   return (
     <>
-      <CoursesHero content={null} />
+      <CoursesHero content={offlineHeroContent} />
       <CourseTabs 
         tabs={tabs}
         courses={courses}

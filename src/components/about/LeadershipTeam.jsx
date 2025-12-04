@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Linkedin, Mail, Award, Users, Briefcase } from "lucide-react";
+import { Linkedin, Mail, Award, Users, Briefcase, Sparkles, CheckCircle2 } from "lucide-react";
 
 const TEAM_MEMBERS = [
   {
@@ -62,72 +62,110 @@ const TEAM_MEMBERS = [
 
 export default function LeadershipTeam() {
   return (
-    <section id="leadership-team" className="px-8 py-20 bg-white">
-      <div className="container mx-auto">
-        <div className="mb-16 text-center">
-          <div className="inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full mb-4">
-            <Users className="w-4 h-4 text-blue-900" />
-            <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">
-              Leadership Team
-            </span>
+    <section id="leadership-team" className="relative px-4 sm:px-6 lg:px-8 py-20 lg:py-24 bg-gradient-to-br from-white via-blue-50/50 to-white overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+
+      <div className="relative z-10 container mx-auto max-w-7xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-16 text-center"
+        >
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              whileInView={{ scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="relative"
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Sparkles className="w-6 h-6 text-blue-950" />
+              </div>
+            </motion.div>
+            <div className="bg-blue-100 px-4 py-2 rounded-full border border-blue-200">
+              <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">Leadership Team</span>
+            </div>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Meet Our Leadership
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
+              Meet Our Leadership
+            </span>
           </h2>
-          <p className="text-lg text-gray-500 max-w-3xl mx-auto">
+          <div className="h-1 w-24 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto mb-6"></div>
+          <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Our leadership team brings together decades of BVT experience, educational expertise, 
             and a shared commitment to excellence in training the next generation of maritime professionals.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Team Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
           {TEAM_MEMBERS.map((member, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl hover:scale-105 transition-all"
+              transition={{ delay: index * 0.1, duration: 0.6 }}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="group relative bg-white rounded-2xl lg:rounded-3xl overflow-hidden shadow-lg border-2 border-gray-200 hover:border-yellow-400 hover:shadow-2xl transition-all"
             >
               {/* Profile Image */}
-              <div className="relative h-64 overflow-hidden">
-                <img 
+              <div className="relative h-64 lg:h-72 overflow-hidden">
+                <motion.img
                   src={member.image}
                   alt={member.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.5 }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-950/80 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-blue-950/90 via-blue-950/50 to-transparent"></div>
                 
                 {/* Experience Badge */}
-                <div className="absolute top-4 right-4 bg-yellow-600 text-blue-950 px-3 py-1 rounded-full text-xs font-bold">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 + 0.2 }}
+                  className="absolute top-4 right-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg"
+                >
                   {member.experience}
-                </div>
+                </motion.div>
 
                 {/* Department Badge */}
-                <div className="absolute bottom-4 left-4 bg-blue-900/90 text-white px-3 py-1 rounded-lg text-xs font-semibold">
+                <div className="absolute bottom-4 left-4 bg-blue-900/90 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-xs font-semibold border border-white/20">
                   {member.department}
                 </div>
               </div>
 
               {/* Content */}
-              <div className="p-6">
+              <div className="p-6 lg:p-8">
                 <div className="mb-4">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
-                  <p className="text-blue-900 font-semibold mb-2">{member.position}</p>
-                  <p className="text-gray-600 text-sm leading-relaxed">{member.bio}</p>
+                  <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-1">{member.name}</h3>
+                  <p className="text-blue-900 font-semibold mb-3 text-base lg:text-lg">{member.position}</p>
+                  <p className="text-gray-600 text-sm lg:text-base leading-relaxed">{member.bio}</p>
                 </div>
 
                 {/* Achievements */}
                 <div className="mb-6">
                   <div className="flex flex-wrap gap-2">
                     {member.achievements.map((achievement, idx) => (
-                      <span 
+                      <motion.span
                         key={idx}
-                        className="bg-blue-100 text-blue-900 px-2 py-1 rounded-full text-xs font-medium"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 + idx * 0.05 }}
+                        className="bg-gradient-to-r from-blue-50 to-blue-100 text-blue-900 px-3 py-1 rounded-full text-xs font-medium border border-blue-200"
                       >
                         {achievement}
-                      </span>
+                      </motion.span>
                     ))}
                   </div>
                 </div>
@@ -135,30 +173,41 @@ export default function LeadershipTeam() {
                 {/* Social Links */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-xs text-gray-500">Available</span>
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-gray-500 font-medium">Available</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <button className="p-2 hover:bg-blue-100 rounded-full transition-colors group">
+                    <motion.button
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="p-2 hover:bg-blue-100 rounded-full transition-colors group"
+                    >
                       <Mail className="w-4 h-4 text-gray-600 group-hover:text-blue-900" />
-                    </button>
-                    <button className="p-2 hover:bg-blue-100 rounded-full transition-colors group">
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="p-2 hover:bg-blue-100 rounded-full transition-colors group"
+                    >
                       <Linkedin className="w-4 h-4 text-gray-600 group-hover:text-blue-900" />
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
               </div>
+
+              {/* Decorative Corner */}
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </motion.div>
           ))}
         </div>
 
         {/* Team Stats */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
           {[
-            { icon: Users, number: "6", label: "Leadership Team Members" },
-            { icon: Award, number: "180+", label: "Combined Years Experience" },
-            { icon: Briefcase, number: "15+", label: "Specialized Departments" },
-            { icon: Award, number: "50+", label: "Awards & Recognitions" }
+            { icon: Users, number: "6", label: "Leadership Team Members", color: "from-blue-500 to-blue-600" },
+            { icon: Award, number: "180+", label: "Combined Years Experience", color: "from-yellow-500 to-yellow-600" },
+            { icon: Briefcase, number: "15+", label: "Specialized Departments", color: "from-green-500 to-green-600" },
+            { icon: Award, number: "50+", label: "Awards & Recognitions", color: "from-purple-500 to-purple-600" }
           ].map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -167,14 +216,15 @@ export default function LeadershipTeam() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="text-center p-6 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-200 hover:shadow-lg transition-all"
+                transition={{ delay: 0.6 + index * 0.1, duration: 0.5 }}
+                whileHover={{ y: -8, scale: 1.05 }}
+                className="text-center p-4 lg:p-6 bg-white rounded-2xl border-2 border-gray-200 hover:border-yellow-400 hover:shadow-xl transition-all"
               >
-                <div className="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Icon className="w-6 h-6 text-blue-950" />
+                <div className={`w-12 h-12 lg:w-14 lg:h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg`}>
+                  <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
                 </div>
-                <div className="text-2xl font-bold text-blue-900 mb-1">{stat.number}</div>
-                <div className="text-sm text-gray-600">{stat.label}</div>
+                <div className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent mb-1">{stat.number}</div>
+                <div className="text-xs lg:text-sm text-gray-600 font-medium leading-tight">{stat.label}</div>
               </motion.div>
             );
           })}

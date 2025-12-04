@@ -1,6 +1,9 @@
+"use client";
+
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Users, Clock } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, Award, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/utils/imageUtils";
 
 const SAMPLE_EVENTS = [
   // Past Events
@@ -16,7 +19,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 300,
     price: "$299",
     originalPrice: "$399",
-    image: "https://picsum.photos/seed/BVT1/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Completed",
     featured: false,
     rating: 4.8,
@@ -34,7 +37,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 50,
     price: "$199",
     originalPrice: "$249",
-    image: "https://picsum.photos/seed/leadership2/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Completed",
     featured: false,
     rating: 4.9,
@@ -52,7 +55,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 200,
     price: "$249",
     originalPrice: "$329",
-    image: "https://picsum.photos/seed/maritime3/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Completed",
     featured: false,
     rating: 4.7,
@@ -70,7 +73,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 35,
     price: "$149",
     originalPrice: "$199",
-    image: "https://picsum.photos/seed/navigation4/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Completed",
     featured: false,
     rating: 4.6,
@@ -87,7 +90,7 @@ const SAMPLE_EVENTS = [
     attendees: 100,
     maxAttendees: 100,
     price: "Free",
-    image: "https://picsum.photos/seed/emergency5/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Completed",
     featured: false,
     rating: 4.5,
@@ -105,7 +108,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 60,
     price: "$349",
     originalPrice: "$449",
-    image: "https://picsum.photos/seed/submarine6/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Completed",
     featured: false,
     rating: 4.9,
@@ -123,7 +126,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 45,
     price: "$279",
     originalPrice: "$349",
-    image: "https://picsum.photos/seed/tactical7/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Completed",
     featured: false,
     rating: 4.8,
@@ -141,7 +144,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 80,
     price: "$399",
     originalPrice: "$499",
-    image: "https://picsum.photos/seed/fleet8/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Completed",
     featured: false,
     rating: 4.7,
@@ -159,7 +162,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 150,
     price: "$199",
     originalPrice: "$249",
-    image: "https://picsum.photos/seed/law9/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Completed",
     featured: false,
     rating: 4.6,
@@ -178,7 +181,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 40,
     price: "$249",
     originalPrice: "$299",
-    image: "https://picsum.photos/seed/radar10/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Limited Spots",
     featured: true,
     rating: 4.8,
@@ -196,7 +199,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 250,
     price: "$349",
     originalPrice: "$449",
-    image: "https://picsum.photos/seed/aviation11/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Popular",
     featured: true,
     rating: 4.9,
@@ -214,7 +217,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 50,
     price: "$299",
     originalPrice: "$399",
-    image: "https://picsum.photos/seed/cyber12/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "New",
     featured: true,
     rating: 4.7,
@@ -232,7 +235,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 150,
     price: "$279",
     originalPrice: "$349",
-    image: "https://picsum.photos/seed/engineering13/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     featured: false,
     rating: 4.6,
     totalRatings: 8
@@ -249,7 +252,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 30,
     price: "$199",
     originalPrice: "$249",
-    image: "https://picsum.photos/seed/medical14/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Certification",
     featured: false,
     rating: 4.9,
@@ -267,7 +270,7 @@ const SAMPLE_EVENTS = [
     maxAttendees: 300,
     price: "$399",
     originalPrice: "$499",
-    image: "https://picsum.photos/seed/cooperation15/800/600",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     badge: "Early Bird",
     featured: true,
     rating: 4.8,
@@ -304,19 +307,22 @@ export default function EventCard({
     });
   };
 
+  const eventImage = getImageUrl(image);
+  const eventSlug = slug || id;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="group bg-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-102 transition-all duration-300 border border-gray-100 relative overflow-hidden"
+      transition={{ delay: index * 0.05, duration: 0.5 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="group relative bg-white rounded-2xl lg:rounded-3xl shadow-lg border-2 border-gray-200 hover:border-yellow-400 hover:shadow-2xl transition-all duration-300 overflow-hidden"
     >
       {/* Badge */}
       {badge && (
         <div className="absolute top-4 left-4 z-10">
-          <span className="bg-yellow-500 text-blue-900 px-3 py-1 rounded-full text-xs font-bold">
+          <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
             {badge}
           </span>
         </div>
@@ -325,95 +331,101 @@ export default function EventCard({
       {/* Featured Badge */}
       {featured && (
         <div className="absolute top-4 right-4 z-10">
-          <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+          <span className="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+            <Award className="w-3 h-3" />
             Featured
           </span>
         </div>
       )}
 
       {/* Event Image */}
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-48 lg:h-56 overflow-hidden">
         <img 
-          src={image} 
+          src={eventImage}
           alt={title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          onError={(e) => {
+            e.target.src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop';
+          }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
         
         {/* Category */}
         <div className="absolute bottom-4 left-4">
-          <span className="bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
-            {category}
+          <span className="bg-white/90 backdrop-blur-sm text-blue-900 px-3 py-1.5 rounded-full text-sm font-bold shadow-lg">
+            {category || 'Event'}
           </span>
         </div>
       </div>
 
       {/* Event Content */}
-      <div className="p-6">
+      <div className="p-5 lg:p-6">
         {/* Date and Time */}
-        <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-          <div className="flex items-center gap-1">
-            <Calendar className="w-4 h-4" />
-            <span>{formatDate(date)}</span>
+        <div className="flex items-center gap-4 text-sm text-gray-600 mb-3 p-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
+          <div className="flex items-center gap-1.5">
+            <Calendar className="w-4 h-4 text-blue-900" />
+            <span className="font-medium">{formatDate(date)}</span>
           </div>
-          <div className="flex items-center gap-1">
-            <Clock className="w-4 h-4" />
-            <span>{time}</span>
+          <div className="flex items-center gap-1.5">
+            <Clock className="w-4 h-4 text-blue-900" />
+            <span className="font-medium">{time || 'TBA'}</span>
           </div>
         </div>
 
         {/* Title */}
-        <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-          {title}
-        </h3>
+        <Link href={`/events/details/${eventSlug}`}>
+          <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-900 transition-colors cursor-pointer">
+            {title}
+          </h3>
+        </Link>
 
         {/* Description */}
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+        <p className="text-gray-600 text-sm lg:text-base mb-4 line-clamp-2 leading-relaxed">
           {description}
         </p>
 
         {/* Location */}
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-          <MapPin className="w-4 h-4" />
-          <span>{location}</span>
+        <div className="flex items-center gap-2 text-sm text-gray-600 mb-4 p-2 bg-gray-50 rounded-lg">
+          <MapPin className="w-4 h-4 text-blue-900" />
+          <span className="font-medium">{location || 'TBA'}</span>
         </div>
 
         {/* Attendance */}
-        <div className="flex items-center gap-2 mb-4">
-          <Users className="w-4 h-4 text-gray-400" />
-          <span className="text-sm text-gray-600">
-            {attendees} {attendees === 1 ? 'attendee' : 'attendees'}
+        <div className="flex items-center gap-2 mb-4 p-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
+          <Users className="w-4 h-4 text-blue-900" />
+          <span className="text-sm text-gray-700 font-medium">
+            {attendees || 0} {attendees === 1 ? 'attendee' : 'attendees'}
+            {maxAttendees && ` / ${maxAttendees} max`}
           </span>
         </div>
 
         {/* Price */}
-        <div className="mb-4">
+        <div className="mb-4 pb-4 border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-blue-900">{price}</span>
-            {originalPrice && originalPrice !== "Free" && (
+            <span className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">{price || 'Free'}</span>
+            {originalPrice && originalPrice !== "Free" && originalPrice !== price && (
               <span className="text-lg text-gray-400 line-through">{originalPrice}</span>
             )}
           </div>
         </div>
+
+        {/* CTA Button */}
+        <Link href={`/events/details/${eventSlug}`}>
+          <motion.button
+            whileHover={{ scale: 1.05, x: 5 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-6 py-3 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2"
+          >
+            View Details
+            <ArrowRight className="w-4 h-4" />
+          </motion.button>
+        </Link>
       </div>
 
-      {/* Hover Overlay */}
-      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center">
-        <div className="flex flex-col gap-3 px-6">
-          <Link href={`/events/details/${slug || id}`} className="block">
-            <button className="w-full bg-white text-blue-900 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg">
-              View Details
-            </button>
-          </Link>
-          <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors shadow-lg">
-            Register Now
-          </button>
-        </div>
-      </div>
+      {/* Decorative Corner */}
+      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
     </motion.div>
   );
 }
 
 export { SAMPLE_EVENTS };
-
-

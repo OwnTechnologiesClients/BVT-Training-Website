@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, ChevronDown } from "lucide-react";
+import { Search, ChevronDown, Sparkles, Filter, X } from "lucide-react";
 import { OnlineCourseCard } from "./index";
 
 export default function CourseTabs({ 
@@ -14,7 +14,7 @@ export default function CourseTabs({
   onSearchChange
 }) {
   const [activeTab, setActiveTab] = useState("all");
-  const [displayedCount, setDisplayedCount] = useState(6);
+  const [displayedCount, setDisplayedCount] = useState(12);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Handle search input change
@@ -29,7 +29,7 @@ export default function CourseTabs({
   const getFilteredCourses = () => {
     let filteredCourses = courses;
 
-    // Apply search query filter - only search by course name and category
+    // Apply search query filter
     if (searchQuery) {
       filteredCourses = filteredCourses.filter(course =>
         course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -49,7 +49,7 @@ export default function CourseTabs({
       return filteredCourses;
     }
 
-    // Check if it's a category tab (match by category name)
+    // Check if it's a category tab
     const matchingCategory = filteredCourses.find(c => 
       c.category && c.category.toLowerCase().replace(/\s+/g, '-') === activeTab
     );
@@ -80,7 +80,6 @@ export default function CourseTabs({
   
   // Separate tabs into categories and other filters
   const categoryTabs = tabs.filter(tab => {
-    // Exclude "all", "featured", "certified", and level tabs
     const isLevel = ['beginner', 'intermediate', 'advanced'].includes(tab.id);
     const isSpecial = ['all', 'featured', 'certified'].includes(tab.id);
     return !isLevel && !isSpecial;
@@ -94,10 +93,10 @@ export default function CourseTabs({
   
   // Reset displayed count when tab changes or search changes
   useEffect(() => {
-    setDisplayedCount(6);
+    setDisplayedCount(12);
   }, [activeTab, searchResults, searchQuery]);
 
-  // Get courses to display (limited by displayedCount)
+  // Get courses to display
   const displayedCourses = filteredCourses.slice(0, displayedCount);
   const hasMore = filteredCourses.length > displayedCount;
   
@@ -116,96 +115,172 @@ export default function CourseTabs({
 
   // Handle load more
   const handleLoadMore = () => {
-    setDisplayedCount(prev => prev + 6);
+    setDisplayedCount(prev => prev + 12);
+  };
+
+  // Clear search
+  const clearSearch = () => {
+    setSearchQuery("");
+    if (onSearchChange) {
+      onSearchChange("");
+    }
   };
 
   return (
-    <section className="py-8 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
+    <section className="relative py-16 lg:py-20 bg-gradient-to-br from-white via-blue-50/30 to-white overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Browse Training Courses
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                whileInView={{ scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="relative"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-6 h-6 text-blue-950" />
+                </div>
+              </motion.div>
+              <div className="bg-blue-100 px-4 py-2 rounded-full border border-blue-200">
+                <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">Browse Courses</span>
+              </div>
+            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
+                Browse Training Courses
+              </span>
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <div className="h-1 w-24 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto mb-6"></div>
+            <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Explore our comprehensive collection of BVT training courses, 
               categorized for easy navigation and discovery.
             </p>
-          </div>
+          </motion.div>
 
-          {/* Search Bar */}
-          <div className="mb-8 max-w-2xl mx-auto">
+          {/* Search Bar - Enhanced */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-8 max-w-3xl mx-auto"
+          >
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="w-5 h-5 text-gray-400" />
+              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none z-10">
+                <Search className="w-5 h-5 lg:w-6 lg:h-6 text-gray-400" />
               </div>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 placeholder="Search courses by name or category..."
-                className="w-full pl-12 pr-4 py-4 rounded-xl bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm text-gray-900"
+                className="w-full pl-14 pr-12 py-4 lg:py-5 rounded-2xl bg-white border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 shadow-lg text-gray-900 text-base lg:text-lg transition-all"
               />
-            </div>
-          </div>
-
-          {/* Tab Navigation */}
-          <div className="flex flex-wrap justify-center items-center gap-3 mb-8">
-            {/* All Courses Button */}
-            <button
-              onClick={() => setActiveTab('all')}
-              className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                activeTab === 'all'
-                  ? "bg-blue-900 text-white shadow-lg transform scale-105"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105"
-              }`}
-            >
-              All Courses
-              <span className="ml-2 text-xs opacity-75">({tabs.find(t => t.id === 'all')?.count || 0})</span>
-            </button>
-
-            {/* Category Dropdown */}
-            {categoryTabs.length > 0 && (
-              <div className="relative">
-                <select
-                  value={selectedCategory?.id || ''}
-                  onChange={handleCategoryChange}
-                  className={`appearance-none px-6 py-3 pr-10 rounded-xl font-medium transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    selectedCategory && activeTab === selectedCategory.id
-                      ? "bg-blue-900 text-white shadow-lg"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+              {searchQuery && (
+                <button
+                  onClick={clearSearch}
+                  className="absolute inset-y-0 right-0 pr-5 flex items-center z-10"
                 >
-                  <option value="">Select Category</option>
-                  {categoryTabs.map((tab) => (
-                    <option key={tab.id} value={tab.id}>
-                      {tab.label} ({tab.count})
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <ChevronDown className={`w-5 h-5 ${selectedCategory && activeTab === selectedCategory.id ? 'text-white' : 'text-gray-500'}`} />
-                </div>
-              </div>
+                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mt-3 text-sm text-gray-600 text-center"
+              >
+                Found {filteredCourses.length} course{filteredCourses.length !== 1 ? 's' : ''} matching "{searchQuery}"
+              </motion.p>
             )}
+          </motion.div>
 
-            {/* Other Filter Buttons (Levels, Featured, Certified) */}
-            {otherTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                  activeTab === tab.id
-                    ? "bg-blue-900 text-white shadow-lg transform scale-105"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105"
+          {/* Tab Navigation - Enhanced */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mb-12"
+          >
+            <div className="flex flex-wrap justify-center items-center gap-3 lg:gap-4">
+              {/* All Courses Button */}
+              <motion.button
+                onClick={() => setActiveTab('all')}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-6 py-3 lg:px-8 lg:py-4 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 ${
+                  activeTab === 'all'
+                    ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 shadow-lg transform scale-105"
+                    : "bg-white text-gray-700 hover:bg-gray-50 hover:scale-105 border-2 border-gray-200 hover:border-yellow-400"
                 }`}
               >
-                {tab.label}
-                <span className="ml-2 text-xs opacity-75">({tab.count})</span>
-              </button>
-            ))}
-          </div>
+                All Courses
+                <span className={`ml-2 text-xs lg:text-sm ${activeTab === 'all' ? 'opacity-90' : 'opacity-75'}`}>
+                  ({tabs.find(t => t.id === 'all')?.count || 0})
+                </span>
+              </motion.button>
+
+              {/* Category Dropdown */}
+              {categoryTabs.length > 0 && (
+                <div className="relative">
+                  <select
+                    value={selectedCategory?.id || ''}
+                    onChange={handleCategoryChange}
+                    className={`appearance-none px-6 py-3 lg:px-8 lg:py-4 pr-12 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 border-2 ${
+                      selectedCategory && activeTab === selectedCategory.id
+                        ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 shadow-lg border-yellow-600"
+                        : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200 hover:border-yellow-400"
+                    }`}
+                  >
+                    <option value="">Select Category</option>
+                    {categoryTabs.map((tab) => (
+                      <option key={tab.id} value={tab.id}>
+                        {tab.label} ({tab.count})
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                    <ChevronDown className={`w-5 h-5 ${selectedCategory && activeTab === selectedCategory.id ? 'text-blue-950' : 'text-gray-500'}`} />
+                  </div>
+                </div>
+              )}
+
+              {/* Other Filter Buttons */}
+              {otherTabs.map((tab) => (
+                <motion.button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-6 py-3 lg:px-8 lg:py-4 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 ${
+                    activeTab === tab.id
+                      ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 shadow-lg transform scale-105"
+                      : "bg-white text-gray-700 hover:bg-gray-50 hover:scale-105 border-2 border-gray-200 hover:border-yellow-400"
+                  }`}
+                >
+                  {tab.label}
+                  <span className={`ml-2 text-xs lg:text-sm ${activeTab === tab.id ? 'opacity-90' : 'opacity-75'}`}>
+                    ({tab.count})
+                  </span>
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
 
@@ -215,11 +290,11 @@ export default function CourseTabs({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="container mx-auto px-4"
+        className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8"
       >
         {displayedCourses.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
             {displayedCourses.map((course, index) => (
                 <CourseCardComponent key={course.id || course._id || index} course={course} index={index} />
             ))}
@@ -227,20 +302,41 @@ export default function CourseTabs({
           
           {/* Load More Button */}
           {hasMore && (
-            <div className="text-center mt-12">
-              <button 
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-center mt-12 lg:mt-16"
+            >
+              <motion.button
                 onClick={handleLoadMore}
-                className="bg-blue-900 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-800 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-8 lg:px-12 py-4 lg:py-5 rounded-xl lg:rounded-2xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg hover:shadow-xl"
               >
-                Load More Courses
-              </button>
-            </div>
+                Load More Courses ({filteredCourses.length - displayedCount} remaining)
+              </motion.button>
+            </motion.div>
           )}
         </>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No courses found in this category.</p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-16 lg:py-24"
+          >
+            <div className="bg-white rounded-2xl p-8 lg:p-12 shadow-lg border-2 border-gray-200 max-w-md mx-auto">
+              <p className="text-gray-500 text-lg lg:text-xl mb-4">No courses found in this category.</p>
+              {searchQuery && (
+                <button
+                  onClick={clearSearch}
+                  className="text-blue-900 hover:text-blue-700 font-semibold underline"
+                >
+                  Clear search
+                </button>
+              )}
+            </div>
+          </motion.div>
         )}
       </motion.div>
     </section>

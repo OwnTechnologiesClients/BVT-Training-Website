@@ -1,6 +1,6 @@
 // API service utility for backend communication
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000/api';
 
 // Log API URL in development for debugging
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
@@ -52,13 +52,13 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
   console.log('🌐 Endpoint:', endpoint);
   console.log('🌐 Options:', options);
   console.log('🌐 API Base URL:', API_BASE_URL);
-  
+
   const token = getToken();
   const isFormData = options.body instanceof FormData;
-  
+
   console.log('🌐 Token exists:', !!token);
   console.log('🌐 Is FormData:', isFormData);
-  
+
   const config = {
     ...options,
     headers: {
@@ -79,11 +79,11 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
     const url = `${API_BASE_URL}${endpoint}`;
     console.log('🌐 Full URL:', url);
     console.log('🌐 Making fetch request...');
-    
+
     const fetchStartTime = Date.now();
     const response = await fetch(url, config);
     const fetchEndTime = Date.now();
-    
+
     console.log('🌐 Fetch response received');
     console.log('🌐 Response time:', fetchEndTime - fetchStartTime, 'ms');
     console.log('🌐 Response status:', response.status);
@@ -100,7 +100,7 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
     let data;
     const contentType = response.headers.get('content-type');
     console.log('🌐 Content-Type:', contentType);
-    
+
     if (contentType && contentType.includes('application/json')) {
       console.log('🌐 Parsing JSON response...');
       data = await response.json();
@@ -128,23 +128,23 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
 
     console.log('🌐 Checking response.ok:', response.ok);
     console.log('🌐 Response status:', response.status);
-    
+
     if (!response.ok) {
       console.log('🌐 Response not OK, handling error...');
       console.log('🌐 Error data:', data);
-      
+
       // Handle 401 (Unauthorized) - token expired or invalid
       // Only auto-logout if it's a clear authentication failure, not permission issues
       if (response.status === 401) {
         console.log('🌐 401 Unauthorized response');
         const errorMessage = data.message || '';
-        
+
         // Check if we actually sent a token - if we did, backend errors might be permission issues
         const hasToken = !!token;
-        
+
         // Check if it's a clear token validation error (should logout)
         // Only logout on specific token errors, not on general "Access denied" messages
-        const isTokenError = 
+        const isTokenError =
           errorMessage.includes('Invalid token') ||
           errorMessage.includes('token expired') ||
           errorMessage.includes('Token is valid but user no longer exists') ||
@@ -152,14 +152,14 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
           (errorMessage.includes('Token') && errorMessage.includes('expired')) ||
           (errorMessage.includes('jwt') && (errorMessage.includes('expired') || errorMessage.includes('invalid'))) ||
           (errorMessage.includes('JWT') && (errorMessage.includes('expired') || errorMessage.includes('invalid')));
-        
+
         // Special case: "No token provided" - only logout if we actually didn't send a token
         const isNoTokenError = errorMessage.includes('No token provided');
         const shouldLogoutOnNoToken = isNoTokenError && !hasToken;
-        
+
         // Check if it's an enrollment/permission error (should NOT logout)
         // Even if message contains "Access denied", if we have a token, it's likely a permission issue
-        const isPermissionError = 
+        const isPermissionError =
           errorMessage.includes('enrolled') ||
           errorMessage.includes('Enrolled') ||
           errorMessage.includes('enrollment') ||
@@ -169,7 +169,7 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
           errorMessage.includes('deactivated') ||
           (errorMessage.includes('Access denied') && hasToken) || // If we have token, "Access denied" = permission
           (isNoTokenError && hasToken); // If we sent token but backend says no token, don't logout (might be backend issue)
-        
+
         // Only logout if:
         // 1. It's clearly a token authentication error (invalid/expired token) OR we didn't send a token
         // 2. AND it's not a permission error
@@ -177,7 +177,7 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
         if ((isTokenError || shouldLogoutOnNoToken) && !isPermissionError) {
           // Clear token from localStorage
           removeToken();
-          
+
           // Clear auth state in AuthContext (if available)
           // This ensures UI updates immediately to show "Enroll Now" instead of user menu
           if (typeof window !== 'undefined') {
@@ -189,16 +189,16 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
               console.log('AuthContext not available, token cleared from localStorage');
             });
           }
-          
+
           // Only redirect to login if we're on a protected route
           // Don't redirect on public routes like course detail pages
           if (typeof window !== 'undefined') {
             const pathname = window.location.pathname;
-            const isProtectedRoute = pathname.includes('/learn') || 
-                                    pathname.includes('/billing') ||
-                                    pathname.includes('/dashboard') ||
-                                    pathname.includes('/admin');
-            
+            const isProtectedRoute = pathname.includes('/learn') ||
+              pathname.includes('/billing') ||
+              pathname.includes('/dashboard') ||
+              pathname.includes('/admin');
+
             // Only redirect if we're on a protected route and not already on login page
             if (isProtectedRoute && !pathname.includes('/login')) {
               window.location.href = '/login';

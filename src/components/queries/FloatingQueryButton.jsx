@@ -17,7 +17,7 @@ const FloatingQueryButton = ({ courseId, courseTitle, lessonId, lessonTitle }) =
       >
         <button
           onClick={() => setIsModalOpen(true)}
-          className="relative bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+          className="relative bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center group cursor-pointer"
           aria-label="Ask your query"
         >
           <MessageCircle className="w-6 h-6" />

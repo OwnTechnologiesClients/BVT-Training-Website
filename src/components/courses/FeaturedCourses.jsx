@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Star, Clock, Users, Award, MapPin, Calendar, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, Clock, Users, Award, MapPin, Calendar, Play, Sparkles, ArrowRight, BookOpen, TrendingUp } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getImageUrl } from "@/lib/utils/imageUtils";
 
@@ -13,13 +13,13 @@ export default function FeaturedCourses({ courses }) {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isAutoPlaying || courses.length === 0) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => 
+      setCurrentIndex((prevIndex) =>
         prevIndex === courses.length - 1 ? 0 : prevIndex + 1
       );
-    }, 5000);
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, courses.length]);
@@ -39,65 +39,92 @@ export default function FeaturedCourses({ courses }) {
     setCurrentIndex(index);
   };
 
+  if (!courses || courses.length === 0) return null;
+
   const currentCourse = courses[currentIndex];
   const imageUrl = currentCourse ? getImageUrl(currentCourse.image) : 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop';
 
-  if (!currentCourse) return null;
-
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
-      <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
+    <section className="relative py-12 lg:py-16 bg-gradient-to-br from-white via-blue-50/50 to-white overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-full mb-4">
-              <Award className="w-4 h-4 text-yellow-600" />
-              <span className="text-sm font-semibold text-yellow-700 uppercase tracking-wide">
-                Featured Courses
-              </span>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-8"
+          >
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                whileInView={{ scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="relative"
+              >
+                <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-5 h-5 text-blue-950" />
+                </div>
+              </motion.div>
+              <div className="bg-blue-100 px-3 py-1.5 rounded-full border border-blue-200">
+                <span className="text-xs font-semibold text-blue-900 uppercase tracking-wide">Featured Courses</span>
+              </div>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Elite Training Courses
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3">
+              <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
+                Elite Training Courses
+              </span>
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover our most prestigious and highly-rated BVT training courses, 
-              designed for the next generation of BVT leaders.
+            <div className="h-1 w-20 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto mb-3"></div>
+            <p className="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto">
+              Discover our most prestigious and highly-rated BVT training courses.
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* Carousel Container - In Container */}
-      <div className="container mx-auto px-4">
-        <div className="relative">
-            {/* Navigation Arrows */}
-            <button
+      {/* Carousel Container */}
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative">
+            {/* Navigation Arrows - Smaller */}
+            <motion.button
               onClick={goToPrevious}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-700 hover:text-blue-900 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+              whileHover={{ scale: 1.1, x: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className="absolute left-2 lg:left-0 top-1/2 transform -translate-y-1/2 z-20 w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 rounded-full shadow-lg hover:from-yellow-400 hover:to-yellow-500 transition-all flex items-center justify-center border-2 border-white"
             >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <button
+              <ChevronLeft className="w-5 h-5" />
+            </motion.button>
+            <motion.button
               onClick={goToNext}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-700 hover:text-blue-900 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+              whileHover={{ scale: 1.1, x: 5 }}
+              whileTap={{ scale: 0.95 }}
+              className="absolute right-2 lg:right-0 top-1/2 transform -translate-y-1/2 z-20 w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 rounded-full shadow-lg hover:from-yellow-400 hover:to-yellow-500 transition-all flex items-center justify-center border-2 border-white"
             >
-              <ChevronRight className="w-6 h-6" />
-            </button>
+              <ChevronRight className="w-5 h-5" />
+            </motion.button>
 
             {/* Course Cards Container */}
-            <div className="overflow-hidden rounded-2xl">
+            <div className="overflow-hidden rounded-2xl lg:rounded-3xl">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentIndex}
                   initial={{ opacity: 0, x: 300 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -300 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center"
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                  className="bg-white rounded-2xl lg:rounded-3xl shadow-2xl border-2 border-gray-200 overflow-hidden"
                 >
-                  {/* Course Image */}
-                  <div className="relative">
-                    <div className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full">
+                    {/* Course Image */}
+                    <div className="relative h-48 lg:h-full overflow-hidden bg-gradient-to-br from-blue-900 to-blue-950">
                       <img
                         src={imageUrl}
                         alt={currentCourse.title}
@@ -108,161 +135,153 @@ export default function FeaturedCourses({ courses }) {
                         loading="eager"
                         fetchPriority="high"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                       
-                      {/* Play Button Overlay for Online courses */}
-                      {currentCourse.location === "Online" && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <button className="bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full p-6 transition-all duration-300 hover:scale-110">
-                            <Play className="w-12 h-12 text-white fill-white" />
-                          </button>
-                        </div>
-                      )}
-
-                      {/* Badge */}
-                      <div className="absolute top-6 left-6">
-                        <span className="bg-yellow-500 text-blue-950 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1">
-                          <Award className="w-4 h-4" />
-                          {currentCourse.badge}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Course Details */}
-                  <div className="space-y-4">
-                    {/* Category & Level */}
-                    <div className="flex items-center gap-3">
-                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {currentCourse.category}
-                      </span>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        currentCourse.level === 'Advanced' ? 'bg-red-100 text-red-800' :
-                        currentCourse.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-green-100 text-green-800'
-                      }`}>
-                        {currentCourse.level}
-                      </span>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-                      {currentCourse.title}
-                    </h3>
-
-                    {/* Description - Limited to 120 characters */}
-                    <p className="text-base text-gray-600 leading-relaxed line-clamp-2">
-                      {currentCourse.description && currentCourse.description.length > 120
-                        ? `${currentCourse.description.substring(0, 120)}...`
-                        : currentCourse.description}
-                    </p>
-
-                    {/* Instructor - Compact */}
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-bold text-white">
-                          {currentCourse.instructor?.split(' ').map(n => n[0]).join('').substring(0, 2) || 'IN'}
-                        </span>
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-sm text-gray-500">Instructor</div>
-                        <div className="text-sm font-medium text-gray-900 truncate">{currentCourse.instructor || 'TBA'}</div>
-                      </div>
-                    </div>
-
-                    {/* Location & Date for Offline courses - Compact */}
-                    {currentCourse.location !== "Online" && (
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        {currentCourse.location && (
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-4 h-4 text-blue-900" />
-                            <span className="truncate max-w-[150px]">{currentCourse.location}</span>
-                          </div>
-                        )}
-                        {currentCourse.startDate && (
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4 text-blue-900" />
-                            <span className="truncate">{currentCourse.startDate}</span>
-                          </div>
+                      {/* Badges Overlay */}
+                      <div className="absolute top-3 left-3 flex flex-col gap-2">
+                        <motion.span
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.2 }}
+                          className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-lg"
+                        >
+                          <Award className="w-3 h-3" />
+                          Featured
+                        </motion.span>
+                        {currentCourse.level && (
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${
+                            currentCourse.level === 'Advanced' ? 'bg-red-500 text-white' :
+                            currentCourse.level === 'Intermediate' ? 'bg-yellow-500 text-white' :
+                            'bg-green-500 text-white'
+                          }`}>
+                            {currentCourse.level}
+                          </span>
                         )}
                       </div>
-                    )}
 
-                    {/* Course Stats - Compact */}
-                    <div className="flex items-center gap-6 py-3 border-t border-b border-gray-200">
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-blue-900" />
-                        <div>
-                          <div className="text-sm font-semibold text-gray-900">{currentCourse.duration}</div>
-                          <div className="text-xs text-gray-500">Duration</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-blue-900" />
-                        <div>
-                          <div className="text-sm font-semibold text-gray-900">{currentCourse.studentsCount || 0}</div>
-                          <div className="text-xs text-gray-500">
-                            {currentCourse.location === "Online" ? "Students" : "Max"}
-                          </div>
-                        </div>
-                      </div>
-                      {currentCourse.location === "Online" && currentCourse.lessons && (
-                        <div className="flex items-center gap-2">
-                          <Play className="w-4 h-4 text-blue-900" />
-                          <div>
-                            <div className="text-sm font-semibold text-gray-900">{currentCourse.lessons}</div>
-                            <div className="text-xs text-gray-500">Lessons</div>
-                          </div>
+                      {/* Category Badge */}
+                      {currentCourse.category && (
+                        <div className="absolute bottom-3 left-3">
+                          <span className="bg-white/90 backdrop-blur-sm text-blue-900 px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                            {currentCourse.category}
+                          </span>
                         </div>
                       )}
                     </div>
 
-                    {/* Price and CTA */}
-                    <div className="flex items-center justify-between pt-2">
+                    {/* Course Details */}
+                    <div className="p-4 lg:p-6 flex flex-col justify-between">
+                      {/* Top Section */}
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">${currentCourse.price || 0}</div>
-                        <div className="text-xs text-gray-500">
-                          {currentCourse.location === "Online" ? "One-time" : "Workshop fee"}
+                        {/* Title */}
+                        <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3 leading-tight line-clamp-2">
+                          {currentCourse.title}
+                        </h3>
+
+                        {/* Description */}
+                        <p className="text-sm lg:text-base text-gray-600 leading-relaxed mb-4 line-clamp-2">
+                          {currentCourse.description && currentCourse.description.length > 100
+                            ? `${currentCourse.description.substring(0, 100)}...`
+                            : currentCourse.description}
+                        </p>
+
+                        {/* Instructor */}
+                        <div className="flex items-center gap-2 mb-4 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-800 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <span className="text-xs font-bold text-white">
+                              {currentCourse.instructor?.split(' ').map(n => n[0]).join('').substring(0, 2) || 'IN'}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs text-gray-500 mb-0.5">Instructor</div>
+                            <div className="text-sm font-semibold text-gray-900 truncate">
+                              {currentCourse.instructor || 'TBA'}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Course Stats */}
+                        <div className="grid grid-cols-3 gap-2 mb-4">
+                          <div className="bg-white rounded-lg p-2 border border-gray-200 text-center">
+                            <Clock className="w-4 h-4 text-blue-900 mx-auto mb-1" />
+                            <div className="text-sm font-bold text-gray-900">{currentCourse.duration || 'N/A'}</div>
+                            <div className="text-xs text-gray-500">Duration</div>
+                          </div>
+                          <div className="bg-white rounded-lg p-2 border border-gray-200 text-center">
+                            <Users className="w-4 h-4 text-blue-900 mx-auto mb-1" />
+                            <div className="text-sm font-bold text-gray-900">{currentCourse.studentsCount || 0}</div>
+                            <div className="text-xs text-gray-500">Students</div>
+                          </div>
+                          {currentCourse.lessons && (
+                            <div className="bg-white rounded-lg p-2 border border-gray-200 text-center">
+                              <BookOpen className="w-4 h-4 text-blue-900 mx-auto mb-1" />
+                              <div className="text-sm font-bold text-gray-900">{currentCourse.lessons}</div>
+                              <div className="text-xs text-gray-500">Lessons</div>
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <Link href={`/courses/${currentCourse.slug || currentCourse.id}`}>
-                        <button className="bg-gradient-to-r from-blue-900 to-blue-950 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-800 hover:to-blue-900 hover:scale-105 transition-all shadow-lg flex items-center gap-2 text-sm">
-                          {currentCourse.location === "Online" ? "Enroll Now" : "Register Now"}
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                          </svg>
-                        </button>
-                      </Link>
+
+                      {/* Bottom Section - Price and CTA in Same Line */}
+                      <div className="pt-4 border-t border-gray-200">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex-shrink-0">
+                            {currentCourse.price ? (
+                              <>
+                                <div className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                                  ${currentCourse.price}
+                                </div>
+                                {currentCourse.originalPrice && currentCourse.originalPrice > currentCourse.price && (
+                                  <div className="text-xs text-gray-500 line-through">${currentCourse.originalPrice}</div>
+                                )}
+                              </>
+                            ) : (
+                              <div className="text-lg lg:text-xl font-bold text-green-600">Free</div>
+                            )}
+                          </div>
+                          <Link href={`/courses/${currentCourse.slug || currentCourse.id}`} className="flex-shrink-0">
+                            <motion.button
+                              whileHover={{ scale: 1.05, y: -2 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-6 py-3 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2 text-sm whitespace-nowrap"
+                            >
+                              {currentCourse.location === "Online" ? "Enroll Now" : "Register Now"}
+                              <ArrowRight className="w-4 h-4" />
+                            </motion.button>
+                          </Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* Dots Indicator */}
-            <div className="flex justify-center mt-8 gap-2">
+            {/* Dots Indicator - Smaller */}
+            <div className="flex justify-center mt-4 gap-2">
               {courses.map((_, index) => (
-                <button
+                <motion.button
                   key={index}
                   onClick={() => goToSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentIndex ? 'bg-blue-900 scale-125' : 'bg-gray-300 hover:bg-gray-400'
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                    index === currentIndex
+                      ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 scale-125 shadow-md'
+                      : 'bg-gray-300 hover:bg-gray-400'
                   }`}
                 />
               ))}
             </div>
-          </div>
-        </div>
 
-      {/* View All Button */}
-      <div className="container mx-auto px-4 mt-12">
-        <div className="text-center">
-          <button className="bg-white border-2 border-blue-900 text-blue-900 px-8 py-3 rounded-xl font-bold hover:bg-blue-900 hover:text-white transition-colors shadow-lg">
-            View All Featured Courses
-          </button>
+            {/* Course Counter */}
+            <div className="text-center mt-4">
+              <span className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700 border border-gray-200 shadow-sm">
+                {currentIndex + 1} of {courses.length}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
-

@@ -13,8 +13,11 @@ import {
   BookOpen,
   TrendingUp,
   Award,
-  ChevronRight
+  ChevronRight,
+  Sparkles,
+  ArrowRight
 } from "lucide-react";
+import Link from "next/link";
 
 const ONLINE_CATEGORIES = [
   {
@@ -120,142 +123,230 @@ const ONLINE_CATEGORIES = [
 
 export default function OnlineCourseCategories() {
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
-      <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
+    <section className="relative py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full mb-4">
-              <BookOpen className="w-4 h-4 text-blue-900" />
-              <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">
-                Online Course Categories
-              </span>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                whileInView={{ scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="relative"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-6 h-6 text-blue-950" />
+                </div>
+              </motion.div>
+              <div className="bg-blue-100 px-4 py-2 rounded-full border border-blue-200">
+                <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">Course Categories</span>
+              </div>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Learn Online by Specialization
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
+                Learn Online by Specialization
+              </span>
             </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            <div className="h-1 w-24 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto mb-6"></div>
+            <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Explore our comprehensive online training programs organized by specialized areas. 
               Learn at your own pace with expert-led video courses and interactive content.
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* Featured Categories - Full Width */}
-      <div className="container mx-auto px-4 mb-12">
-        <div className="flex items-center gap-2 mb-6">
-          <TrendingUp className="w-5 h-5 text-blue-900" />
-          <h3 className="text-xl font-bold text-gray-900">Featured Online Categories</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {ONLINE_CATEGORIES.filter(cat => cat.featured).map((category, index) => {
-                const Icon = category.icon;
-                return (
-                  <motion.div
-                    key={category.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1, duration: 0.5 }}
-                    className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 cursor-pointer"
-                  >
+      {/* Featured Categories - Enhanced */}
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex items-center gap-3 mb-6"
+          >
+            <TrendingUp className="w-6 h-6 text-blue-900" />
+            <h3 className="text-2xl lg:text-3xl font-bold text-gray-900">Featured Online Categories</h3>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {ONLINE_CATEGORIES.filter(cat => cat.featured).map((category, index) => {
+              const Icon = category.icon;
+              return (
+                <motion.div
+                  key={category.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1, duration: 0.6 }}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="group relative bg-white rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-lg border-2 border-gray-200 hover:border-yellow-400 hover:shadow-2xl transition-all overflow-hidden cursor-pointer"
+                >
+                  {/* Background Gradient on Hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${category.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+
+                  <div className="relative z-10">
                     {/* Category Icon */}
-                    <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${category.color} rounded-2xl mb-4 group-hover:scale-110 transition-transform`}>
-                      <Icon className="w-8 h-8 text-white" />
-                    </div>
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
+                      transition={{ duration: 0.3 }}
+                      className={`inline-flex items-center justify-center w-16 h-16 lg:w-18 lg:h-18 bg-gradient-to-r ${category.color} rounded-2xl mb-4 shadow-lg`}
+                    >
+                      <Icon className="w-8 h-8 lg:w-9 lg:h-9 text-white" />
+                    </motion.div>
 
                     {/* Category Info */}
-                    <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-900 transition-colors">
+                    <h4 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-900 transition-colors">
                       {category.title}
                     </h4>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    <p className="text-gray-600 text-sm lg:text-base mb-4 line-clamp-2 leading-relaxed">
                       {category.description}
                     </p>
 
                     {/* Stats */}
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                      <div className="flex items-center gap-1">
-                        <BookOpen className="w-4 h-4" />
-                        <span>{category.coursesCount} courses</span>
+                    <div className="flex items-center justify-between text-sm text-gray-600 mb-6 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="w-4 h-4 text-blue-900" />
+                        <span className="font-semibold">{category.coursesCount} courses</span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Users className="w-4 h-4" />
-                        <span>{category.studentsCount.toLocaleString()} students</span>
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-blue-900" />
+                        <span className="font-semibold">{category.studentsCount.toLocaleString()} students</span>
                       </div>
                     </div>
 
                     {/* CTA */}
-                    <button className="w-full bg-gray-100 hover:bg-blue-900 hover:text-white text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 group-hover:gap-3">
-                      Explore Online Courses
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </motion.div>
-                );
-              })}
-            </div>
+                    <motion.button
+                      whileHover={{ scale: 1.05, x: 5 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-4 py-3 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2"
+                    >
+                      Explore Courses
+                      <ArrowRight className="w-4 h-4" />
+                    </motion.button>
+                  </div>
+
+                  {/* Decorative Corner */}
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </motion.div>
+              );
+            })}
           </div>
-
-      {/* All Categories - Full Width */}
-      <div className="container mx-auto px-4">
-        <div className="flex items-center gap-2 mb-6">
-          <Award className="w-5 h-5 text-blue-900" />
-          <h3 className="text-xl font-bold text-gray-900">All Online Categories</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {ONLINE_CATEGORIES.map((category, index) => {
-                const Icon = category.icon;
-                return (
-                  <motion.div
-                    key={category.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.05, duration: 0.5 }}
-                    className="group bg-white rounded-xl p-4 shadow-md hover:shadow-lg hover:scale-102 transition-all duration-300 border border-gray-100 cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3">
-                      {/* Icon */}
-                      <div className={`flex-shrink-0 w-12 h-12 bg-gradient-to-r ${category.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        <Icon className="w-6 h-6 text-white" />
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-bold text-gray-900 group-hover:text-blue-900 transition-colors truncate">
-                          {category.title}
-                        </h4>
-                        <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
-                          <span>{category.coursesCount} courses</span>
-                          <span>•</span>
-                          <span>{category.studentsCount.toLocaleString()} students</span>
-                        </div>
-                      </div>
-
-                      {/* Arrow */}
-                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-900 group-hover:translate-x-1 transition-all flex-shrink-0" />
-                    </div>
-                  </motion.div>
-                );
-              })}
         </div>
       </div>
 
-      {/* Call to Action */}
-      <div className="container mx-auto px-4 mt-16">
-        <div className="text-center">
-          <div className="bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Need Custom Online Training?
-            </h3>
-            <p className="text-gray-600 mb-6">
-              We can create customized online training programs for your organization. 
-              Contact us to discuss your specific requirements.
-            </p>
-            <button className="bg-blue-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-800 transition-colors shadow-lg">
-              Request Custom Training
-            </button>
+      {/* All Categories - Enhanced */}
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex items-center gap-3 mb-6"
+          >
+            <Award className="w-6 h-6 text-blue-900" />
+            <h3 className="text-2xl lg:text-3xl font-bold text-gray-900">All Online Categories</h3>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            {ONLINE_CATEGORIES.map((category, index) => {
+              const Icon = category.icon;
+              return (
+                <motion.div
+                  key={category.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05, duration: 0.5 }}
+                  whileHover={{ y: -4, scale: 1.02 }}
+                  className="group relative bg-white rounded-xl lg:rounded-2xl p-4 lg:p-5 shadow-md border-2 border-gray-200 hover:border-yellow-400 hover:shadow-xl transition-all cursor-pointer overflow-hidden"
+                >
+                  {/* Background Pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <div className="absolute top-2 right-2 w-16 h-16 border border-blue-600 rounded-full"></div>
+                  </div>
+
+                  <div className="relative z-10 flex items-center gap-3">
+                    {/* Icon */}
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+                      transition={{ duration: 0.3 }}
+                      className={`flex-shrink-0 w-12 h-12 lg:w-14 lg:h-14 bg-gradient-to-r ${category.color} rounded-xl flex items-center justify-center shadow-lg`}
+                    >
+                      <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
+                    </motion.div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm lg:text-base font-bold text-gray-900 group-hover:text-blue-900 transition-colors truncate mb-1">
+                        {category.title}
+                      </h4>
+                      <div className="flex items-center gap-3 text-xs lg:text-sm text-gray-500">
+                        <span className="font-medium">{category.coursesCount} courses</span>
+                        <span>•</span>
+                        <span className="font-medium">{category.studentsCount.toLocaleString()} students</span>
+                      </div>
+                    </div>
+
+                    {/* Arrow */}
+                    <ChevronRight className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 group-hover:text-yellow-600 group-hover:translate-x-1 transition-all flex-shrink-0" />
+                  </div>
+
+                  {/* Decorative Corner */}
+                  <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </motion.div>
+              );
+            })}
           </div>
+        </div>
+      </div>
+
+      {/* Call to Action - Enhanced */}
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 mt-12 lg:mt-16">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-center"
+          >
+            <div className="bg-gradient-to-r from-blue-900 to-blue-950 rounded-2xl lg:rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden border-2 border-yellow-400/30">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-4 left-4 w-32 h-32 border-2 border-yellow-500 rounded-full"></div>
+                <div className="absolute bottom-4 right-4 w-24 h-24 border-2 border-yellow-500 rounded-full"></div>
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-2xl lg:text-3xl font-bold mb-4">Need Custom Online Training?</h3>
+                <p className="text-blue-100 mb-6 max-w-2xl mx-auto text-base lg:text-lg leading-relaxed">
+                  We can create customized online training programs for your organization. 
+                  Contact us to discuss your specific requirements.
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-8 py-4 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2 mx-auto"
+                >
+                  Request Custom Training
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
