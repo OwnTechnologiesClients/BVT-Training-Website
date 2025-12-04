@@ -6,88 +6,144 @@ import React, {
   useContext,
   useMemo,
   useState,
+  useEffect,
+  useRef,
 } from "react";
-import {
-  studentQueriesMockData,
-  getStudentQueries,
-  getQueryById,
-} from "@/data/studentQueriesMockData";
+import * as queryAPI from "@/lib/api/studentQuery";
 
 const QueryContext = createContext(null);
 
-// Mock current student ID - in real app, this would come from auth
-const MOCK_STUDENT_ID = "stu-001";
-
 export const QueryProvider = ({ children }) => {
-  const [queries, setQueries] = useState(studentQueriesMockData);
+  const [queries, setQueries] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch all queries on mount - only once
+  // Use a ref to track if we've already fetched to prevent re-fetching on remounts
+  const hasFetchedRef = useRef(false);
+  
+  useEffect(() => {
+    // Only fetch if we haven't fetched before and queries array is empty
+    if (hasFetchedRef.current || queries.length > 0) {
+      return;
+    }
+
+    const fetchQueries = async () => {
+      try {
+        setLoading(true);
+        hasFetchedRef.current = true;
+        const response = await queryAPI.getAllQueries();
+        if (response.success && response.data) {
+          setQueries(response.data.queries || []);
+        } else {
+          console.warn("Failed to fetch queries:", response.message);
+          // Don't set queries to empty - keep existing state if API fails
+        }
+      } catch (error) {
+        console.error("Error fetching queries:", error);
+        // If it's a 404 or route not found, the backend might not have the endpoint yet
+        if (error.message?.includes("404") || error.message?.includes("Not Found")) {
+          console.warn("Queries endpoint not found - backend may need to be updated");
+        }
+        // Keep queries as empty array if fetch fails
+        setQueries([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQueries();
+  }, [queries.length]);
 
   // Get current student's queries
   const studentQueries = useMemo(() => {
-    return getStudentQueries(MOCK_STUDENT_ID);
+    return queries;
   }, [queries]);
 
   // Create a new query
   const createQuery = useCallback(
-    (queryData) => {
-      const newQuery = {
-        id: `query-${Date.now()}`,
-        studentId: MOCK_STUDENT_ID,
-        studentName: "Lieutenant Marcus Allen", // Mock name
-        courseId: queryData.courseId,
-        courseTitle: queryData.courseTitle || "Course",
-        lessonId: queryData.lessonId,
-        lessonTitle: queryData.lessonTitle || "Lesson",
-        subject: queryData.subject,
-        messages: [
-          {
-            id: `msg-${Date.now()}`,
-            sender: "student",
-            senderName: "Lieutenant Marcus Allen",
-            content: queryData.message,
-            timestamp: new Date().toISOString(),
-          },
-        ],
-        status: "open",
-        createdAt: new Date().toISOString(),
-        lastUpdated: new Date().toISOString(),
-      };
-
-      setQueries((prev) => [...prev, newQuery]);
-      return newQuery;
+    async (queryData, attachments = []) => {
+      try {
+        setLoading(true);
+        const response = await queryAPI.createQuery(queryData, attachments);
+        if (response.success && response.data) {
+          const newQuery = response.data.query;
+          setQueries((prev) => [...prev, newQuery]);
+          return newQuery;
+        }
+      } catch (error) {
+        console.error("Error creating query:", error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
     },
     []
   );
 
   // Add a message to an existing query
-  const addMessage = useCallback((queryId, message, sender = "student") => {
-    setQueries((prev) =>
-      prev.map((query) => {
-        if (query.id === queryId) {
-          const newMessage = {
-            id: `msg-${Date.now()}`,
-            sender,
-            senderName:
-              sender === "student"
-                ? "Lieutenant Marcus Allen"
-                : "Commander Sarah Johnson",
-            content: message,
-            timestamp: new Date().toISOString(),
-          };
-          return {
-            ...query,
-            messages: [...query.messages, newMessage],
-            lastUpdated: new Date().toISOString(),
-          };
-        }
-        return query;
-      })
-    );
+  const addMessage = useCallback(async (queryId, message, attachments = []) => {
+    try {
+      setLoading(true);
+      const response = await queryAPI.addMessage(queryId, message, attachments);
+      if (response.success && response.data) {
+        const updatedQuery = response.data.query;
+        // Update queries list
+        setQueries((prev) =>
+          prev.map((query) => {
+            const queryIdStr = query._id?.toString() || query._id;
+            const targetIdStr = queryId?.toString() || queryId;
+            return queryIdStr === targetIdStr ? updatedQuery : query;
+          })
+        );
+        return updatedQuery;
+      } else {
+        throw new Error(response.message || "Failed to add message");
+      }
+    } catch (error) {
+      console.error("Error adding message:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   // Get query by ID
   const getQuery = useCallback(
-    (queryId) => {
-      return queries.find((q) => q.id === queryId);
+    async (queryId) => {
+      // First check local state
+      const localQuery = queries.find((q) => {
+        const qIdStr = q._id?.toString() || q._id;
+        const targetIdStr = queryId?.toString() || queryId;
+        return qIdStr === targetIdStr;
+      });
+      if (localQuery) return localQuery;
+
+      // If not found, fetch from API
+      try {
+        const response = await queryAPI.getQueryById(queryId);
+        if (response.success && response.data) {
+          const fetchedQuery = response.data.query;
+          // Update local state with fetched query
+          setQueries((prev) => {
+            const exists = prev.some((q) => {
+              const qIdStr = q._id?.toString() || q._id;
+              const targetIdStr = fetchedQuery._id?.toString() || fetchedQuery._id;
+              return qIdStr === targetIdStr;
+            });
+            if (!exists) {
+              return [...prev, fetchedQuery];
+            }
+            return prev.map((q) => {
+              const qIdStr = q._id?.toString() || q._id;
+              const targetIdStr = fetchedQuery._id?.toString() || fetchedQuery._id;
+              return qIdStr === targetIdStr ? fetchedQuery : q;
+            });
+          });
+          return fetchedQuery;
+        }
+      } catch (error) {
+        console.error("Error fetching query:", error);
+      }
+      return null;
     },
     [queries]
   );
@@ -99,8 +155,9 @@ export const QueryProvider = ({ children }) => {
       createQuery,
       addMessage,
       getQuery,
+      loading,
     }),
-    [queries, studentQueries, createQuery, addMessage, getQuery]
+    [queries, studentQueries, createQuery, addMessage, getQuery, loading]
   );
 
   return <QueryContext.Provider value={value}>{children}</QueryContext.Provider>;

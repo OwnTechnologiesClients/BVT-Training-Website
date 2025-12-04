@@ -102,8 +102,6 @@ export const AuthProvider = ({ children }) => {
       ...student,
       name: student.fullName || student.email,
       email: student.email,
-      rank: student.rank || null,
-      branch: student.branch || null,
     };
   }, [student]);
 

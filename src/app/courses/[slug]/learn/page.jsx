@@ -1318,8 +1318,8 @@ export default function CourseLearningPage({ params }) {
 
       {/* Floating Query Button */}
       <FloatingQueryButton
-        courseId={resolvedParams?.slug || "course-1"}
-        courseTitle="Navigation Systems & GPS"
+        courseId={courseData?._id || courseData?.id || resolvedParams?.slug}
+        courseTitle={courseData?.title || "Course"}
         lessonId={currentLessonId}
         lessonTitle={currentLesson?.title || "Current Lesson"}
       />

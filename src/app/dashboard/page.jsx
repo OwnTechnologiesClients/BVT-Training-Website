@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getMyEnrollments } from "@/lib/api/enrollment";
 import { getCourseStructure } from "@/lib/api/courses";
@@ -23,6 +23,9 @@ export default function DashboardPage() {
   const [error, setError] = useState(null);
   const [selectedQueryId, setSelectedQueryId] = useState(null);
   const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
+  
+  // Track if we've already fetched to prevent unnecessary re-fetches
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -30,22 +33,12 @@ export default function DashboardPage() {
       return;
     }
 
-    if (isAuthenticated && student?.id) {
+    // Only fetch if authenticated and we haven't fetched yet
+    if (isAuthenticated && student?.id && !hasFetchedRef.current) {
+      hasFetchedRef.current = true;
       fetchEnrollments();
     }
   }, [isAuthenticated, authLoading, student]);
-
-  // Refresh enrollments when window gains focus (user might have completed lessons in another tab)
-  useEffect(() => {
-    const handleFocus = () => {
-      if (isAuthenticated && student?.id) {
-        fetchEnrollments();
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [isAuthenticated, student]);
 
   const fetchEnrollments = async () => {
     try {
@@ -368,7 +361,11 @@ export default function DashboardPage() {
             ) : (
               <div className="space-y-4">
                 {studentQueries
-                  .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated))
+                  .sort((a, b) => {
+                    const dateA = new Date(a.lastUpdated || a.updatedAt || a.createdAt || 0);
+                    const dateB = new Date(b.lastUpdated || b.updatedAt || b.createdAt || 0);
+                    return dateB.getTime() - dateA.getTime();
+                  })
                   .slice(0, 5)
                   .map((query) => {
                     const lastMessage = query.messages[query.messages.length - 1];
@@ -412,11 +409,18 @@ export default function DashboardPage() {
                               <div className="flex items-center gap-2">
                                 <Clock className="w-4 h-4" />
                                 <span>
-                                  {new Date(query.lastUpdated).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  })}
+                                  {(() => {
+                                    const dateValue = query.lastUpdated || query.updatedAt || query.createdAt;
+                                    if (!dateValue) return "N/A";
+                                    const date = new Date(dateValue);
+                                    return isNaN(date.getTime()) 
+                                      ? "N/A"
+                                      : date.toLocaleDateString("en-US", {
+                                          month: "short",
+                                          day: "numeric",
+                                          year: "numeric",
+                                        });
+                                  })()}
                                 </span>
                               </div>
                             </div>

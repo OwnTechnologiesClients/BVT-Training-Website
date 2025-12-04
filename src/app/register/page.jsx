@@ -16,7 +16,6 @@ export default function RegisterPage() {
     phone: "",
     password: "",
     confirmPassword: "",
-    rank: "",
     experience: "",
     location: "",
     agreeToTerms: false,
@@ -65,8 +64,6 @@ export default function RegisterPage() {
         password: formData.password,
         fullName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
         phone: formData.phone || undefined,
-        rank: formData.rank || undefined,
-        branch: formData.experience || undefined, // Using experience as branch
         address: formData.location ? {
           city: formData.location,
           country: "India" // Default country
@@ -88,15 +85,6 @@ export default function RegisterPage() {
       setIsLoading(false);
     }
   };
-
-  const ranks = [
-    "Seaman Recruit", "Seaman Apprentice", "Seaman", "Petty Officer 3rd Class",
-    "Petty Officer 2nd Class", "Petty Officer 1st Class", "Chief Petty Officer",
-    "Senior Chief Petty Officer", "Master Chief Petty Officer", "Warrant Officer",
-    "Chief Warrant Officer", "Ensign", "Lieutenant Junior Grade", "Lieutenant",
-    "Lieutenant Commander", "Commander", "Captain", "Commodore", "Rear Admiral",
-    "Vice Admiral", "Admiral"
-  ];
 
   const experienceLevels = [
     "Fresh Graduate", "1-2 years", "3-5 years", "6-10 years", "11-15 years", "16-20 years", "20+ years"
@@ -231,30 +219,6 @@ export default function RegisterPage() {
 
             {/* BVT Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="rank" className="block text-sm font-medium text-white mb-2">
-                  BVT Rank
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Shield className="h-5 w-5 text-blue-300" />
-                  </div>
-                  <select
-                    id="rank"
-                    name="rank"
-                    required
-                    value={formData.rank}
-                    onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-3 border border-white/30 rounded-xl bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all appearance-none"
-                  >
-                    <option value="" className="text-gray-900">Select your rank</option>
-                    {ranks.map((rank) => (
-                      <option key={rank} value={rank} className="text-gray-900">{rank}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
               <div>
                 <label htmlFor="experience" className="block text-sm font-medium text-white mb-2">
                   Experience Level
