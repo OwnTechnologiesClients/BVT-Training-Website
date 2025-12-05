@@ -11,19 +11,19 @@ export default function CoursesHero({ content }) {
     setIsMounted(true);
   }, []);
 
-  // Default content if none provided
+  // Default content if none provided - Generic for both online and offline
   const defaultContent = {
-    title: "Online Training Courses",
-    subtitle: "Master BVT Skills with Expert-Led Online Programs",
-    description: "Access world-class naval training from anywhere. Learn at your own pace with comprehensive video courses, interactive content, and expert instruction.",
+    title: "BVT Training Courses",
+    subtitle: "Master Naval Skills with Expert-Led Programs",
+    description: "Explore comprehensive naval training programs designed for both online and offline learning. Access world-class instruction, hands-on training, and expert guidance to advance your career.",
     stats: [
-      { number: "400+", label: "Online Courses" },
+      { number: "400+", label: "Training Courses" },
       { number: "8.5K+", label: "Active Students" },
       { number: "95%", label: "Success Rate" },
-      { number: "24/7", label: "Access" }
+      { number: "24/7", label: "Support" }
     ],
     features: [
-      { icon: "Clock", text: "Self-Paced Learning" },
+      { icon: "Clock", text: "Flexible Learning" },
       { icon: "Users", text: "Expert Instructors" },
       { icon: "Award", text: "Certificates" }
     ]
@@ -39,7 +39,7 @@ export default function CoursesHero({ content }) {
       <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+      <div className="relative z-10 container mx-auto px-3 sm:px-4 lg:px-6 py-10 lg:py-16">
         <div className="max-w-6xl mx-auto">
           {/* Badge */}
           <motion.div
@@ -77,12 +77,12 @@ export default function CoursesHero({ content }) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-tight"
+            className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-4 leading-tight"
           >
-            {heroContent.title || 'Online Training Courses'}
+            {heroContent.title || 'BVT Training Courses'}
             <br />
             <span className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent">
-              {heroContent.subtitle || 'Master BVT Skills'}
+              {heroContent.subtitle || 'Master Naval Skills'}
             </span>
           </motion.h1>
 
@@ -93,7 +93,7 @@ export default function CoursesHero({ content }) {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg lg:text-xl xl:text-2xl text-blue-100 mb-8 leading-relaxed max-w-3xl"
           >
-            {heroContent.description || "Access world-class naval training from anywhere. Learn at your own pace with comprehensive video courses, interactive content, and expert instruction."}
+            {heroContent.description || "Explore comprehensive naval training programs designed for both online and offline learning. Access world-class instruction, hands-on training, and expert guidance to advance your career."}
           </motion.p>
 
           {/* Stats Grid */}
@@ -112,7 +112,7 @@ export default function CoursesHero({ content }) {
                 whileHover={{ y: -8, scale: 1.05 }}
                 className="group relative bg-white/10 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-white/20 hover:border-yellow-400/50 hover:bg-white/15 transition-all"
               >
-                <div className="text-2xl lg:text-3xl xl:text-4xl font-bold text-white mb-2">{stat.number}</div>
+                <div className="text-lg lg:text-xl xl:text-2xl font-bold text-white mb-1.5">{stat.number}</div>
                 <div className="text-xs lg:text-sm text-blue-100 font-medium">{stat.label}</div>
                 
                 {/* Decorative Corner */}

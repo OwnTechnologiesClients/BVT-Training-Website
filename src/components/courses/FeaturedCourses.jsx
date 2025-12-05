@@ -12,37 +12,54 @@ export default function FeaturedCourses({ courses }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
+  // Filter out any invalid courses
+  const validCourses = courses?.filter(course => course && course.title) || [];
+
+  // Reset index if it's out of bounds when courses change
   useEffect(() => {
-    if (!isAutoPlaying || courses.length === 0) return;
+    if (currentIndex >= validCourses.length && validCourses.length > 0) {
+      setCurrentIndex(0);
+    }
+  }, [validCourses.length, currentIndex]);
+
+  useEffect(() => {
+    if (!isAutoPlaying || validCourses.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) =>
-        prevIndex === courses.length - 1 ? 0 : prevIndex + 1
+        prevIndex === validCourses.length - 1 ? 0 : prevIndex + 1
       );
     }, 8000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying, courses.length]);
+  }, [isAutoPlaying, validCourses.length]);
 
   const goToPrevious = () => {
     setIsAutoPlaying(false);
-    setCurrentIndex(currentIndex === 0 ? courses.length - 1 : currentIndex - 1);
+    if (validCourses.length === 0) return;
+    setCurrentIndex(currentIndex === 0 ? validCourses.length - 1 : currentIndex - 1);
   };
 
   const goToNext = () => {
     setIsAutoPlaying(false);
-    setCurrentIndex(currentIndex === courses.length - 1 ? 0 : currentIndex + 1);
+    if (validCourses.length === 0) return;
+    setCurrentIndex(currentIndex === validCourses.length - 1 ? 0 : currentIndex + 1);
   };
 
   const goToSlide = (index) => {
     setIsAutoPlaying(false);
-    setCurrentIndex(index);
+    if (index >= 0 && index < validCourses.length) {
+      setCurrentIndex(index);
+    }
   };
 
-  if (!courses || courses.length === 0) return null;
+  if (!validCourses || validCourses.length === 0) return null;
 
-  const currentCourse = courses[currentIndex];
-  const imageUrl = currentCourse ? getImageUrl(currentCourse.image) : 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop';
+  const currentCourse = validCourses[currentIndex];
+  
+  if (!currentCourse || !currentCourse.title) return null;
+  
+  const imageUrl = getImageUrl(currentCourse.image) || 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop';
 
   return (
     <section className="relative py-12 lg:py-16 bg-gradient-to-br from-white via-blue-50/50 to-white overflow-hidden">
@@ -76,7 +93,7 @@ export default function FeaturedCourses({ courses }) {
                 <span className="text-xs font-semibold text-blue-900 uppercase tracking-wide">Featured Courses</span>
               </div>
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">
               <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
                 Elite Training Courses
               </span>
@@ -98,7 +115,7 @@ export default function FeaturedCourses({ courses }) {
               onClick={goToPrevious}
               whileHover={{ scale: 1.1, x: -5 }}
               whileTap={{ scale: 0.95 }}
-              className="absolute left-2 lg:left-0 top-1/2 transform -translate-y-1/2 z-20 w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 rounded-full shadow-lg hover:from-yellow-400 hover:to-yellow-500 transition-all flex items-center justify-center border-2 border-white"
+              className="absolute left-[-20px] lg:left-[-50px] top-1/2 transform -translate-y-1/2 z-20 w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 rounded-full shadow-lg hover:from-yellow-400 hover:to-yellow-500 transition-all flex items-center justify-center border-2 border-white"
             >
               <ChevronLeft className="w-5 h-5" />
             </motion.button>
@@ -106,7 +123,7 @@ export default function FeaturedCourses({ courses }) {
               onClick={goToNext}
               whileHover={{ scale: 1.1, x: 5 }}
               whileTap={{ scale: 0.95 }}
-              className="absolute right-2 lg:right-0 top-1/2 transform -translate-y-1/2 z-20 w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 rounded-full shadow-lg hover:from-yellow-400 hover:to-yellow-500 transition-all flex items-center justify-center border-2 border-white"
+              className="absolute right-[-20px] lg:right-[-50px] top-1/2 transform -translate-y-1/2 z-20 w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 rounded-full shadow-lg hover:from-yellow-400 hover:to-yellow-500 transition-all flex items-center justify-center border-2 border-white"
             >
               <ChevronRight className="w-5 h-5" />
             </motion.button>
@@ -120,14 +137,14 @@ export default function FeaturedCourses({ courses }) {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -300 }}
                   transition={{ duration: 0.6, ease: "easeInOut" }}
-                  className="bg-white rounded-2xl lg:rounded-3xl shadow-2xl border-2 border-gray-200 overflow-hidden"
+                  className="bg-white rounded-2xl lg:rounded-3xl shadow-2xl border-2 border-gray-200 overflow-hidden h-[420px] lg:h-[380px]"
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full">
                     {/* Course Image */}
                     <div className="relative h-48 lg:h-full overflow-hidden bg-gradient-to-br from-blue-900 to-blue-950">
                       <img
                         src={imageUrl}
-                        alt={currentCourse.title}
+                        alt={currentCourse.title || 'Course'}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.target.src = 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop';
@@ -169,9 +186,9 @@ export default function FeaturedCourses({ courses }) {
                     </div>
 
                     {/* Course Details */}
-                    <div className="p-4 lg:p-6 flex flex-col justify-between">
+                    <div className="p-4 lg:p-6 flex flex-col justify-between h-full">
                       {/* Top Section */}
-                      <div>
+                      <div className="flex-1 flex flex-col">
                         {/* Title */}
                         <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3 leading-tight line-clamp-2">
                           {currentCourse.title}
@@ -181,7 +198,7 @@ export default function FeaturedCourses({ courses }) {
                         <p className="text-sm lg:text-base text-gray-600 leading-relaxed mb-4 line-clamp-2">
                           {currentCourse.description && currentCourse.description.length > 100
                             ? `${currentCourse.description.substring(0, 100)}...`
-                            : currentCourse.description}
+                            : currentCourse.description || 'No description available'}
                         </p>
 
                         {/* Instructor */}
@@ -200,29 +217,24 @@ export default function FeaturedCourses({ courses }) {
                         </div>
 
                         {/* Course Stats */}
-                        <div className="grid grid-cols-3 gap-2 mb-4">
+                        <div className="grid grid-cols-2 gap-2 mb-4">
                           <div className="bg-white rounded-lg p-2 border border-gray-200 text-center">
                             <Clock className="w-4 h-4 text-blue-900 mx-auto mb-1" />
                             <div className="text-sm font-bold text-gray-900">{currentCourse.duration || 'N/A'}</div>
                             <div className="text-xs text-gray-500">Duration</div>
                           </div>
                           <div className="bg-white rounded-lg p-2 border border-gray-200 text-center">
-                            <Users className="w-4 h-4 text-blue-900 mx-auto mb-1" />
-                            <div className="text-sm font-bold text-gray-900">{currentCourse.studentsCount || 0}</div>
-                            <div className="text-xs text-gray-500">Students</div>
-                          </div>
-                          {currentCourse.lessons && (
-                            <div className="bg-white rounded-lg p-2 border border-gray-200 text-center">
-                              <BookOpen className="w-4 h-4 text-blue-900 mx-auto mb-1" />
-                              <div className="text-sm font-bold text-gray-900">{currentCourse.lessons}</div>
-                              <div className="text-xs text-gray-500">Lessons</div>
+                            <MapPin className="w-4 h-4 text-blue-900 mx-auto mb-1" />
+                            <div className="text-sm font-bold text-gray-900">
+                              {currentCourse.isOnline ? 'Online' : 'Offline'}
                             </div>
-                          )}
+                            <div className="text-xs text-gray-500">Location</div>
+                          </div>
                         </div>
                       </div>
 
                       {/* Bottom Section - Price and CTA in Same Line */}
-                      <div className="pt-4 border-t border-gray-200">
+                      <div className="pt-2 border-t border-gray-200">
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex-shrink-0">
                             {currentCourse.price ? (
@@ -244,7 +256,7 @@ export default function FeaturedCourses({ courses }) {
                               whileTap={{ scale: 0.95 }}
                               className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-6 py-3 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2 text-sm whitespace-nowrap"
                             >
-                              {currentCourse.location === "Online" ? "Enroll Now" : "Register Now"}
+                              {currentCourse.isOnline ? "Enroll Now" : "Register Now"}
                               <ArrowRight className="w-4 h-4" />
                             </motion.button>
                           </Link>
@@ -258,7 +270,7 @@ export default function FeaturedCourses({ courses }) {
 
             {/* Dots Indicator - Smaller */}
             <div className="flex justify-center mt-4 gap-2">
-              {courses.map((_, index) => (
+              {validCourses.map((_, index) => (
                 <motion.button
                   key={index}
                   onClick={() => goToSlide(index)}
@@ -276,7 +288,7 @@ export default function FeaturedCourses({ courses }) {
             {/* Course Counter */}
             <div className="text-center mt-4">
               <span className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700 border border-gray-200 shadow-sm">
-                {currentIndex + 1} of {courses.length}
+                {currentIndex + 1} of {validCourses.length}
               </span>
             </div>
           </div>

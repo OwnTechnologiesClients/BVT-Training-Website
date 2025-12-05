@@ -52,9 +52,9 @@ export default function ExploreCourses() {
   // Loading state
   if (loading) {
     return (
-      <section className="relative py-20 bg-gradient-to-b from-white via-blue-50/50 to-white overflow-hidden">
+      <section className="relative py-12 bg-gradient-to-b from-white via-blue-50/50 to-white overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
@@ -69,19 +69,19 @@ export default function ExploreCourses() {
   // Error state
   if (error && courses.length === 0) {
     return (
-      <section className="relative py-20 bg-gradient-to-b from-white via-blue-50/50 to-white overflow-hidden">
+      <section className="relative py-12 bg-gradient-to-b from-white via-blue-50/50 to-white overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="mb-16 text-center">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
+          <div className="mb-10 text-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-yellow-400/20 backdrop-blur-sm px-5 py-2.5 rounded-full border-2 border-yellow-500/30 mb-6 shadow-lg"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-yellow-400/20 backdrop-blur-sm px-5 py-2.5 rounded-full border-2 border-yellow-500/30 mb-4 shadow-lg"
             >
               <Award className="w-5 h-5 text-yellow-600" />
               <span className="text-sm font-bold text-yellow-700 uppercase tracking-wider">Training Courses</span>
             </motion.div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-blue-950 via-blue-800 to-blue-950 bg-clip-text text-transparent mb-4">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-blue-950 via-blue-800 to-blue-950 bg-clip-text text-transparent mb-3">
               Explore Training Courses
             </h2>
             <p className="text-red-600 bg-red-50 px-6 py-3 rounded-lg border border-red-200 inline-block">
@@ -94,7 +94,7 @@ export default function ExploreCourses() {
   }
 
   return (
-    <section className="relative py-20 bg-gradient-to-b from-white via-blue-50/50 to-white overflow-hidden">
+    <section className="relative py-12 bg-gradient-to-b from-white via-blue-50/50 to-white overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl"></div>
@@ -109,26 +109,26 @@ export default function ExploreCourses() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
+          className="mb-10 text-center"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-yellow-400/20 backdrop-blur-sm px-5 py-2.5 rounded-full border-2 border-yellow-500/30 mb-6 shadow-lg"
+            className="inline-flex items-center gap-1.5 bg-gradient-to-r from-yellow-500/20 to-yellow-400/20 backdrop-blur-sm px-3.5 py-1.5 rounded-full border-2 border-yellow-500/30 mb-4 shadow-lg"
           >
-            <Sparkles className="w-5 h-5 text-yellow-600 animate-pulse" />
-            <span className="text-sm font-bold text-yellow-700 uppercase tracking-wider">
+            <Sparkles className="w-4 h-4 text-yellow-600 animate-pulse" />
+            <span className="text-xs font-bold text-yellow-700 uppercase tracking-wider">
               {courses.length > 0 ? `${courses.length}+ Featured Courses` : 'Featured Courses'}
             </span>
-            <Star className="w-5 h-5 text-yellow-600" />
+            <Star className="w-4 h-4 text-yellow-600" />
           </motion.div>
           
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-blue-950 via-blue-800 to-blue-950 bg-clip-text text-transparent mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-blue-950 via-blue-800 to-blue-950 bg-clip-text text-transparent mb-4">
             Explore Training Courses
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 lg:w-6/12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-sm md:text-base text-gray-600 lg:w-6/12 max-w-3xl mx-auto leading-relaxed">
             Browse through our comprehensive BVT vocational training courses and find the perfect path 
             for your career advancement.
           </p>
@@ -136,7 +136,7 @@ export default function ExploreCourses() {
 
         {/* Courses Grid */}
         {courses.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-10 ">
             {courses.map((course, idx) => (
               <Link key={idx} href={`/courses/${course.slug}`}>
                 <motion.div
@@ -148,11 +148,11 @@ export default function ExploreCourses() {
                     default: { delay: idx * 0.1, duration: 0.6, type: "spring" },
                     hover: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }
                   }}
-                  className="group relative h-full bg-white rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl cursor-pointer border-2 border-transparent hover:border-yellow-400/50"
+                  className="group relative h-full bg-white rounded-xl lg:rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl cursor-pointer border-2 border-transparent hover:border-yellow-400/50"
                   style={{ willChange: 'transform' }}
                 >
                   {/* Course Image - Clear and Prominent */}
-                  <div className="relative h-64 lg:h-72 overflow-hidden">
+                  <div className="relative h-48 lg:h-56 overflow-hidden">
                     <img 
                       src={course.image}
                       alt={course.title}
@@ -179,7 +179,7 @@ export default function ExploreCourses() {
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: [0, -5, 5, -5, 0] }}
                       transition={{ duration: 0.5 }}
-                      className="absolute top-4 right-4 bg-gradient-to-r from-yellow-500 to-yellow-400 px-4 py-2 rounded-xl border-2 border-white shadow-xl z-10"
+                      className="absolute top-3 right-3 bg-gradient-to-r from-yellow-500 to-yellow-400 px-3 py-1.5 rounded-lg border-2 border-white shadow-xl z-10"
                     >
                       <span className="text-xs font-bold text-blue-950 uppercase tracking-wider">
                         {course.level}
@@ -187,8 +187,8 @@ export default function ExploreCourses() {
                     </motion.div>
 
                     {/* Course Number Badge - Top Left */}
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-xl border border-gray-200 shadow-lg z-10">
-                      <span className="text-lg font-extrabold text-gray-900">
+                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-gray-200 shadow-lg z-10">
+                      <span className="text-sm font-extrabold text-gray-900">
                         #{idx + 1}
                       </span>
                     </div>
@@ -203,47 +203,47 @@ export default function ExploreCourses() {
                       <motion.div
                         whileHover={{ scale: 1.2 }}
                         transition={{ duration: 0.3 }}
-                        className="bg-gradient-to-r from-yellow-500/95 to-yellow-400/95 backdrop-blur-sm p-5 rounded-full shadow-2xl border-4 border-white"
+                        className="bg-gradient-to-r from-yellow-500/95 to-yellow-400/95 backdrop-blur-sm p-3 rounded-full shadow-2xl border-3 border-white"
                       >
-                        <Play className="w-8 h-8 text-blue-950 fill-blue-950" />
+                        <Play className="w-5 h-5 text-blue-950 fill-blue-950" />
                       </motion.div>
                     </motion.div>
                   </div>
 
                   {/* Course Content */}
-                  <div className="p-6 lg:p-8 bg-gradient-to-b from-white to-blue-50/30">
+                  <div className="p-4 lg:p-5 bg-gradient-to-b from-white to-blue-50/30">
                     {/* Meta Info - Enhanced */}
                     <div className="flex items-center gap-4 mb-4">
                       <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200">
                         <Clock className="w-4 h-4 text-blue-600" />
                         <span className="text-xs font-semibold text-blue-900">{course.duration}</span>
                       </div>
-                      <div className="flex items-center gap-2 bg-yellow-50 px-3 py-1.5 rounded-lg border border-yellow-200">
-                        <Users className="w-4 h-4 text-yellow-600" />
-                        <span className="text-xs font-semibold text-yellow-900">{course.maxStudents} Max</span>
+                      <div className="flex items-center gap-2 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200">
+                        <Award className="w-4 h-4 text-green-600" />
+                        <span className="text-xs font-semibold text-green-900">Certificate</span>
                       </div>
                     </div>
 
                     {/* Course Title */}
-                    <h3 className="mb-3 text-xl lg:text-2xl font-extrabold text-gray-900 leading-tight group-hover:text-blue-900 transition-colors line-clamp-2">
+                    <h3 className="mb-2 text-base lg:text-lg font-extrabold text-gray-900 leading-tight group-hover:text-blue-900 transition-colors line-clamp-2">
                       {course.title}
                     </h3>
                     
                     {/* Course Description */}
-                    <p className="mb-6 text-sm lg:text-base text-gray-600 line-clamp-3 leading-relaxed">
+                    <p className="mb-3 text-xs lg:text-sm text-gray-600 line-clamp-3 leading-relaxed">
                       {course.description}
                     </p>
 
                     {/* CTA Button - Enhanced */}
                     <motion.div
                       whileHover={{ x: 5 }}
-                      className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white px-6 py-3.5 rounded-xl font-bold hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 transition-all shadow-lg flex items-center justify-center gap-2 group/btn relative overflow-hidden"
+                      className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white px-4 py-2 rounded-lg font-bold text-sm hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 transition-all shadow-lg flex items-center justify-center gap-1.5 group/btn relative overflow-hidden"
                     >
                       <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover/btn:opacity-100 transition-opacity"></span>
-                      <span className="relative z-10 flex items-center gap-2">
-                        <BookOpen className="w-5 h-5" />
+                      <span className="relative z-10 flex items-center gap-1.5">
+                        <BookOpen className="w-4 h-4" />
                         <span>View Course</span>
-                        <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                       </span>
                     </motion.div>
                   </div>
@@ -278,7 +278,7 @@ export default function ExploreCourses() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="container mx-auto text-center py-16"
+            className="container mx-auto text-center py-10"
           >
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 border-2 border-gray-200 shadow-lg">
               <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -306,7 +306,7 @@ export default function ExploreCourses() {
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(37, 99, 235, 0.3)" }}
                 whileTap={{ scale: 0.95 }}
-                className="group relative bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white px-10 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 transition-all duration-300 shadow-xl overflow-hidden cursor-pointer"
+                className="group relative bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 transition-all duration-300 shadow-xl overflow-hidden cursor-pointer"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 <span className="relative z-10 flex items-center gap-3">

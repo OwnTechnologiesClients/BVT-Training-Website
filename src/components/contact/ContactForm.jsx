@@ -3,36 +3,28 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Send, CheckCircle, AlertCircle, User, Mail, Phone, MessageSquare, BookOpen, Sparkles, ArrowRight } from "lucide-react";
+import { createInquiry } from "@/lib/api/inquiries";
+import { showSuccess, showError } from "@/lib/utils/sweetalert";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
     email: "",
     phone: "",
-    subject: "",
     message: "",
-    department: "general",
-    urgency: "normal"
+    inquiryType: "general",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
 
-  const departments = [
+  const inquiries = [
     { value: "general", label: "General Inquiry" },
-    { value: "programs", label: "Program Information" },
+    { value: "courses", label: "Course Information" },
     { value: "enrollment", label: "Enrollment Support" },
     { value: "technical", label: "Technical Support" },
-    { value: "certification", label: "Certification Support" },
-    { value: "career", label: "Career Counseling" }
-  ];
-
-  const urgencyLevels = [
-    { value: "low", label: "Low Priority", color: "green" },
-    { value: "normal", label: "Normal Priority", color: "blue" },
-    { value: "high", label: "High Priority", color: "orange" },
-    { value: "urgent", label: "Urgent", color: "red" }
+    { value: "certification", label: "Certification" },
+    { value: "events", label: "Events & Workshops" }
   ];
 
   const handleInputChange = (e) => {
@@ -49,29 +41,38 @@ export default function ContactForm() {
     setSubmitStatus(null);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        subject: "",
-        message: "",
-        department: "general",
-        urgency: "normal"
+      const response = await createInquiry({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone || null,
+        inquiryType: formData.inquiryType,
+        message: formData.message
       });
-      
-      setSubmitStatus('success');
+
+      if (response.success) {
+        setFormData({
+          fullName: "",
+          email: "",
+          phone: "",
+          message: "",
+          inquiryType: "general",
+        });
+        setSubmitStatus('success');
+        showSuccess('Message Sent!', 'Thank you! Your message has been sent successfully. We\'ll get back to you soon.');
+      } else {
+        throw new Error(response.message || 'Failed to submit inquiry');
+      }
     } catch (error) {
+      console.error('Error submitting inquiry:', error);
       setSubmitStatus('error');
+      showError('Failed to Send Message', error.message || 'Sorry, there was an error sending your message. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <section className="relative py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
+    <section className="relative py-10 lg:py-12 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
@@ -102,7 +103,7 @@ export default function ContactForm() {
                 <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">Contact Form</span>
               </div>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
               <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
                 Send Us a Message
               </span>
@@ -150,42 +151,21 @@ export default function ContactForm() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">
-                    First Name *
+                    Name *
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       type="text"
-                      name="firstName"
-                      value={formData.firstName}
+                      name="fullName"
+                      value={formData.fullName}
                       onChange={handleInputChange}
                       required
                       className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all"
-                      placeholder="Enter your first name"
+                      placeholder="Enter your name"
                     />
                   </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Last Name *
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all"
-                      placeholder="Enter your last name"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">
                     Email Address *
@@ -203,7 +183,9 @@ export default function ContactForm() {
                     />
                   </div>
                 </div>
+              </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">
                     Phone Number
@@ -220,60 +202,24 @@ export default function ContactForm() {
                     />
                   </div>
                 </div>
-              </div>
-
-              {/* Department and Urgency */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Department
+                    Inquiry Type
                   </label>
                   <div className="relative">
                     <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
                     <select
-                      name="department"
-                      value={formData.department}
+                      name="inquiryType"
+                      value={formData.inquiryType}
                       onChange={handleInputChange}
                       className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all appearance-none bg-white"
                     >
-                      {departments.map(dept => (
-                        <option key={dept.value} value={dept.value}>{dept.label}</option>
+                      {inquiries.map(inquiry => (
+                        <option key={inquiry.value} value={inquiry.value}>{inquiry.label}</option>
                       ))}
                     </select>
                   </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Urgency Level
-                  </label>
-                  <select
-                    name="urgency"
-                    value={formData.urgency}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all appearance-none bg-white"
-                  >
-                    {urgencyLevels.map(level => (
-                      <option key={level.value} value={level.value}>{level.label}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Subject */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Subject *
-                </label>
-                <input
-                  type="text"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all"
-                  placeholder="Brief description of your inquiry"
-                />
               </div>
 
               {/* Message */}

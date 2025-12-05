@@ -7,7 +7,7 @@ import { SAMPLE_EVENTS } from "./EventCard";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils/imageUtils";
 
-export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, events = [] }) {
+export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, events = [], hideMaxAttendees = false }) {
   const scrollContainerRef = useRef(null);
   
   // Use provided events or fallback to SAMPLE_EVENTS
@@ -60,7 +60,7 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, e
   // Handle empty state
   if (filteredEvents.length === 0) {
     return (
-      <section className="relative py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
+      <section className="relative py-10 lg:py-12 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
@@ -82,7 +82,7 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, e
   };
 
   return (
-    <section className="relative py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
+    <section className="relative py-10 lg:py-12 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
@@ -95,7 +95,7 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, e
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12 lg:mb-16"
+            className="text-center mb-8 lg:mb-10"
           >
             <div className="flex items-center justify-center gap-3 mb-6">
               <motion.div
@@ -113,7 +113,7 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, e
                 <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">Events Timeline</span>
               </div>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
               <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
                 Events Timeline
               </span>
@@ -280,10 +280,12 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, e
                                 <MapPin className="w-4 h-4 text-blue-900" />
                                 <span className="line-clamp-1 font-medium">{event.location || 'TBA'}</span>
                               </div>
-                              <div className="flex items-center gap-2 text-xs text-gray-700">
-                                <Users className="w-4 h-4 text-blue-900" />
-                                <span className="font-medium">{event.attendees || 0}/{event.maxAttendees || 0} attendees</span>
-                              </div>
+                              {!hideMaxAttendees && (
+                                <div className="flex items-center gap-2 text-xs text-gray-700">
+                                  <Users className="w-4 h-4 text-blue-900" />
+                                  <span className="font-medium">{event.attendees} attendees</span>
+                                </div>
+                              )}
                             </div>
 
                             {/* Rating and Price */}

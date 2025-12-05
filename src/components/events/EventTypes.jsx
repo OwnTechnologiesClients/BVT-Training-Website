@@ -126,7 +126,7 @@ export default function EventTypes() {
 
   if (loading) {
     return (
-      <section className="py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      <section className="py-10 lg:py-12 bg-gradient-to-br from-gray-50 via-white to-blue-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
@@ -139,7 +139,7 @@ export default function EventTypes() {
 
   if (error) {
     return (
-      <section className="py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      <section className="py-10 lg:py-12 bg-gradient-to-br from-gray-50 via-white to-blue-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center text-red-600">
             <p>Error loading event types: {error}</p>
@@ -151,7 +151,7 @@ export default function EventTypes() {
 
   if (eventCategories.length === 0) {
     return (
-      <section className="py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      <section className="py-10 lg:py-12 bg-gradient-to-br from-gray-50 via-white to-blue-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center text-gray-600">
             <p>No event types available at the moment.</p>
@@ -175,7 +175,7 @@ export default function EventTypes() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12 lg:mb-16"
+            className="text-center mb-8 lg:mb-10"
           >
             <div className="flex items-center justify-center gap-3 mb-6">
               <motion.div
@@ -193,7 +193,7 @@ export default function EventTypes() {
                 <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">Event Categories</span>
               </div>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
               <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
                 Types of Events We Host
               </span>

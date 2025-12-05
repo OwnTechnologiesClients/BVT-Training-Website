@@ -3,18 +3,22 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search, ChevronDown, Sparkles, Filter, X } from "lucide-react";
-import { OnlineCourseCard } from "./index";
+import CourseCard from "./CourseCard";
 
 export default function CourseTabs({ 
   tabs, 
   courses, 
+  allCourses = [], // All courses (both online and offline) for filtering
   searchResults, 
   activeFilters, 
-  courseCardComponent: CourseCardComponent = OnlineCourseCard,
+  courseType = 'online',
+  onCourseTypeChange,
+  onlineCount = 0,
+  offlineCount = 0,
   onSearchChange
 }) {
   const [activeTab, setActiveTab] = useState("all");
-  const [displayedCount, setDisplayedCount] = useState(12);
+  const [displayedCount, setDisplayedCount] = useState(8);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Handle search input change
@@ -26,8 +30,10 @@ export default function CourseTabs({
     }
   };
 
-  const getFilteredCourses = () => {
-    let filteredCourses = courses;
+  // Get filtered courses for a specific type (online/offline) based on current filters
+  const getFilteredCoursesByType = (type) => {
+    // Start with all courses (both online and offline) for filtering
+    let filteredCourses = allCourses.length > 0 ? allCourses : courses;
 
     // Apply search query filter
     if (searchQuery) {
@@ -39,14 +45,17 @@ export default function CourseTabs({
 
     // If there are search results, use those instead
     if (searchResults && searchResults.length > 0) {
-      filteredCourses = courses.filter(course => 
+      filteredCourses = (allCourses.length > 0 ? allCourses : courses).filter(course => 
         searchResults.some(result => result.id === course.id)
       );
     }
 
     // Apply tab filtering
     if (activeTab === 'all') {
-      return filteredCourses;
+      // Filter by course type
+      return filteredCourses.filter(course => 
+        type === 'online' ? course.isOnline !== false : course.isOnline === false
+      );
     }
 
     // Check if it's a category tab
@@ -54,26 +63,114 @@ export default function CourseTabs({
       c.category && c.category.toLowerCase().replace(/\s+/g, '-') === activeTab
     );
     if (matchingCategory) {
-      return filteredCourses.filter(course => 
+      const categoryFiltered = filteredCourses.filter(course => 
         course.category && course.category.toLowerCase().replace(/\s+/g, '-') === activeTab
+      );
+      // Filter by course type
+      return categoryFiltered.filter(course => 
+        type === 'online' ? course.isOnline !== false : course.isOnline === false
       );
     }
 
     // Check standard filters
+    let result = filteredCourses;
     switch (activeTab) {
       case "featured":
-        return filteredCourses.filter(course => course.isFeatured);
+        result = filteredCourses.filter(course => course.isFeatured);
+        break;
       case "beginner":
-        return filteredCourses.filter(course => course.level === "Beginner");
+        result = filteredCourses.filter(course => course.level === "Beginner");
+        break;
       case "intermediate":
-        return filteredCourses.filter(course => course.level === "Intermediate");
+        result = filteredCourses.filter(course => course.level === "Intermediate");
+        break;
       case "advanced":
-        return filteredCourses.filter(course => course.level === "Advanced");
+        result = filteredCourses.filter(course => course.level === "Advanced");
+        break;
       case "certified":
-        return filteredCourses.filter(course => course.certificate);
+        result = filteredCourses.filter(course => course.certificate);
+        break;
       default:
-        return filteredCourses;
+        result = filteredCourses;
     }
+    
+    // Filter by course type
+    return result.filter(course => 
+      type === 'online' ? course.isOnline !== false : course.isOnline === false
+    );
+  };
+
+  // Calculate filtered counts for online and offline tabs
+  const filteredOnlineCount = getFilteredCoursesByType('online').length;
+  const filteredOfflineCount = getFilteredCoursesByType('offline').length;
+
+  const getFilteredCourses = () => {
+    // Start with all courses (both online and offline) for filtering
+    let filteredCourses = allCourses.length > 0 ? allCourses : courses;
+
+    // Apply search query filter
+    if (searchQuery) {
+      filteredCourses = filteredCourses.filter(course =>
+        course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.category?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // If there are search results, use those instead
+    if (searchResults && searchResults.length > 0) {
+      filteredCourses = (allCourses.length > 0 ? allCourses : courses).filter(course => 
+        searchResults.some(result => result.id === course.id)
+      );
+    }
+
+    // Apply tab filtering
+    if (activeTab === 'all') {
+      // Filter by course type after applying other filters
+      return filteredCourses.filter(course => 
+        courseType === 'online' ? course.isOnline !== false : course.isOnline === false
+      );
+    }
+
+    // Check if it's a category tab
+    const matchingCategory = filteredCourses.find(c => 
+      c.category && c.category.toLowerCase().replace(/\s+/g, '-') === activeTab
+    );
+    if (matchingCategory) {
+      const categoryFiltered = filteredCourses.filter(course => 
+        course.category && course.category.toLowerCase().replace(/\s+/g, '-') === activeTab
+      );
+      // Filter by course type
+      return categoryFiltered.filter(course => 
+        courseType === 'online' ? course.isOnline !== false : course.isOnline === false
+      );
+    }
+
+    // Check standard filters
+    let result = filteredCourses;
+    switch (activeTab) {
+      case "featured":
+        result = filteredCourses.filter(course => course.isFeatured);
+        break;
+      case "beginner":
+        result = filteredCourses.filter(course => course.level === "Beginner");
+        break;
+      case "intermediate":
+        result = filteredCourses.filter(course => course.level === "Intermediate");
+        break;
+      case "advanced":
+        result = filteredCourses.filter(course => course.level === "Advanced");
+        break;
+      case "certified":
+        result = filteredCourses.filter(course => course.certificate);
+        break;
+      default:
+        result = filteredCourses;
+    }
+    
+    // Filter by course type
+    return result.filter(course => 
+      courseType === 'online' ? course.isOnline !== false : course.isOnline === false
+    );
   };
 
   const filteredCourses = getFilteredCourses();
@@ -93,8 +190,17 @@ export default function CourseTabs({
   
   // Reset displayed count when tab changes or search changes
   useEffect(() => {
-    setDisplayedCount(12);
-  }, [activeTab, searchResults, searchQuery]);
+    setDisplayedCount(8);
+  }, [activeTab, searchQuery]);
+  
+  // Reset search when course type changes
+  useEffect(() => {
+    setSearchQuery('');
+    if (onSearchChange) {
+      onSearchChange('');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseType]);
 
   // Get courses to display
   const displayedCourses = filteredCourses.slice(0, displayedCount);
@@ -115,7 +221,7 @@ export default function CourseTabs({
 
   // Handle load more
   const handleLoadMore = () => {
-    setDisplayedCount(prev => prev + 12);
+    setDisplayedCount(prev => prev + 8);
   };
 
   // Clear search
@@ -127,7 +233,7 @@ export default function CourseTabs({
   };
 
   return (
-    <section className="relative py-16 lg:py-20 bg-gradient-to-br from-white via-blue-50/30 to-white overflow-hidden">
+    <section className="relative py-10 lg:py-12 bg-gradient-to-br from-white via-blue-50/30 to-white overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
@@ -158,7 +264,7 @@ export default function CourseTabs({
                 <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">Browse Courses</span>
               </div>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
               <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
                 Browse Training Courses
               </span>
@@ -281,6 +387,48 @@ export default function CourseTabs({
               ))}
             </div>
           </motion.div>
+
+          {/* Course Type Tabs - Online/Offline - Below Filters */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="mb-8"
+          >
+            <div className="flex justify-center items-center gap-4">
+              <motion.button
+                onClick={() => onCourseTypeChange && onCourseTypeChange('online')}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-8 py-3 lg:px-10 lg:py-4 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 ${
+                  courseType === 'online'
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-105"
+                    : "bg-white text-gray-700 hover:bg-gray-50 hover:scale-105 border-2 border-gray-200 hover:border-blue-400"
+                }`}
+              >
+                Online Courses
+                <span className={`ml-2 text-xs lg:text-sm ${courseType === 'online' ? 'opacity-90' : 'opacity-75'}`}>
+                  ({filteredOnlineCount})
+                </span>
+              </motion.button>
+              <motion.button
+                onClick={() => onCourseTypeChange && onCourseTypeChange('offline')}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-8 py-3 lg:px-10 lg:py-4 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 ${
+                  courseType === 'offline'
+                    ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 shadow-lg transform scale-105"
+                    : "bg-white text-gray-700 hover:bg-gray-50 hover:scale-105 border-2 border-gray-200 hover:border-yellow-400"
+                }`}
+              >
+                Offline Courses
+                <span className={`ml-2 text-xs lg:text-sm ${courseType === 'offline' ? 'opacity-90' : 'opacity-75'}`}>
+                  ({filteredOfflineCount})
+                </span>
+              </motion.button>
+            </div>
+          </motion.div>
         </div>
       </div>
 
@@ -296,7 +444,7 @@ export default function CourseTabs({
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
             {displayedCourses.map((course, index) => (
-                <CourseCardComponent key={course.id || course._id || index} course={course} index={index} />
+                <CourseCard key={course.id || course._id || index} course={course} index={index} />
             ))}
           </div>
           
@@ -323,7 +471,7 @@ export default function CourseTabs({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-16 lg:py-24"
+            className="text-center py-10 lg:py-16"
           >
             <div className="bg-white rounded-2xl p-8 lg:p-12 shadow-lg border-2 border-gray-200 max-w-md mx-auto">
               <p className="text-gray-500 text-lg lg:text-xl mb-4">No courses found in this category.</p>

@@ -51,7 +51,7 @@ const TIMELINE = [
 
 export default function OurStory() {
   return (
-    <section className="relative px-4 sm:px-6 lg:px-8 py-20 lg:py-24 bg-gradient-to-br from-white via-blue-50/50 to-white overflow-hidden">
+    <section className="relative px-3 sm:px-4 lg:px-6 py-12 lg:py-16 bg-gradient-to-br from-white via-blue-50/50 to-white overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
@@ -63,7 +63,7 @@ export default function OurStory() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
+          className="mb-10 text-center"
         >
           <div className="flex items-center justify-center gap-3 mb-6">
             <motion.div
@@ -81,7 +81,7 @@ export default function OurStory() {
               <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">Our Journey</span>
             </div>
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
             <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
               Our Story Through the Decades
             </span>
@@ -116,7 +116,7 @@ export default function OurStory() {
                   <div className={`w-full lg:w-5/12 ${isEven ? 'lg:text-right lg:pr-8' : 'lg:text-left lg:pl-8'} mb-6 lg:mb-0`}>
                     <motion.div
                       whileHover={{ y: -8, scale: 1.02 }}
-                      className={`bg-white rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-lg border-2 border-gray-200 hover:border-yellow-400 hover:shadow-2xl transition-all group ${isEven ? 'lg:ml-auto' : 'lg:mr-auto'}`}
+                      className={`bg-white rounded-xl lg:rounded-2xl p-4 lg:p-6 shadow-lg border-2 border-gray-200 hover:border-yellow-400 hover:shadow-2xl transition-all group ${isEven ? 'lg:ml-auto' : 'lg:mr-auto'} max-w-md`}
                     >
                       {/* Background Pattern */}
                       <div className="absolute inset-0 opacity-5 rounded-2xl lg:rounded-3xl overflow-hidden">
@@ -132,7 +132,7 @@ export default function OurStory() {
                           >
                             <Icon className="w-7 h-7 text-white" />
                           </motion.div>
-                          <div className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">{item.year}</div>
+                          <div className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">{item.year}</div>
                         </div>
                         <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3">{item.title}</h3>
                         <p className="text-gray-600 leading-relaxed text-base lg:text-lg">{item.description}</p>

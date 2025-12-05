@@ -12,7 +12,7 @@ export default function ContactHero() {
   }, []);
 
   return (
-    <section className="relative py-16 lg:py-24 bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 overflow-hidden">
+    <section className="relative py-10 lg:py-16 bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
@@ -52,7 +52,7 @@ export default function ContactHero() {
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight">
               <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
                 Contact Our Team
               </span>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { X, Send, MessageCircle, Paperclip, File, XCircle } from "lucide-react";
 import { useQuery } from "@/context/QueryContext";
+import { showSuccess, showError } from "@/lib/utils/sweetalert";
 
 const StudentQueryModal = ({
   isOpen,
@@ -91,12 +92,12 @@ const StudentQueryModal = ({
     // Validation: for new queries, need subject and message; for existing, only message
     if (existingQuery) {
       if (!message.trim() && attachments.length === 0) {
-        alert("Please enter a message or attach a file");
+        showError('Validation Error', 'Please enter a message or attach a file');
         return;
       }
     } else {
       if (!subject.trim() || !message.trim()) {
-        alert("Please fill in all required fields");
+        showError('Validation Error', 'Please fill in all required fields');
         return;
       }
     }
@@ -112,6 +113,7 @@ const StudentQueryModal = ({
           setExistingQuery(updatedQuery);
           setMessage(""); // Clear message but keep modal open to see reply
           setAttachments([]);
+          showSuccess('Message Sent!', 'Your message has been sent successfully.');
         } else {
           throw new Error("Failed to get updated query from server");
         }
@@ -129,6 +131,7 @@ const StudentQueryModal = ({
           setSubject("");
           setMessage("");
           setAttachments([]);
+          showSuccess('Query Created!', 'Your query has been submitted successfully. We\'ll get back to you soon.');
           onClose();
         } else {
           throw new Error("Failed to create query");
@@ -139,9 +142,9 @@ const StudentQueryModal = ({
       const errorMessage = error.message || "Unknown error";
       // Check if it's a backend compatibility issue
       if (errorMessage.includes("404") || errorMessage.includes("Not Found") || errorMessage.includes("route")) {
-        alert("This feature requires backend updates. Please ensure the backend is deployed with the latest code.");
+        showError('Backend Error', 'This feature requires backend updates. Please ensure the backend is deployed with the latest code.');
       } else {
-        alert("Failed to send message: " + errorMessage);
+        showError('Failed to Send Message', errorMessage);
       }
       // Don't clear the form on error so user can retry
     } finally {

@@ -19,7 +19,7 @@ export default function FloatingInquiryButton() {
   return (
     <>
       <motion.div
-        className="fixed bottom-24 right-6 z-50"
+        className="fixed bottom-28 right-4 z-50"
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5, type: "spring", stiffness: 200 }}

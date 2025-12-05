@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, User, Shield, ArrowRight, Phone, Briefcase, MapPin } from "lucide-react";
 import { studentRegister } from "@/lib/api/auth";
+import { showSuccess, showError } from "@/lib/utils/sweetalert";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -41,17 +42,23 @@ export default function RegisterPage() {
     
     // Client-side validation
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords don't match!");
+      const errorMsg = "Passwords don't match!";
+      setError(errorMsg);
+      showError('Validation Error', errorMsg);
       return;
     }
     
     if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long!");
+      const errorMsg = "Password must be at least 6 characters long!";
+      setError(errorMsg);
+      showError('Validation Error', errorMsg);
       return;
     }
     
     if (!formData.agreeToTerms) {
-      setError("Please agree to the terms and conditions!");
+      const errorMsg = "Please agree to the terms and conditions!";
+      setError(errorMsg);
+      showError('Validation Error', errorMsg);
       return;
     }
     
@@ -73,14 +80,19 @@ export default function RegisterPage() {
       const response = await studentRegister(registrationData);
       
       if (response.success) {
-        // Show success message and redirect to login
-        alert("Registration successful! Please login to continue.");
+        showSuccess('Registration Successful!', 'Your account has been created successfully. Redirecting to login...');
+        setTimeout(() => {
         router.push("/login");
+        }, 1500);
       } else {
-        setError(response.message || "Registration failed. Please try again.");
+        const errorMsg = response.message || "Registration failed. Please try again.";
+        setError(errorMsg);
+        showError('Registration Failed', errorMsg);
       }
     } catch (err) {
-      setError(err.message || "An error occurred during registration. Please try again.");
+      const errorMsg = err.message || "An error occurred during registration. Please try again.";
+      setError(errorMsg);
+      showError('Registration Error', errorMsg);
     } finally {
       setIsLoading(false);
     }

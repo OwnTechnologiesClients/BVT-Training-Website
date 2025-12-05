@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, CheckCircle, AlertCircle, User, Mail, Phone, MessageSquare, BookOpen, Sparkles } from "lucide-react";
+import { createInquiry } from "@/lib/api/inquiries";
 
 export default function InquiryModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
-    firstName: "",
+    fullName: "",
     email: "",
     phone: "",
     message: "",
@@ -16,7 +17,7 @@ export default function InquiryModal({ isOpen, onClose }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
 
-  const inquiryTypes = [
+  const inquiries = [
     { value: "general", label: "General Inquiry" },
     { value: "courses", label: "Course Information" },
     { value: "enrollment", label: "Enrollment Support" },
@@ -39,12 +40,18 @@ export default function InquiryModal({ isOpen, onClose }) {
     setSubmitStatus(null);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      const response = await createInquiry({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone || null,
+        inquiryType: formData.inquiryType,
+        message: formData.message
+      });
+
+      if (response.success) {
       // Reset form
       setFormData({
-        firstName: "",
+        fullName: "",
         email: "",
         phone: "",
         message: "",
@@ -58,7 +65,11 @@ export default function InquiryModal({ isOpen, onClose }) {
         onClose();
         setSubmitStatus(null);
       }, 2000);
+      } else {
+        throw new Error(response.message || 'Failed to submit inquiry');
+      }
     } catch (error) {
+      console.error('Error submitting inquiry:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -141,8 +152,8 @@ export default function InquiryModal({ isOpen, onClose }) {
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       type="text"
-                      name="firstName"
-                      value={formData.firstName}
+                      name="fullName"
+                      value={formData.fullName}
                       onChange={handleInputChange}
                       required
                       className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all"
@@ -200,7 +211,7 @@ export default function InquiryModal({ isOpen, onClose }) {
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all appearance-none bg-white"
                   >
-                    {inquiryTypes.map(type => (
+                    {inquiries.map(type => (
                       <option key={type.value} value={type.value}>{type.label}</option>
                     ))}
                   </select>

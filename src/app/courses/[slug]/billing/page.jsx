@@ -49,11 +49,15 @@ export default function CourseBillingPage({ params }) {
         if (response.success && response.data) {
           setCourseData(response.data);
         } else {
-          setError('Course not found');
+          const errorMsg = 'Course not found';
+          setError(errorMsg);
+          showError('Course Not Found', errorMsg);
         }
       } catch (err) {
         console.error('Error fetching course:', err);
-        setError(err.message || 'Failed to load course');
+        const errorMsg = err.message || 'Failed to load course';
+        setError(errorMsg);
+        showError('Error Loading Course', errorMsg);
       } finally {
         setLoading(false);
       }
@@ -119,7 +123,7 @@ export default function CourseBillingPage({ params }) {
             </div>
 
             {/* Thank You Message */}
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
               Thank You for Your Purchase!
             </h1>
             <p className="text-lg text-gray-600 mb-2">

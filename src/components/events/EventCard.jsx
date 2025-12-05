@@ -391,13 +391,14 @@ export default function EventCard({
         </div>
 
         {/* Attendance */}
-        <div className="flex items-center gap-2 mb-4 p-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
-          <Users className="w-4 h-4 text-blue-900" />
-          <span className="text-sm text-gray-700 font-medium">
-            {attendees || 0} {attendees === 1 ? 'attendee' : 'attendees'}
-            {maxAttendees && ` / ${maxAttendees} max`}
-          </span>
-        </div>
+        {maxAttendees && (
+          <div className="flex items-center gap-2 mb-4 p-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
+            <Users className="w-4 h-4 text-blue-900" />
+            <span className="text-sm text-gray-700 font-medium">
+              {attendees || 0} {attendees === 1 ? 'attendee' : 'attendees'}
+            </span>
+          </div>
+        )}
 
         {/* Price */}
         <div className="mb-4 pb-4 border-b border-gray-200">

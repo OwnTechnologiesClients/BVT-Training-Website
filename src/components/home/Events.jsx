@@ -104,7 +104,7 @@ export default function Events() {
   }, []);
 
   return (
-    <section className="relative py-20 bg-gradient-to-b from-white via-blue-50/50 to-white overflow-hidden">
+    <section className="relative py-12 bg-gradient-to-b from-white via-blue-50/50 to-white overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl"></div>
@@ -112,33 +112,33 @@ export default function Events() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-100/10 to-yellow-100/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
+          className="mb-10 text-center"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-yellow-400/20 backdrop-blur-sm px-5 py-2.5 rounded-full border-2 border-yellow-500/30 mb-6 shadow-lg"
+            className="inline-flex items-center gap-1.5 bg-gradient-to-r from-yellow-500/20 to-yellow-400/20 backdrop-blur-sm px-3.5 py-1.5 rounded-full border-2 border-yellow-500/30 mb-4 shadow-lg"
           >
-            <Calendar className="w-5 h-5 text-yellow-600" />
-            <span className="text-sm font-bold text-yellow-700 uppercase tracking-wider">
+            <Calendar className="w-4 h-4 text-yellow-600" />
+            <span className="text-xs font-bold text-yellow-700 uppercase tracking-wider">
               Upcoming Events
             </span>
-            <Sparkles className="w-5 h-5 text-yellow-600 animate-pulse" />
+            <Sparkles className="w-4 h-4 text-yellow-600 animate-pulse" />
           </motion.div>
           
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-blue-950 via-blue-800 to-blue-950 bg-clip-text text-transparent mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-blue-950 via-blue-800 to-blue-950 bg-clip-text text-transparent mb-4">
             Events & Seminars
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 lg:w-6/12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-sm md:text-base text-gray-600 lg:w-6/12 max-w-3xl mx-auto leading-relaxed">
             Join our BVT training events, workshops, and seminars designed to enhance 
             your professional development and career growth.
           </p>
@@ -163,7 +163,7 @@ export default function Events() {
             </div>
           </motion.div>
         ) : events.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-10">
             {events.map((event, idx) => {
               const seatsLeft = event.maxAttendees - event.registeredAttendees;
               const formattedDate = formatDate(event.eventDate);
@@ -271,13 +271,6 @@ export default function Events() {
                           )}
                           <span className="text-sm font-semibold text-gray-700 line-clamp-1">{event.location}</span>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200">
-                            <Users className="w-4 h-4 text-yellow-600 flex-shrink-0" />
-                            <span className="text-sm font-semibold text-yellow-900">
-                              {event.registeredAttendees}/{event.maxAttendees}
-                            </span>
-                          </div>
                           {event.cost !== undefined && (
                             <div className="bg-gradient-to-r from-green-50 to-green-100 px-3 py-2 rounded-lg border border-green-200">
                               <span className="text-sm font-bold text-green-700">
@@ -285,24 +278,6 @@ export default function Events() {
                               </span>
                             </div>
                           )}
-                        </div>
-                      </div>
-
-                      {/* Progress Bar for Seats */}
-                      <div className="mb-6">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-semibold text-gray-600">Registration</span>
-                          <span className="text-xs font-bold text-blue-600">{seatsPercentage}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: `${seatsPercentage}%` }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 1, delay: idx * 0.1 + 0.3 }}
-                            className="h-full bg-gradient-to-r from-blue-600 to-blue-700 rounded-full"
-                          ></motion.div>
-                        </div>
                       </div>
 
                       {/* CTA Button - Enhanced */}
@@ -351,7 +326,7 @@ export default function Events() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="container mx-auto text-center py-16"
+            className="container mx-auto text-center py-10"
           >
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 border-2 border-gray-200 shadow-lg inline-block">
               <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -379,7 +354,7 @@ export default function Events() {
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(37, 99, 235, 0.3)" }}
                 whileTap={{ scale: 0.95 }}
-                className="group relative bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white px-10 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 transition-all duration-300 shadow-xl overflow-hidden cursor-pointer"
+                className="group relative bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 transition-all duration-300 shadow-xl overflow-hidden cursor-pointer"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 <span className="relative z-10 flex items-center gap-3">

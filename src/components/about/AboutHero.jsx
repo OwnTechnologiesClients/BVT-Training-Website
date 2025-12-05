@@ -1,166 +1,184 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Play, Award, Users, Zap, Sparkles, ArrowRight, Ship } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Play, Award, Users, Zap } from "lucide-react";
+import styles from "./AboutHero.module.css";
 
 export default function AboutHero() {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-blue-950 via-blue-900 to-blue-950">
-      {/* Decorative Background Elements */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-500/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
-      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+    <div className={styles.section}>
+      {/* Pattern Overlay */}
+      <div className={styles.patternOverlay}></div>
 
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-        <div className="max-w-5xl mx-auto">
+      {/* CONTENT */}
+      <div className="relative z-20 container mx-auto px-6 pt-24 pb-20">
+
+        {/* LEFT SIDE CONTENT */}
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="max-w-2xl space-y-6"
+        >
           {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center gap-3 mb-6"
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="inline-flex items-center gap-2 bg-blue-100 px-4 py-1 rounded-full"
           >
             <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="relative"
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Sparkles className="w-6 h-6 text-blue-950" />
-              </div>
-              {isMounted && (
-                <motion.div
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                  className="absolute -top-1 -right-1"
-                >
-                  <Award className="w-5 h-5 text-yellow-400" />
-                </motion.div>
-              )}
+              <Zap className="w-4 h-4 text-blue-600" />
             </motion.div>
-            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-              <span className="text-sm font-semibold text-yellow-400 uppercase tracking-wide">About BVT Training</span>
-            </div>
+            <span className="text-sm font-semibold text-blue-600">
+              About BVT Training
+            </span>
           </motion.div>
 
-          {/* Main Heading */}
+          {/* Heading */}
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight"
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight"
           >
-            Naval Excellence{' '}
-            <span className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent">
+            Naval Excellence <br />
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="text-blue-600"
+            >
               Since 1973
-            </span>
+            </motion.span>
           </motion.h1>
 
           {/* Description */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-xl lg:text-2xl text-blue-100 mb-8 leading-relaxed max-w-3xl"
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-lg md:text-xl text-gray-600 leading-relaxed"
           >
-            Trusted by BVT forces worldwide for over 50 years, delivering comprehensive vocational training that transforms careers.
+            Trusted by BVT forces worldwide for over 50 years, delivering 
+            comprehensive vocational training that transforms careers.
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-4 mb-16"
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="flex flex-col sm:flex-row gap-4"
           >
-            <motion.button
-              onClick={() => {
-                const teamSection = document.getElementById('leadership-team');
-                if (teamSection) {
-                  teamSection.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
+            <motion.a
+              href="#leadership-team"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-8 py-4 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2"
+              className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-lg"
             >
               <Users className="w-5 h-5" />
               Meet Our Team
-              <ArrowRight className="w-5 h-5" />
-            </motion.button>
+            </motion.a>
+
             <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
+              whileHover={{ scale: 1.05, x: 5 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/20 hover:border-yellow-400 transition-all flex items-center justify-center gap-3"
+              className="flex items-center justify-center gap-3 text-blue-600 hover:text-blue-700 transition-colors"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
-                <Play className="w-5 h-5 ml-1 text-blue-950" />
-              </div>
-              <span>Watch Our Story</span>
+              <motion.div
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+                className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center"
+              >
+                <Play className="w-5 h-5 ml-1" />
+              </motion.div>
+              <span className="font-medium text-lg">Watch Our Story</span>
             </motion.button>
           </motion.div>
+        </motion.div>
 
-          {/* Stats Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-6"
-          >
-            {[
-              { icon: Award, number: "50+", label: "Years Excellence", color: "from-blue-500 to-blue-600" },
-              { icon: Users, number: "8.5K+", label: "Graduates", color: "from-green-500 to-green-600" },
-              { icon: Ship, number: "100+", label: "Courses", color: "from-purple-500 to-purple-600" }
-            ].map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
-                  whileHover={{ y: -8, scale: 1.05 }}
-                  className="group relative bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:border-yellow-400/50 hover:bg-white/15 transition-all"
-                >
-                  <div className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg`}>
-                    <Icon className="w-7 h-7 text-white" />
-                  </div>
-                  <div className="text-3xl font-bold text-white mb-2">{stat.number}</div>
-                  <div className="text-sm text-blue-100 font-medium">{stat.label}</div>
-                  
-                  {/* Decorative Corner */}
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+        {/* MISSION + STATS */}
+        <div className={styles.statsWrapper}>
+          <div className={styles.missionStatsContainer}>
+            {/* LEFT: Mission Content */}
+            <div className={styles.missionContent}>
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+                className="inline-flex items-center gap-2 bg-yellow-600 text-white px-6 py-3 rounded-full font-semibold mb-6"
+              >
+              <Zap className="w-5 h-5" />
+              Top Class Training
+              </motion.div>
+              <motion.h2
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.7 }}
+                className="text-3xl md:text-4xl font-bold text-white mb-4"
+              >
+              About Our Mission
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                className="text-blue-100 text-lg leading-relaxed"
+              >
+              We are committed to excellence in BVT vocational training, 
+              preparing professionals for successful maritime careers.
+              </motion.p>
+          </div>
+
+            {/* RIGHT: Stats */}
+          <div className={styles.statsGrid}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.9 }}
+                className={styles.statBox}
+              >
+              <div className={styles.statIconBlue}>
+                <Award className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-white">50+</div>
+              <div className="text-sm text-blue-100 font-medium">Years Excellence</div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.0 }}
+                className={styles.statBox}
+              >
+              <div className={styles.statIconGreen}>
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-white">8.5K+</div>
+              <div className="text-sm text-blue-100 font-medium">Graduates</div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.1 }}
+                className={styles.statBox}
+              >
+              <div className={styles.statIconPurple}>
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-white">100+</div>
+              <div className="text-sm text-blue-100 font-medium">Courses</div>
+              </motion.div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Floating Elements */}
-      {isMounted && (
-        <>
-          <motion.div
-            animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-20 right-10 w-20 h-20 bg-yellow-400/10 rounded-full blur-xl"
-          ></motion.div>
-          <motion.div
-            animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-20 left-10 w-24 h-24 bg-blue-400/10 rounded-full blur-xl"
-          ></motion.div>
-        </>
-      )}
-    </section>
+      </div>
+    </div>
   );
 }

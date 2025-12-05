@@ -193,6 +193,7 @@ export default function EventsPage() {
         selectedTimeframe={selectedTimeframe} 
         onTimeframeChange={handleTimeframeChange}
         events={filteredEvents}
+        hideMaxAttendees={!!selectedTheme}
       />
     </>
   );

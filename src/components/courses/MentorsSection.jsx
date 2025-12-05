@@ -103,7 +103,7 @@ export default function MentorsSection({ mentors: propMentors, showLocations = f
   ];
 
   return (
-    <section id="instructors" className="relative py-16 lg:py-20 bg-gradient-to-br from-white via-blue-50/30 to-white overflow-hidden">
+    <section id="instructors" className="relative py-10 lg:py-12 bg-gradient-to-br from-white via-blue-50/30 to-white overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
@@ -136,7 +136,7 @@ export default function MentorsSection({ mentors: propMentors, showLocations = f
                 </span>
               </div>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
               <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
                 Learn from Expert Instructors
               </span>

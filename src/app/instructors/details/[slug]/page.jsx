@@ -205,7 +205,7 @@ export default function InstructorDetailsPage({ params }) {
                   )}
 
                   {/* Instructor Title */}
-                  <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
                     {instructorName}
                   </h1>
 

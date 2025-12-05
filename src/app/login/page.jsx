@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, Shield, ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { showSuccess, showError } from "@/lib/utils/sweetalert";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,13 +38,20 @@ export default function LoginPage() {
       const result = await login(formData.email, formData.password);
       
       if (result.success) {
+        showSuccess('Login Successful!', 'Welcome back! Redirecting to courses...');
         // Redirect to courses page on successful login
+        setTimeout(() => {
         router.push("/courses");
+        }, 1000);
       } else {
-        setError(result.error || "Login failed. Please check your credentials.");
+        const errorMsg = result.error || "Login failed. Please check your credentials.";
+        setError(errorMsg);
+        showError('Login Failed', errorMsg);
       }
     } catch (err) {
-      setError(err.message || "An error occurred during login. Please try again.");
+      const errorMsg = err.message || "An error occurred during login. Please try again.";
+      setError(errorMsg);
+      showError('Login Error', errorMsg);
     } finally {
       setIsLoading(false);
     }

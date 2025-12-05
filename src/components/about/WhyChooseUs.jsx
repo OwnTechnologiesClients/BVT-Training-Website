@@ -60,7 +60,7 @@ const TESTIMONIALS = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="relative px-4 sm:px-6 lg:px-8 py-20 lg:py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
+    <section className="relative px-3 sm:px-4 lg:px-6 py-12 lg:py-16 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
@@ -72,7 +72,7 @@ export default function WhyChooseUs() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
+          className="mb-10 text-center"
         >
           <div className="flex items-center justify-center gap-3 mb-6">
             <motion.div
@@ -90,7 +90,7 @@ export default function WhyChooseUs() {
               <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">Why Choose Us</span>
             </div>
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
             <span className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent">
               The BVT Training Advantage
             </span>
@@ -103,7 +103,7 @@ export default function WhyChooseUs() {
         </motion.div>
 
         {/* Reasons Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 mb-10">
           {REASONS.map((reason, index) => {
             const Icon = reason.icon;
             return (
@@ -229,7 +229,7 @@ export default function WhyChooseUs() {
             </div>
 
             <div className="relative z-10">
-              <h3 className="text-3xl lg:text-4xl font-bold mb-4">Ready to Start Your Naval Career Journey?</h3>
+              <h3 className="text-xl lg:text-2xl font-bold mb-3">Ready to Start Your Naval Career Journey?</h3>
               <p className="text-blue-100 mb-6 max-w-2xl mx-auto text-base lg:text-lg leading-relaxed">
                 Join thousands of successful graduates who have advanced their careers through BVT Training's 
                 world-class programs. Your future in BVT excellence starts here.

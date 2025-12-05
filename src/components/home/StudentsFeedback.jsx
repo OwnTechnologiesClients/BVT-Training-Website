@@ -36,7 +36,7 @@ const FEEDBACKS = [
 
 export default function StudentsFeedback() {
   return (
-    <section className="relative py-20 bg-gradient-to-b from-white via-blue-50/50 to-white overflow-hidden">
+    <section className="relative py-12 bg-gradient-to-b from-white via-blue-50/50 to-white overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl"></div>
@@ -44,33 +44,33 @@ export default function StudentsFeedback() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-100/10 to-yellow-100/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
+          className="mb-10 text-center"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-yellow-400/20 backdrop-blur-sm px-5 py-2.5 rounded-full border-2 border-yellow-500/30 mb-6 shadow-lg"
+            className="inline-flex items-center gap-1.5 bg-gradient-to-r from-yellow-500/20 to-yellow-400/20 backdrop-blur-sm px-3.5 py-1.5 rounded-full border-2 border-yellow-500/30 mb-4 shadow-lg"
           >
-            <ThumbsUp className="w-5 h-5 text-yellow-600" />
-            <span className="text-sm font-bold text-yellow-700 uppercase tracking-wider">
+            <ThumbsUp className="w-4 h-4 text-yellow-600" />
+            <span className="text-xs font-bold text-yellow-700 uppercase tracking-wider">
               Success Stories
             </span>
-            <Sparkles className="w-5 h-5 text-yellow-600 animate-pulse" />
+            <Sparkles className="w-4 h-4 text-yellow-600 animate-pulse" />
           </motion.div>
           
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-blue-950 via-blue-800 to-blue-950 bg-clip-text text-transparent mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-blue-950 via-blue-800 to-blue-950 bg-clip-text text-transparent mb-4">
             What Our Trainees Are Saying
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 lg:w-6/12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-sm md:text-base text-gray-600 lg:w-6/12 max-w-3xl mx-auto leading-relaxed">
             Our mission is to empower BVT personnel with the knowledge and skills
             they need to excel in their careers. Hear from our graduates about their
             training experience.
@@ -78,7 +78,7 @@ export default function StudentsFeedback() {
         </motion.div>
 
         {/* Testimonials Grid */}
-        <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-16">
+        <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-10">
           {FEEDBACKS.map((feedback, key) => (
             <motion.div
               key={key}
@@ -252,7 +252,7 @@ export default function StudentsFeedback() {
                 </span>
               </motion.div>
               
-              <h3 className="text-3xl lg:text-4xl font-extrabold text-white mb-3">
+              <h3 className="text-xl lg:text-2xl font-extrabold text-white mb-2">
                 Join 8,500+ Successful Graduates
               </h3>
               <p className="text-lg lg:text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
@@ -263,7 +263,7 @@ export default function StudentsFeedback() {
                 <motion.button
                   whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(234, 179, 8, 0.4)" }}
                   whileTap={{ scale: 0.95 }}
-                  className="group relative bg-gradient-to-r from-yellow-500 to-yellow-400 text-blue-950 px-10 py-4 rounded-xl font-bold text-lg hover:from-yellow-400 hover:to-yellow-300 transition-all duration-300 shadow-xl overflow-hidden cursor-pointer"
+                  className="group relative bg-gradient-to-r from-yellow-500 to-yellow-400 text-blue-950 px-6 py-2.5 rounded-lg font-bold text-sm hover:from-yellow-400 hover:to-yellow-300 transition-all duration-300 shadow-xl overflow-hidden cursor-pointer"
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                   <span className="relative z-10 flex items-center gap-3">
