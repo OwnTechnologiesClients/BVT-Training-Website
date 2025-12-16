@@ -61,7 +61,7 @@ export default function Hero() {
           muted
           playsInline
         >
-          <source src="/200993-914924518.mp4" type="video/mp4" />
+          <source src="/bvt-video.mp4" type="video/mp4" />
           <source src="/images/navy-ship.mp4" type="video/mp4" />
           <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
         </video>
