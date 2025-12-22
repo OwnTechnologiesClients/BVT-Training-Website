@@ -27,12 +27,23 @@ export const getTestById = async (testId) => {
  * Submit test answers
  * @param {string} testId - Test ID
  * @param {Array} answers - Array of { questionId, answer }
+ * @param {Object} options - Optional submission options
+ * @param {Array} options.violations - Array of { type, description, timestamp }
+ * @param {boolean} options.autoSubmitted - Whether test was auto-submitted
+ * @param {string} options.autoSubmitReason - Reason for auto-submit
  * @returns {Promise} API response with test results
  */
-export const submitTest = async (testId, answers) => {
+export const submitTest = async (testId, answers, options = {}) => {
+  const { violations, autoSubmitted, autoSubmitReason } = options;
+  
   return await apiRequest(`/tests/submit/${testId}`, {
     method: 'POST',
-    body: JSON.stringify({ answers }),
+    body: JSON.stringify({ 
+      answers,
+      violations,
+      autoSubmitted,
+      autoSubmitReason
+    }),
   });
 };
 
@@ -54,6 +65,23 @@ export const getCourseTestAttempts = async (courseId) => {
  */
 export const getTestResults = async (testId) => {
   return await apiRequest(`/tests/results/${testId}`, {
+    method: 'GET',
+  });
+};
+
+/**
+ * Get required tests for a lesson/chapter
+ * @param {string} courseId - Course ID
+ * @param {string} chapterId - Chapter ID (optional)
+ * @param {string} lessonId - Lesson ID (optional)
+ * @returns {Promise} API response with required tests
+ */
+export const getRequiredTests = async (courseId, chapterId = null, lessonId = null) => {
+  const params = new URLSearchParams({ courseId });
+  if (chapterId) params.append('chapterId', chapterId);
+  if (lessonId) params.append('lessonId', lessonId);
+  
+  return await apiRequest(`/tests/required?${params.toString()}`, {
     method: 'GET',
   });
 };

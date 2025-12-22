@@ -2,12 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { PlayCircle, CheckCircle, Clock, BookOpen, ArrowRight } from "lucide-react";
+import { PlayCircle, CheckCircle, Clock, BookOpen, ArrowRight, MapPin } from "lucide-react";
 import { getImageUrl } from "@/lib/utils/imageUtils";
 
 export default function CourseCard({ enrollment, onRefresh }) {
   const router = useRouter();
   const course = enrollment.courseId;
+  
+  // Check if course is offline - offline courses don't have learning pages
+  const isOfflineCourse = course?.isOnline === false;
   
   // Use pre-calculated progress if available, otherwise calculate
   let progress = enrollment.calculatedProgress;
@@ -61,6 +64,15 @@ export default function CourseCard({ enrollment, onRefresh }) {
   if (!course) return null;
 
   const getStatusBadge = () => {
+    // For offline courses, show "Offline Workshop" badge
+    if (isOfflineCourse) {
+      return (
+        <span className="px-2 py-1 bg-amber-100 text-amber-800 text-xs font-medium rounded">
+          Offline Workshop
+        </span>
+      );
+    }
+    
     // If progress is 100%, always show "Completed" regardless of status
     if (progress >= 100) {
       return (
@@ -148,19 +160,29 @@ export default function CourseCard({ enrollment, onRefresh }) {
           {course.description}
         </p>
 
-        {/* Progress */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-medium text-gray-700">Progress</span>
-            <span className="text-xs font-bold text-blue-600">{progress}%</span>
+        {/* Progress - only show for online courses */}
+        {!isOfflineCourse && (
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium text-gray-700">Progress</span>
+              <span className="text-xs font-bold text-blue-600">{progress}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            ></div>
+        )}
+        
+        {/* Location info for offline courses */}
+        {isOfflineCourse && course.location && (
+          <div className="mb-4 flex items-center gap-2 text-sm text-amber-700 bg-amber-50 px-3 py-2 rounded-lg">
+            <MapPin className="w-4 h-4 flex-shrink-0" />
+            <span>{course.location}</span>
           </div>
-        </div>
+        )}
 
         {/* Meta Info */}
         <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
@@ -179,7 +201,16 @@ export default function CourseCard({ enrollment, onRefresh }) {
 
         {/* Actions */}
         <div className="flex gap-2">
-          {status === "active" && progress < 100 ? (
+          {isOfflineCourse ? (
+            // Offline course - show "View Details" instead of learning buttons
+            <Link
+              href={`/courses/${course.slug}`}
+              className="flex-1 bg-amber-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-amber-700 transition-colors flex items-center justify-center gap-2"
+            >
+              <MapPin className="w-4 h-4" />
+              View Details
+            </Link>
+          ) : status === "active" && progress < 100 ? (
             <button
               onClick={handleContinue}
               className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
@@ -187,7 +218,7 @@ export default function CourseCard({ enrollment, onRefresh }) {
               <PlayCircle className="w-4 h-4" />
               Continue
             </button>
-          ) : status === "completed" ? (
+          ) : status === "completed" || progress >= 100 ? (
             <Link
               href={`/courses/${course.slug}`}
               className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
@@ -204,12 +235,14 @@ export default function CourseCard({ enrollment, onRefresh }) {
               Start Course
             </button>
           )}
-          <Link
-            href={`/courses/${course.slug}`}
-            className="px-4 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
-          >
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          {!isOfflineCourse && (
+            <Link
+              href={`/courses/${course.slug}`}
+              className="px-4 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
+            >
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          )}
         </div>
       </div>
     </div>

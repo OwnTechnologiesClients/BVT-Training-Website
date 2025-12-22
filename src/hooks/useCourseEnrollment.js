@@ -61,12 +61,18 @@ export const useCourseEnrollment = (courseId) => {
     fetchEnrollmentStatus();
   }, [courseId, isAuthenticated, authLoading]);
 
+  // Function to update enrollment state directly (without API call)
+  const updateEnrollment = (newEnrollment) => {
+    setEnrollment(newEnrollment);
+  };
+
   return {
     isEnrolled,
     enrollment,
     loading: loading || authLoading,
     error,
-    refetch: fetchEnrollmentStatus
+    refetch: fetchEnrollmentStatus,
+    updateEnrollment
   };
 };
 

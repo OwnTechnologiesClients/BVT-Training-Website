@@ -91,6 +91,26 @@ export const getEventById = async (eventId) => {
 };
 
 /**
+ * Register for an event
+ * @param {string} eventId - Event ID
+ */
+export const registerForEvent = async (eventId) => {
+  return await apiRequest('/events/register', {
+    method: 'POST',
+    body: JSON.stringify({ eventId }),
+  });
+};
+
+/**
+ * Get student's registered events
+ */
+export const getMyRegisteredEvents = async () => {
+  return await apiRequest('/events/my-registered', {
+    method: 'GET',
+  });
+};
+
+/**
  * Get event by slug
  * @param {string} slug - Event slug
  */

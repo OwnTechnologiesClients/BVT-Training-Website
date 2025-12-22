@@ -62,7 +62,13 @@ export default function ContinueLearning({ enrollment }) {
     }
   };
 
+  // Check if course is offline - offline courses don't have learning pages
+  const isOfflineCourse = course?.isOnline === false;
+
   if (!course) return null;
+  
+  // Don't show "Continue Learning" for offline courses
+  if (isOfflineCourse) return null;
 
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">

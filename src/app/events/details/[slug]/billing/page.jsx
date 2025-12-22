@@ -3,66 +3,66 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { getCourseBySlug } from "@/lib/api/courses";
-import { enrollInCourse } from "@/lib/api/enrollment";
+import { getEventBySlug } from "@/lib/api/events";
+import { registerForEvent } from "@/lib/api/events";
 import BillingPage from "@/components/billing/BillingPage";
 import { Loader2 } from "lucide-react";
 import { showError } from "@/lib/utils/sweetalert";
 
-export default function CourseBillingPage({ params }) {
+export default function EventBillingPage({ params }) {
   const router = useRouter();
   const { student, isAuthenticated } = useAuth();
   const { slug } = use(params);
-  const [course, setCourse] = useState(null);
+  const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push(`/login?redirect=/courses/${slug}/billing`);
+      router.push(`/login?redirect=/events/details/${slug}/billing`);
       return;
     }
 
-    const fetchCourse = async () => {
+    const fetchEvent = async () => {
       try {
         setLoading(true);
-        const response = await getCourseBySlug(slug);
+        const response = await getEventBySlug(slug);
         if (response.success && response.data) {
-          setCourse(response.data);
+          setEvent(response.data);
         } else {
-          showError('Error', 'Course not found');
-          router.push('/courses');
+          showError('Error', 'Event not found');
+          router.push('/events');
         }
       } catch (error) {
-        console.error('Error fetching course:', error);
-        showError('Error', 'Failed to load course details');
-        router.push('/courses');
+        console.error('Error fetching event:', error);
+        showError('Error', 'Failed to load event details');
+        router.push('/events');
       } finally {
         setLoading(false);
       }
     };
 
     if (slug) {
-      fetchCourse();
+      fetchEvent();
     }
   }, [slug, isAuthenticated, router]);
 
-  const handlePurchaseComplete = async () => {
+  const handleRegistrationComplete = async () => {
     try {
-      if (!course?._id) {
-        throw new Error('Course ID not found');
+      if (!event?._id) {
+        throw new Error('Event ID not found');
       }
 
-      // Enroll the student in the course
-      const response = await enrollInCourse(course._id);
+      // Register the student for the event
+      const response = await registerForEvent(event._id);
       
       if (response.success) {
-        // Redirect to course learning page
-        router.push(`/courses/${slug}/learn`);
+        // Redirect to dashboard
+        router.push('/dashboard');
       } else {
-        throw new Error(response.message || 'Failed to enroll in course');
+        throw new Error(response.message || 'Failed to register for event');
       }
     } catch (error) {
-      console.error('Error enrolling in course:', error);
+      console.error('Error registering for event:', error);
       throw error; // Re-throw to let BillingPage handle the error display
     }
   };
@@ -75,16 +75,17 @@ export default function CourseBillingPage({ params }) {
     );
   }
 
-  if (!course) {
+  if (!event) {
     return null; // Error already handled in useEffect
   }
 
   return (
     <BillingPage
-      type="course"
-      item={course}
-      onComplete={handlePurchaseComplete}
-      onCancel={() => router.push(`/courses/${slug}`)}
+      type="event"
+      item={event}
+      onComplete={handleRegistrationComplete}
+      onCancel={() => router.push(`/events/details/${slug}`)}
     />
   );
 }
+

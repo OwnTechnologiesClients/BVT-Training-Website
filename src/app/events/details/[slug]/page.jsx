@@ -756,6 +756,7 @@ export default function EventDetailsPage({ params }) {
                       {/* Register Button */}
                       {isUpcoming && registrationOpen && !isFull ? (
                         <button 
+                          onClick={() => router.push(`/events/details/${eventSlug}/billing`)}
                           className="w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors mb-6 shadow-md"
                         >
                           Register Now

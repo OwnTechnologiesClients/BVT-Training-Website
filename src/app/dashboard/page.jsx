@@ -10,9 +10,10 @@ import MyCourses from "@/components/dashboard/MyCourses";
 import ContinueLearning from "@/components/dashboard/ContinueLearning";
 import RecentActivity from "@/components/dashboard/RecentActivity";
 import UpcomingTests from "@/components/dashboard/UpcomingTests";
+import MyEvents from "@/components/dashboard/MyEvents";
 import { useQuery } from "@/context/QueryContext";
 import { StudentQueryModal } from "@/components/queries";
-import { MessageCircle, Clock, BookOpen, Eye } from "lucide-react";
+import { MessageCircle, Clock, BookOpen, Eye, GraduationCap, Calendar, FileText } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function DashboardPage() {
   const [error, setError] = useState(null);
   const [selectedQueryId, setSelectedQueryId] = useState(null);
   const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("courses");
   
   // Track if we've already fetched to prevent unnecessary re-fetches
   const hasFetchedRef = useRef(false);
@@ -261,9 +263,16 @@ export default function DashboardPage() {
       : 0,
   };
 
-  // Get last accessed course - show most recently accessed, prioritizing active courses
+  // Get last accessed ONLINE course - show most recently accessed, prioritizing active courses
+  // Offline courses don't have learning pages, so exclude them from "Continue Learning"
   const lastAccessedCourse = enrollments
-    .filter(e => e.status === 'active' || e.status === 'pending' || (e.status === 'completed' && e.lastAccessedAt))
+    .filter(e => {
+      // Must be active/pending or completed with recent access
+      const hasValidStatus = e.status === 'active' || e.status === 'pending' || (e.status === 'completed' && e.lastAccessedAt);
+      // Must be an online course (has learning content)
+      const isOnlineCourse = e.courseId?.isOnline !== false;
+      return hasValidStatus && isOnlineCourse;
+    })
     .sort((a, b) => {
       const dateA = a.lastAccessedAt ? new Date(a.lastAccessedAt) : new Date(a.enrolledAt || 0);
       const dateB = b.lastAccessedAt ? new Date(b.lastAccessedAt) : new Date(b.enrolledAt || 0);
@@ -272,6 +281,28 @@ export default function DashboardPage() {
       if (b.status === 'active' && a.status !== 'active') return 1;
       return dateB - dateA;
     })[0];
+
+  // Tab definitions
+  const tabs = [
+    {
+      id: "courses",
+      label: "My Courses",
+      icon: <GraduationCap className="w-5 h-5" />,
+      count: enrollments.length
+    },
+    {
+      id: "tests",
+      label: "My Tests",
+      icon: <FileText className="w-5 h-5" />,
+      count: null // Tests count would come from enrollments
+    },
+    {
+      id: "events",
+      label: "My Events",
+      icon: <Calendar className="w-5 h-5" />,
+      count: null // Events count would come from MyEvents component
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -297,21 +328,54 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Statistics */}
+        {/* Statistics - Show on all tabs */}
         <DashboardStats stats={stats} />
 
+        {/* Tabs Navigation */}
+        <div className="mt-8 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="flex border-b border-gray-200">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition-all duration-200 relative ${
+                  activeTab === tab.id
+                    ? "text-blue-900 bg-blue-50"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+                {tab.count !== null && (
+                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${
+                    activeTab === tab.id
+                      ? "bg-blue-200 text-blue-900"
+                      : "bg-gray-200 text-gray-600"
+                  }`}>
+                    {tab.count}
+                  </span>
+                )}
+                {activeTab === tab.id && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-900"></div>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab Content */}
+          <div className="p-6">
+            {/* Courses Tab */}
+            {activeTab === "courses" && (
+              <div className="space-y-8">
         {/* Continue Learning */}
         {lastAccessedCourse && (
-          <div className="mt-8">
             <ContinueLearning enrollment={{
               ...lastAccessedCourse,
               calculatedProgress: calculateProgress(lastAccessedCourse)
             }} />
-          </div>
         )}
 
         {/* My Courses */}
-        <div className="mt-8">
           <MyCourses 
             enrollments={enrollments.map(e => ({
               ...e,
@@ -320,20 +384,11 @@ export default function DashboardPage() {
             loading={loading}
             onRefresh={fetchEnrollments}
           />
-        </div>
-
-        {/* Upcoming Tests */}
-        <div className="mt-8">
-          <UpcomingTests enrollments={enrollments} />
-        </div>
 
         {/* Recent Activity */}
-        <div className="mt-8">
           <RecentActivity enrollments={enrollments} />
-        </div>
 
         {/* Queries Section */}
-        <div className="mt-8">
           <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -464,6 +519,24 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+            )}
+
+            {/* Tests Tab */}
+            {activeTab === "tests" && (
+              <div className="space-y-8">
+                <UpcomingTests enrollments={enrollments} />
+              </div>
+            )}
+
+            {/* Events Tab */}
+            {activeTab === "events" && (
+              <div className="space-y-8">
+                <MyEvents />
+              </div>
+            )}
+          </div>
+        </div>
+
       </div>
 
       {/* Query Modal */}

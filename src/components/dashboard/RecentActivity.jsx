@@ -71,7 +71,7 @@ export default function RecentActivity({ enrollments }) {
       return acts;
     })
     .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 10); // Show last 10 activities
+    .slice(0, 20); // Show last 20 activities (scrollable)
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -103,28 +103,32 @@ export default function RecentActivity({ enrollments }) {
 
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <Clock className="w-5 h-5" />
-        Recent Activity
-      </h2>
-      <div className="space-y-4">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <Clock className="w-5 h-5" />
+          Recent Activity
+        </h2>
+        <span className="text-xs text-gray-500">{activities.length} activities</span>
+      </div>
+      {/* Scrollable container with max height */}
+      <div className="max-h-[400px] overflow-y-auto space-y-3 pr-1 scrollbar-thin">
         {activities.map((activity, index) => {
           const Icon = activity.icon;
           return (
             <Link
               key={index}
               href={activity.link}
-              className="flex items-start gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors block"
             >
               <div
                 className={`${activity.bgColor} p-2 rounded-lg flex-shrink-0`}
               >
-                <Icon className={`w-5 h-5 ${activity.color}`} />
+                <Icon className={`w-4 h-4 ${activity.color}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900">{activity.title}</p>
+                <p className="font-medium text-gray-900 text-sm">{activity.title}</p>
                 {activity.score !== undefined && (
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-xs text-gray-600 mt-0.5">
                     Score: {activity.score}%{" "}
                     {activity.passed ? (
                       <span className="text-green-600">(Passed)</span>
@@ -133,7 +137,7 @@ export default function RecentActivity({ enrollments }) {
                     )}
                   </p>
                 )}
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-0.5">
                   {formatDate(activity.date)}
                 </p>
               </div>

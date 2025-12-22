@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCourseEnrollment } from "@/hooks/useCourseEnrollment";
 import { getCourseBySlug, getCourseStructure } from "@/lib/api/courses";
 import { markLessonComplete } from "@/lib/api/enrollment";
+import { getRequiredTests } from "@/lib/api/test";
 
 
 export default function CourseLearningPage({ params }) {
@@ -30,10 +31,12 @@ export default function CourseLearningPage({ params }) {
   const [timerCompleted, setTimerCompleted] = useState(false); // Whether timer has completed for current lesson
   const timerIntervalRef = useRef(null); // Reference to timer interval
   const locallyCompletedLessonsRef = useRef(new Set()); // Track lessons completed locally to prevent flickering
+  const [requiredTests, setRequiredTests] = useState([]); // Required tests for current lesson/chapter
+  const [loadingTests, setLoadingTests] = useState(false); // Loading state for tests
 
   // Get enrollment status - only check when courseData is available
   const courseId = courseData?._id || courseData?.id;
-  const { isEnrolled, enrollment, loading: enrollmentLoading } = useCourseEnrollment(
+  const { isEnrolled, enrollment, loading: enrollmentLoading, updateEnrollment } = useCourseEnrollment(
     isAuthenticated && courseId ? courseId : null
   );
 
@@ -84,6 +87,11 @@ export default function CourseLearningPage({ params }) {
     
     return ids;
   }, [courseStructure, enrollment?.lessonsCompleted]);
+
+  // Convert completedLessonIds Set to a sorted array string for stable dependency checking
+  const completedLessonIdsString = useMemo(() => {
+    return Array.from(completedLessonIds).sort().join(',');
+  }, [completedLessonIds]);
 
   // Function to mark lesson as completed
   const handleMarkLessonComplete = async (lessonId) => {
@@ -165,22 +173,22 @@ export default function CourseLearningPage({ params }) {
               }
               
               // Recalculate locks
-              if (moduleIndex === 0 && lessonIndex === 0) {
+              // All lessons in the first chapter are always unlocked
+              if (moduleIndex === 0) {
                 lessonCopy.isLocked = false;
-              } else if (isCurrentModule) {
-                lessonCopy.isLocked = false;
-              } else if (lessonIndex > 0) {
-                const previousLesson = module.lessons[lessonIndex - 1];
-                const previousLessonId = (previousLesson._id || previousLesson.id)?.toString();
-                lessonCopy.isLocked = !currentCompletedIds.has(previousLessonId);
-              } else if (lessonIndex === 0 && moduleIndex > 0) {
+              } else if (moduleIndex > 0) {
+                // For other chapters, check if the last lesson of previous chapter is completed
                 const previousModule = prev.modules[moduleIndex - 1];
-                const allPreviousLessonsCompleted = previousModule.lessons.every(les => {
-                  const lesId = (les._id || les.id)?.toString();
-                  return currentCompletedIds.has(lesId);
-                });
-                lessonCopy.isLocked = !allPreviousLessonsCompleted;
+                // Check if the last lesson of previous module is completed
+                if (previousModule.lessons && previousModule.lessons.length > 0) {
+                  const lastLesson = previousModule.lessons[previousModule.lessons.length - 1];
+                  const lastLessonId = (lastLesson._id || lastLesson.id)?.toString();
+                  lessonCopy.isLocked = !currentCompletedIds.has(lastLessonId);
               } else {
+                  lessonCopy.isLocked = true;
+                }
+              } else {
+                // All lessons in the same chapter are unlocked once previous chapter's last lesson is completed
                 lessonCopy.isLocked = false;
               }
               
@@ -199,16 +207,22 @@ export default function CourseLearningPage({ params }) {
         };
       });
       
-      // Then call API (don't wait for response - UI already updated)
-      markLessonComplete(enrollment._id, lessonIdStr).then(response => {
+      // Call API and update enrollment state with response data (no page refresh or extra API call)
+      try {
+        const response = await markLessonComplete(enrollment._id, lessonIdStr);
         if (response.success) {
           console.log('✅ Lesson marked as complete successfully');
+          // Update enrollment state directly with the response data
+          if (response.data?.enrollment) {
+            updateEnrollment(response.data.enrollment);
+            console.log('✅ Enrollment state updated');
+          }
         } else {
           console.error('❌ Failed to mark lesson complete on server');
         }
-      }).catch(error => {
-        console.error('❌ Error marking lesson complete:', error);
-      });
+      } catch (apiError) {
+        console.error('❌ Error marking lesson complete:', apiError);
+      }
     } catch (error) {
       console.error('❌ Error in handleMarkLessonComplete:', error);
       // Don't show error to user - they can try again
@@ -217,33 +231,26 @@ export default function CourseLearningPage({ params }) {
 
   // Function to calculate if lesson is locked
   const isLessonLocked = (lesson, moduleIndex, lessonIndex, allModules) => {
-    // First lesson of first module is never locked
-    if (moduleIndex === 0 && lessonIndex === 0) {
+    // All lessons in the first chapter are always unlocked
+    if (moduleIndex === 0) {
       return false;
     }
 
-    // If previous lesson in same module exists and is not completed, lock this lesson
-    if (lessonIndex > 0) {
-      const previousLesson = allModules[moduleIndex].lessons[lessonIndex - 1];
-      const previousLessonId = (previousLesson._id || previousLesson.id)?.toString();
-      if (!completedLessonIds.has(previousLessonId)) {
-        return true;
-      }
-    }
-
-    // If this is first lesson of a module, check if previous module is completed
-    if (lessonIndex === 0 && moduleIndex > 0) {
+    // For other chapters, check if the last lesson of previous chapter is completed
+    // All lessons in the same chapter are accessible, but other chapters require previous chapter's last lesson
+    if (moduleIndex > 0) {
       const previousModule = allModules[moduleIndex - 1];
-      // Check if all lessons in previous module are completed
-      const allPreviousLessonsCompleted = previousModule.lessons.every(lesson => {
-        const lessonId = (lesson._id || lesson.id)?.toString();
-        return completedLessonIds.has(lessonId);
-      });
-      if (!allPreviousLessonsCompleted) {
-        return true;
+      // Check if the last lesson of previous module is completed
+      if (previousModule.lessons && previousModule.lessons.length > 0) {
+        const lastLesson = previousModule.lessons[previousModule.lessons.length - 1];
+        const lastLessonId = (lastLesson._id || lastLesson.id)?.toString();
+        if (!completedLessonIds.has(lastLessonId)) {
+          return true; // Lock all lessons in this chapter if last lesson of previous chapter not completed
+        }
       }
     }
 
+    // All lessons in the same chapter are unlocked once previous chapter's last lesson is completed
     return false;
   };
 
@@ -374,9 +381,9 @@ export default function CourseLearningPage({ params }) {
 
                       // Check for content in the new structure
                       if (lesson.content) {
-                        // Video content
-                        if (lesson.content.video && lesson.content.video.filePath) {
-                          videoSrc = lesson.content.video.filePath;
+                        // Video content - pass entire video object to support YouTube
+                        if (lesson.content.video) {
+                          videoSrc = lesson.content.video; // Pass the entire video object
                         }
                         
                         // Document content for text - extract HTML content directly
@@ -487,42 +494,28 @@ export default function CourseLearningPage({ params }) {
                 const isCurrentModule = moduleIndex === currentModuleIndex;
                 
                 module.lessons.forEach((lesson, lessonIndex) => {
-                  // First lesson of first module is never locked
-                  if (moduleIndex === 0 && lessonIndex === 0) {
+                  // All lessons in the first chapter are always unlocked
+                  if (moduleIndex === 0) {
                     lesson.isLocked = false;
                     return;
                   }
 
-                  // Don't lock lessons in the current chapter
-                  if (isCurrentModule) {
-                    lesson.isLocked = false;
-                    return;
-                  }
-
-                  // If previous lesson in same module exists and is not completed, lock this lesson
-                  if (lessonIndex > 0) {
-                    const previousLesson = module.lessons[lessonIndex - 1];
-                    const previousLessonId = (previousLesson._id || previousLesson.id)?.toString();
-                    if (!currentCompletedIds.has(previousLessonId)) {
-                      lesson.isLocked = true;
-                      return;
-                    }
-                  }
-
-                  // If this is first lesson of a module, check if previous module is completed
-                  if (lessonIndex === 0 && moduleIndex > 0) {
+                  // For other chapters, check if the last lesson of previous chapter is completed
+                  // All lessons in the same chapter are accessible, but other chapters require previous chapter's last lesson
+                  if (moduleIndex > 0) {
                     const previousModule = transformedModules[moduleIndex - 1];
-                    // Check if all lessons in previous module are completed
-                    const allPreviousLessonsCompleted = previousModule.lessons.every(les => {
-                      const lesId = (les._id || les.id)?.toString();
-                      return currentCompletedIds.has(lesId);
-                    });
-                    if (!allPreviousLessonsCompleted) {
-                      lesson.isLocked = true;
-                      return;
+                    // Check if the last lesson of previous module is completed
+                    if (previousModule.lessons && previousModule.lessons.length > 0) {
+                      const lastLesson = previousModule.lessons[previousModule.lessons.length - 1];
+                      const lastLessonId = (lastLesson._id || lastLesson.id)?.toString();
+                      if (!currentCompletedIds.has(lastLessonId)) {
+                        lesson.isLocked = true; // Lock all lessons in this chapter if last lesson of previous chapter not completed
+                    return;
+                  }
                     }
                   }
 
+                  // All lessons in the same chapter are unlocked once previous chapter's last lesson is completed
                   lesson.isLocked = false;
                 });
               });
@@ -652,11 +645,77 @@ export default function CourseLearningPage({ params }) {
     }
   };
 
+  // Fetch required tests when lesson changes
+  useEffect(() => {
+    const fetchRequiredTests = async () => {
+      if (!courseId || !currentLessonId || !isEnrolled || !courseStructure?.modules) {
+        setRequiredTests([]);
+        return;
+      }
+
+      try {
+        setLoadingTests(true);
+        
+        // Find current lesson from courseStructure instead of allLessons to avoid dependency issues
+        let currentLesson = null;
+        let chapterId = null;
+        
+        for (const module of courseStructure.modules) {
+          const foundLesson = module.lessons?.find(l => {
+            const lessonId = (l._id || l.id)?.toString();
+            const currentId = currentLessonId?.toString();
+            return lessonId === currentId;
+          });
+          
+          if (foundLesson) {
+            currentLesson = foundLesson;
+            chapterId = (module._id || module.id)?.toString();
+            break;
+          }
+        }
+
+        if (!currentLesson) {
+          setRequiredTests([]);
+          return;
+        }
+
+        const lessonId = (currentLesson._id || currentLesson.id)?.toString();
+
+        const response = await getRequiredTests(courseId, chapterId, lessonId);
+        if (response.success && response.data) {
+          setRequiredTests(response.data || []);
+        } else {
+          setRequiredTests([]);
+        }
+      } catch (error) {
+        console.error('Error fetching required tests:', error);
+        setRequiredTests([]);
+      } finally {
+        setLoadingTests(false);
+      }
+    };
+
+    fetchRequiredTests();
+  }, [courseId, currentLessonId, isEnrolled, courseStructure]);
+
+  // Check if all required tests are completed
+  const allRequiredTestsCompleted = useMemo(() => {
+    if (requiredTests.length === 0) return true;
+    return requiredTests.every(test => test.isCompleted);
+  }, [requiredTests]);
+
+
   // Navigation functions
   const goToNextLesson = async () => {
     // Only proceed if timer is completed
     if (!timerCompleted) {
       console.log('⏸️ Timer not completed yet, cannot proceed');
+      return;
+    }
+
+    // Check if all required tests are completed
+    if (!allRequiredTestsCompleted) {
+      console.log('⏸️ Required tests not completed, cannot proceed');
       return;
     }
 
@@ -767,22 +826,22 @@ export default function CourseLearningPage({ params }) {
             const lessonCopy = { ...lesson };
             
             // Recalculate locks
-            if (moduleIndex === 0 && lessonIndex === 0) {
+            // All lessons in the first chapter are always unlocked
+            if (moduleIndex === 0) {
               lessonCopy.isLocked = false;
-            } else if (isCurrentModule) {
-              lessonCopy.isLocked = false; // Lessons in current chapter are not locked
-            } else if (lessonIndex > 0) {
-              const previousLesson = module.lessons[lessonIndex - 1];
-              const previousLessonId = (previousLesson._id || previousLesson.id)?.toString();
-              lessonCopy.isLocked = !currentCompletedIds.has(previousLessonId);
-            } else if (lessonIndex === 0 && moduleIndex > 0) {
+            } else if (moduleIndex > 0) {
+              // For other chapters, check if the last lesson of previous chapter is completed
               const previousModule = prev.modules[moduleIndex - 1];
-              const allPreviousLessonsCompleted = previousModule.lessons.every(les => {
-                const lesId = (les._id || les.id)?.toString();
-                return currentCompletedIds.has(lesId);
-              });
-              lessonCopy.isLocked = !allPreviousLessonsCompleted;
+              // Check if the last lesson of previous module is completed
+              if (previousModule.lessons && previousModule.lessons.length > 0) {
+                const lastLesson = previousModule.lessons[previousModule.lessons.length - 1];
+                const lastLessonId = (lastLesson._id || lastLesson.id)?.toString();
+                lessonCopy.isLocked = !currentCompletedIds.has(lastLessonId);
             } else {
+                lessonCopy.isLocked = true;
+              }
+            } else {
+              // All lessons in the same chapter are unlocked once previous chapter's last lesson is completed
               lessonCopy.isLocked = false;
             }
             
@@ -839,15 +898,20 @@ export default function CourseLearningPage({ params }) {
       const lessonIdStr = currentLessonId.toString();
       
       // Check if timer was already completed for this lesson
-      if (isTimerCompleted(lessonIdStr)) {
-        // Timer already completed - don't start it again
+      const timerWasCompleted = isTimerCompleted(lessonIdStr);
+      
+      // Check if lesson itself is already completed (use completedLessonIds from current render)
+      const lessonIsCompleted = completedLessonIds.has(lessonIdStr);
+      
+      if (timerWasCompleted || lessonIsCompleted) {
+        // Timer already completed or lesson completed - skip timer
+        console.log('✅ Timer/lesson already completed for lesson:', lessonIdStr);
         setLessonTimer(60);
         setTimerCompleted(true);
-        console.log('✅ Timer already completed for lesson:', lessonIdStr);
-        return;
+        return; // Don't start timer
       }
 
-      // Start new timer
+      // Start fresh timer for this lesson
       console.log('⏱️ Starting timer for lesson:', lessonIdStr);
       setLessonTimer(0);
       setTimerCompleted(false);
@@ -881,7 +945,7 @@ export default function CourseLearningPage({ params }) {
         timerIntervalRef.current = null;
       }
     };
-  }, [currentLessonId, courseId]);
+  }, [currentLessonId, courseId, completedLessonIdsString]); // Use stable string representation instead of Set
 
   // Error state - show early if course not found
   if (error && !courseData) {
@@ -1126,7 +1190,8 @@ export default function CourseLearningPage({ params }) {
       <div className="flex-1 flex flex-col min-w-0 max-w-none lg:ml-0">
         {/* Top Bar */}
         <div className="bg-white border-b border-gray-200 px-6 py-4 flex-shrink-0">
-          <div className="flex items-center justify-between mb-4">
+          {/* Header Row */}
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-4">
               <button 
                 onClick={() => setIsSidebarOpen(true)}
@@ -1139,19 +1204,26 @@ export default function CourseLearningPage({ params }) {
                 <span className="text-sm">Back to Dashboard</span>
               </Link>
             </div>
+            {/* Tests Button */}
+              <Link
+                href={`/courses/${resolvedParams?.slug}/test`}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200"
+              >
+                <Award className="w-4 h-4" />
+                Tests
+              </Link>
+            </div>
+          
+          {/* Title Row */}
+          <div className="mb-4">
             <h1 className="text-lg font-semibold text-gray-900">
               {courseData?.title || "Course Learning"}
             </h1>
             {currentLesson && (
-              <div className="text-sm text-gray-600 ml-4">
+              <p className="text-sm text-gray-500 mt-1">
                 {currentLesson.title}
-              </div>
+              </p>
             )}
-            <div className="flex items-center gap-2">
-              <button className="p-2 hover:bg-gray-100 rounded">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
           </div>
           
           {/* Tab Navigation */}
@@ -1256,52 +1328,112 @@ export default function CourseLearningPage({ params }) {
                 {currentIndex + 1} of {totalLessons}
               </div>
               
-              {/* Timer Display - only show if not on last lesson */}
-              {currentIndex < totalLessons - 1 && !timerCompleted && lessonTimer < 60 && (
-                <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-lg border border-blue-200">
-                  <Clock className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-900">
-                    {Math.max(0, 60 - lessonTimer)}s
+              {/* Timer Display - show on all lessons */}
+              {(
+                <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border ${
+                  timerCompleted 
+                    ? 'bg-green-50 border-green-200' 
+                    : 'bg-blue-50 border-blue-200'
+                }`}>
+                  <Clock className={`w-4 h-4 ${
+                    timerCompleted ? 'text-green-600' : 'text-blue-600'
+                  }`} />
+                  <span className={`text-sm font-medium ${
+                    timerCompleted ? 'text-green-900' : 'text-blue-900'
+                  }`}>
+                    {timerCompleted 
+                      ? 'Ready' 
+                      : `${Math.max(0, 60 - lessonTimer)}s`
+                    }
                   </span>
                 </div>
               )}
               
-              {/* Show Next Lesson button only if not on last lesson */}
+              {/* Show buttons based on lesson position and test requirements */}
               {currentIndex < totalLessons - 1 ? (
+                <div className="flex items-center gap-3">
+                  {/* Take Test button - shown when tests are required */}
+                  {requiredTests.length > 0 && !allRequiredTestsCompleted && (
+                    <Link
+                      href={`/courses/${resolvedParams?.slug}/test`}
+                      disabled={!timerCompleted}
+                      className={`px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
+                        !timerCompleted
+                          ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                          : 'bg-orange-600 text-white hover:bg-orange-700'
+                      }`}
+                    >
+                      <Award className="w-4 h-4" />
+                      Take Test {requiredTests.filter(t => !t.isCompleted).length > 1 && `(${requiredTests.filter(t => !t.isCompleted).length})`}
+                    </Link>
+                  )}
+                  
+                  {/* Next Lesson button - automatically marks lesson as complete when clicked */}
                 <button 
                   onClick={goToNextLesson}
-                  disabled={!timerCompleted}
+                    disabled={!timerCompleted || !allRequiredTestsCompleted || loadingTests}
                   className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
-                    !timerCompleted
+                      !timerCompleted || !allRequiredTestsCompleted || loadingTests
                       ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
                       : 'bg-blue-900 text-white hover:bg-blue-800'
                   }`}
+                    title={!allRequiredTestsCompleted ? `Complete ${requiredTests.filter(t => !t.isCompleted).length} required test(s) to proceed` : ''}
                 >
-                  {!timerCompleted
-                    ? `Next Lesson (${Math.max(0, 60 - lessonTimer)}s)` 
-                    : 'Next Lesson'}
+                    {loadingTests ? (
+                      'Loading...'
+                    ) : !timerCompleted ? (
+                      `Next Lesson (${Math.max(0, 60 - lessonTimer)}s)`
+                    ) : !allRequiredTestsCompleted ? (
+                      `Complete Tests (${requiredTests.filter(t => !t.isCompleted).length})`
+                    ) : (
+                      'Next Lesson'
+                    )}
                 </button>
+                </div>
               ) : (
-                <Link
-                  href={`/courses/${resolvedParams?.slug}/test`}
-                  onClick={async (e) => {
-                    // Mark final lesson as complete when going to tests
-                    // (No timer requirement for final lesson since there's no next lesson)
+                <div className="flex items-center gap-3">
+                  {/* Complete button for last lesson */}
+                  <button 
+                    onClick={async () => {
                     if (currentLesson && currentLessonId) {
                       const currentLessonIdStr = (currentLesson._id || currentLesson.id)?.toString();
                       if (!completedLessonIds.has(currentLessonIdStr)) {
-                        e.preventDefault(); // Prevent navigation temporarily
                         await handleMarkLessonComplete(currentLessonIdStr);
-                        // Navigate after marking complete
-                        router.push(`/courses/${resolvedParams?.slug}/test`);
+                        }
                       }
-                    }
-                  }}
-                  className="px-6 py-2 rounded-lg font-semibold transition-colors bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
+                    }}
+                    disabled={!timerCompleted || completedLessonIds.has((currentLesson?._id || currentLesson?.id)?.toString())}
+                    className={`px-6 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
+                      !timerCompleted || completedLessonIds.has((currentLesson?._id || currentLesson?.id)?.toString())
+                        ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                        : 'bg-green-600 text-white hover:bg-green-700'
+                    }`}
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    {completedLessonIds.has((currentLesson?._id || currentLesson?.id)?.toString()) ? 'Completed' : 'Complete'}
+                  </button>
+                  
+                  {/* Take Test button for last lesson - only show after course is 100% complete */}
+                  {completedLessons === totalLessons && totalLessons > 0 && (
+                    <Link
+                      href={`/courses/${resolvedParams?.slug}/test`}
+                      className="px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2 bg-orange-600 text-white hover:bg-orange-700"
                 >
                   <Award className="w-4 h-4" />
-                  Go to Tests
+                      Take Test
                 </Link>
+              )}
+                  
+                  {/* Show timer for last lesson */}
+                  {!timerCompleted && (
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-lg border bg-blue-50 border-blue-200">
+                      <Clock className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-900">
+                        {Math.max(0, 60 - lessonTimer)}s
+                      </span>
+            </div>
+                  )}
+                </div>
               )}
             </div>
           </div>

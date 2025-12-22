@@ -54,11 +54,11 @@ export const updateEnrollmentProgress = async (enrollmentId, progressData) => {
 };
 
 /**
- * Enroll in a course
+ * Enroll in a course (self-enrollment for students)
  * @param {string} courseId - Course ID
  */
 export const enrollInCourse = async (courseId) => {
-  return await apiRequest('/enrollments', {
+  return await apiRequest('/enrollments/self-enroll', {
     method: 'POST',
     body: JSON.stringify({ courseId }),
   });
