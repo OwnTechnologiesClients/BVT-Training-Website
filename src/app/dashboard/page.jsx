@@ -480,8 +480,8 @@ export default function DashboardPage() {
                               </div>
                             </div>
 
-                            <p className="text-gray-700 mb-4 line-clamp-2">
-                              {query.messages[0].content}
+<p className="text-gray-700 mb-4 line-clamp-2">
+{query.messages[query.messages.length - 1].content}
                             </p>
 
                             <div className="flex items-center justify-between">

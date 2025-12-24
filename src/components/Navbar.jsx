@@ -5,6 +5,7 @@ import { Phone, Mail, User, Menu, X, ChevronDown, Ship, LogOut, Settings, Sparkl
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import LanguageToggle from './LanguageToggle';
+import { NotificationBell } from './notifications';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
 
@@ -275,6 +276,13 @@ export default function Navbar() {
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-3">
+              
+              {/* Notification Bell - Only for authenticated users */}
+              {isAuthenticated && (
+                <div className="hidden md:block">
+                  <NotificationBell />
+                </div>
+              )}
               {/* Language Toggle */}
               <div className="hidden md:block">
                 <LanguageToggle />
@@ -445,6 +453,14 @@ export default function Navbar() {
                 <div className="px-3.5 py-2">
                   <LanguageToggle />
                 </div>
+                
+                {/* Mobile Notification Bell */}
+                {isAuthenticated && (
+                  <div className="px-3.5 py-2 flex items-center gap-2">
+                    <NotificationBell />
+                    <span className="text-sm text-gray-600">Notifications</span>
+                  </div>
+                )}
                 
                 {isAuthenticated ? (
                   <div className="mt-1.5 space-y-2 px-3.5">
