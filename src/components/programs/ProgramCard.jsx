@@ -1,6 +1,9 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { Clock, Users, Star, BookOpen, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 const SAMPLE_PROGRAMS = [
   {
@@ -92,14 +95,14 @@ const SAMPLE_PROGRAMS = [
   }
 ];
 
-export default function ProgramCard({ 
+export default function ProgramCard({
   id,
-  title, 
-  description, 
-  category, 
-  duration, 
-  students, 
-  rating, 
+  title,
+  description,
+  category,
+  duration,
+  students,
+  rating,
   totalRatings,
   level,
   image,
@@ -108,6 +111,8 @@ export default function ProgramCard({
   badge,
   index = 0
 }) {
+  const { isAuthenticated } = useAuth();
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -203,9 +208,11 @@ export default function ProgramCard({
               View Details
             </button>
           </Link>
-          <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors shadow-lg">
-            Enroll Now
-          </button>
+          <Link href={isAuthenticated ? "/programs" : "/login"}>
+            <button className="w-full bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors shadow-lg">
+              Enroll Now
+            </button>
+          </Link>
         </div>
       </div>
     </motion.div>

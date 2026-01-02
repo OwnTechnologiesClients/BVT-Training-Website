@@ -1,126 +1,214 @@
-/* Custom diagonal split styles for About Hero */
-
+/* ----------- MAIN HERO SECTION ----------- */
 .section {
-  position: relative;
-  width: 100%;
-  height: 100vh; 
-  padding-top: 0;
+position: relative;
+width: 100%;
+min-height: 100vh;
+background: white;
+overflow: hidden;
 }
 
+/* Desktop right-side image */
 .section::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 60%;
-  height: 60%;
-  background: url('/image.jpg') no-repeat center center/cover;
-  z-index: 0;
+content: "";
+position: absolute;
+top: 0;
+right: 0;
+width: 55%;
+height: 75%;
+background: url('/image.jpg') no-repeat center center / cover;
+z-index: 1; /* keep above white bg */
 }
 
+/* Dark diagonal bg */
 .section::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #0f2466;
-  clip-path: polygon(0 70%, 100% 50%, 100% 100%, 0% 100%);
-  z-index: 1;
+content: "";
+position: absolute;
+inset: 0;
+background: #0f2466;
+clip-path: polygon(0 70%, 100% 50%, 100% 100%, 0% 100%);
+z-index: 2;
 }
 
-/* Ensure left content area has white background */
-.section {
-  background: white;
-}
-
-/* Add decorative pattern overlay to dark section */
+/* Pattern overlay layer */
 .patternOverlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #0f2466;
-  clip-path: polygon(0 70%, 100% 50%, 100% 100%, 0% 100%);
-  z-index: 1;
-  overflow: hidden;
+position: absolute;
+inset: 0;
+background: #0f2466;
+clip-path: polygon(0 70%, 100% 50%, 100% 100%, 0% 100%);
+z-index: 3;
 }
 
 .patternOverlay::before {
-  content: "";
-  position: absolute;
-  top: -100px;
-  right: -100px;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
-  border-radius: 50%;
+content: "";
+position: absolute;
+top: -70px;
+right: -70px;
+width: 240px;
+height: 240px;
+background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+border-radius: 50%;
 }
 
-.patternOverlay::after {
-  content: "";
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 120px;
-  height: 120px;
-  background-image: 
-    linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%), 
-    linear-gradient(-45deg, rgba(255,255,255,0.03) 25%, transparent 25%), 
-    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.03) 75%), 
-    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.03) 75%);
-  background-size: 15px 15px;
-  background-position: 0 0, 0 7px, 7px -7px, -7px 0px;
+/* ----------------- STATS SECTION ----------------- */
+.statsWrapper {
+margin-top: 3rem;
+position: relative;
+z-index: 5;
 }
 
-.missionSection {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 60%;
-  height: 50%;
-  background: transparent;
-  z-index: 3;
+.missionStatsContainer {
+display: flex;
+flex-direction: column;
+gap: 2rem;
 }
 
-.diagonalLine {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 20px;
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #dbeafe 100%);
-  clip-path: polygon(0 100%, 100% 100%, 100% 0, 35% 100%);
-  z-index: 4;
+.missionContent {
+text-align: left;
 }
 
-/* Background patterns */
-.lightBackgroundPattern {
-  position: absolute;
-  inset: 0;
-  opacity: 0.1;
+.statsGrid {
+display: flex;
+flex-wrap: wrap;
+gap: 1.5rem;
+justify-content: center;
 }
 
-.darkBackgroundPattern {
-  position: absolute;
-  inset: 0;
-  opacity: 0.1;
+.statBox {
+background: rgba(255, 255, 255, 0.1);
+backdrop-filter: blur(6px);
+padding: 1.25rem;
+border-radius: 1rem;
+border: 1px solid rgba(255,255,255,0.2);
+min-width: 130px;
+text-align: center;
+transition: transform 0.2s ease;
 }
 
-/* Responsive adjustments */
+.statBox:hover {
+transform: translateY(-5px);
+}
+
+/* Icon backgrounds */
+.statIconBlue,
+.statIconGreen,
+.statIconPurple {
+width: 50px;
+height: 50px;
+margin: 0 auto 10px;
+display: flex;
+justify-content: center;
+align-items: center;
+border-radius: 0.75rem;
+}
+
+.statIconBlue {
+background: #2563eb;
+}
+.statIconGreen {
+background: #16a34a;
+}
+.statIconPurple {
+background: #7c3aed;
+}
+
+/* ----------------- RESPONSIVE FIXES ----------------- */
+
+/* DESKTOP */
+@media (min-width: 1025px) {
+.missionStatsContainer {
+flex-direction: row;
+align-items: flex-start;
+gap: 4rem;
+}
+
+.missionContent {
+flex: 1;
+max-width: 700px;
+}
+
+.statsGrid {
+flex: 1;
+justify-content: flex-end;
+flex-wrap: nowrap;
+gap: 1.5rem;
+}
+
+.statBox {
+min-width: 150px;
+flex: 0 0 auto;
+}
+}
+
+/* TABLET */
+@media (max-width: 1024px) {
+.section {
+min-height: auto;
+padding-bottom: 4rem;
+}
+
+.section::before {
+width: 100%;
+height: 45vh;
+left: 0;
+right: 0;
+top: 0;
+z-index: 1;
+}
+
+.section::after,
+.patternOverlay {
+clip-path: polygon(0 40%, 100% 25%, 100% 100%, 0% 100%);
+}
+
+.missionStatsContainer {
+text-align: center;
+}
+
+.missionContent {
+text-align: center;
+}
+
+.statsGrid {
+justify-content: center;
+}
+}
+
+/* MOBILE */
 @media (max-width: 768px) {
-  .lightSection {
-    clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
-  }
-  
-  .missionSection {
-    width: 100%;
-    height: 30%;
-  }
-  
-  .diagonalLine {
-    clip-path: polygon(0 100%, 100% 100%, 100% 0, 0 100%);
-  }
+.section {
+min-height: auto;
+padding-bottom: 4rem;
+}
+
+.section::before {
+width: 100%;
+height: 260px;
+top: 0;
+left: 0;
+right: 0;
+}
+
+.section::after,
+.patternOverlay {
+clip-path: polygon(0 32%, 100% 20%, 100% 100%, 0% 100%);
+}
+
+.patternOverlay::before {
+width: 150px;
+height: 150px;
+top: -30px;
+right: -30px;
+}
+
+.missionStatsContainer {
+text-align: center;
+}
+
+.missionContent {
+text-align: center;
+}
+
+.statsGrid {
+justify-content: center;
+}
 }

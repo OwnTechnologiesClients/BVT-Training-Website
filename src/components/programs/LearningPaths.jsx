@@ -5,8 +5,42 @@ import { BookOpen, Users, Clock, Award, ChevronRight, CheckCircle, Star } from "
 import { useState } from "react";
 import { SAMPLE_PROGRAMS } from "./ProgramCard";
 
-export default function LearningPaths({ selectedPath, onPathChange }) {
-  const learningPaths = [
+export default function LearningPaths({ selectedPath, onPathChange, programs = [] }) {
+  // Use provided programs or fallback to SAMPLE_PROGRAMS
+  const displayPrograms = programs.length > 0 ? programs : SAMPLE_PROGRAMS;
+  
+  // Generate learning paths dynamically from programs or use defaults
+  const getLearningPaths = () => {
+    // If we have programs from backend, generate paths from categories
+    if (displayPrograms.length > 0) {
+      const categories = [...new Set(displayPrograms.map(p => p.category))].filter(Boolean);
+      const colors = ['blue', 'green', 'red', 'purple', 'yellow'];
+      const icons = ['⚙️', '👥', '🛡️', '📊', '🚀'];
+      
+      return categories.map((category, index) => {
+        const categoryPrograms = displayPrograms.filter(p => p.category === category);
+        return {
+          id: category.toLowerCase().replace(/\s+/g, '-'),
+          title: `${category} Path`,
+          description: `Master ${category.toLowerCase()} skills and expertise`,
+          duration: "12-18 months",
+          difficulty: "Intermediate",
+          programCount: categoryPrograms.length,
+          color: colors[index % colors.length],
+          icon: icons[index % icons.length],
+          outcomes: [
+            `${category} Certification`,
+            "Specialized Skills",
+            "Industry Expertise",
+            "Professional Development"
+          ],
+          programs: categoryPrograms.slice(0, 4)
+        };
+      });
+    }
+    
+    // Default paths if no programs
+    return [
     {
       id: "technical",
       title: "Technical Excellence Path",
@@ -59,6 +93,9 @@ export default function LearningPaths({ selectedPath, onPathChange }) {
       programs: SAMPLE_PROGRAMS.filter(p => p.category === "Security").slice(0, 4)
     }
   ];
+  };
+
+  const learningPaths = getLearningPaths();
 
   const getColorClasses = (color) => {
     const colorMap = {

@@ -3,12 +3,40 @@
 import { useState, useEffect, useRef } from "react";
 import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, RotateCcw, Settings, SkipForward, SkipBack } from "lucide-react";
 
+// Helper function to extract YouTube video ID from URL
+const getYouTubeVideoId = (url) => {
+  if (!url) return null;
+  
+  // Handle various YouTube URL formats
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/.*[?&]v=([^&\n?#]+)/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  
+  return null;
+};
+
+// Helper function to get YouTube embed URL
+const getYouTubeEmbedUrl = (url) => {
+  const videoId = getYouTubeVideoId(url);
+  if (!videoId) return null;
+  return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+};
+
 const VideoPlayer = ({ 
-  videoSrc, 
+  videoSrc, // Can be string (file path) or object with {type, filePath/youtubeUrl}
   title = "Video Player", 
   autoplay = false,
   onVideoEnd = null,
-  onVideoStart = null
+  onVideoStart = null,
+  onProgressUpdate = null // Callback for progress tracking: (progressPercentage, currentTime, duration) => void
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -49,7 +77,15 @@ const VideoPlayer = ({
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
+      const newCurrentTime = videoRef.current.currentTime;
+      const newDuration = videoRef.current.duration;
+      setCurrentTime(newCurrentTime);
+      
+      // Call progress update callback if provided
+      if (onProgressUpdate && newDuration > 0) {
+        const progressPercentage = (newCurrentTime / newDuration) * 100;
+        onProgressUpdate(progressPercentage, newCurrentTime, newDuration);
+      }
     }
   };
 
@@ -174,7 +210,54 @@ const VideoPlayer = ({
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  if (!videoSrc) {
+  // Determine video type and source
+  const videoData = typeof videoSrc === 'object' && videoSrc !== null ? videoSrc : { type: 'upload', filePath: videoSrc };
+  
+  // Check if it's a YouTube video
+  const hasYouTubeType = videoData.type === 'youtube';
+  const hasYouTubeUrl = videoData.youtubeUrl && typeof videoData.youtubeUrl === 'string';
+  const isYouTube = hasYouTubeType || (hasYouTubeUrl && getYouTubeVideoId(videoData.youtubeUrl));
+  
+  // Get the actual video source or YouTube embed URL
+  const actualVideoSrc = isYouTube ? null : (videoData.filePath || (typeof videoSrc === 'string' ? videoSrc : null));
+  const youtubeEmbedUrl = isYouTube ? getYouTubeEmbedUrl(videoData.youtubeUrl) : null;
+
+  // Debug logging (remove in production)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('VideoPlayer Debug:', {
+      videoSrc,
+      videoData,
+      hasYouTubeType,
+      hasYouTubeUrl,
+      isYouTube,
+      youtubeEmbedUrl,
+      actualVideoSrc
+    });
+  }
+
+  // Early return for YouTube videos - render simple iframe without custom player
+  if (isYouTube && youtubeEmbedUrl) {
+    return (
+      <div className="relative w-full h-full bg-black">
+        {/* Video Title Overlay */}
+        <div className="absolute top-4 left-4 z-20">
+          <h3 className="text-white text-lg font-semibold bg-black bg-opacity-50 px-3 py-1 rounded">
+            {title}
+          </h3>
+        </div>
+        <iframe
+          src={youtubeEmbedUrl}
+          className="w-full h-full"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          title={title}
+        />
+      </div>
+    );
+  }
+
+  if (!videoSrc && !youtubeEmbedUrl) {
     return (
       <div className="w-full h-full bg-gray-900 flex items-center justify-center">
         <div className="text-center text-white">
@@ -207,10 +290,10 @@ const VideoPlayer = ({
         </div>
       )}
 
-      {/* Video Element */}
+      {/* Video Element for uploaded videos */}
       <video
         ref={videoRef}
-        src={videoSrc}
+        src={actualVideoSrc}
         className="w-full h-full object-contain cursor-pointer"
         autoPlay={autoplay}
         muted={isMuted}
@@ -222,7 +305,7 @@ const VideoPlayer = ({
         onClick={handleVideoClick}
         controls={false}
         playsInline
-        key={videoSrc} // Force reload when videoSrc changes
+        key={actualVideoSrc} // Force reload when videoSrc changes
       />
 
       {/* Video Title Overlay */}
@@ -232,7 +315,8 @@ const VideoPlayer = ({
         </h3>
       </div>
 
-      {/* Custom Controls */}
+      {/* Custom Controls - Only show for uploaded videos, not YouTube */}
+      {!isYouTube && (
       <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
         {/* Progress Bar */}
         <div className="mb-4">
@@ -357,6 +441,7 @@ const VideoPlayer = ({
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };

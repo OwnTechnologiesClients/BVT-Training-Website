@@ -3,7 +3,6 @@ import {
   Stats,
   CourseCategories,
   ExploreCourses,
-  Testimonial,
   Events,
   StudentsFeedback,
   TrustedCompanies
@@ -16,7 +15,6 @@ export default function HomePage() {
       {/* <Stats /> */}
       <CourseCategories />
       <ExploreCourses />
-      <Testimonial />
       <Events />
       <StudentsFeedback />
       <TrustedCompanies />

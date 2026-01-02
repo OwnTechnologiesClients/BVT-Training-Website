@@ -4,8 +4,15 @@ import { useEffect, useState } from "react";
 
 export default function LanguageToggle() {
   const [lang, setLang] = useState("en");
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted || typeof window === 'undefined' || typeof document === 'undefined') return;
+
     // Load Google Translate script
     if (!document.querySelector('script[src*="translate.google.com"]')) {
       const script = document.createElement('script');
@@ -58,9 +65,10 @@ export default function LanguageToggle() {
     });
 
     return () => observer.disconnect();
-  }, [lang]);
+  }, [lang, isMounted]);
 
   const changeLanguage = (langCode) => {
+    if (typeof document === 'undefined') return;
     // Wait a moment for Google Translate to be ready
     setTimeout(() => {
       const select = document.querySelector(".goog-te-combo");
@@ -88,6 +96,7 @@ export default function LanguageToggle() {
   };
 
   const initializeGoogleTranslate = () => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
     // Remove existing translate element
     const existingElement = document.getElementById('google_translate_element');
     if (existingElement) {

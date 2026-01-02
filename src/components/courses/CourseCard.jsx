@@ -1,155 +1,206 @@
 "use client";
 
+import Link from 'next/link';
 import { motion } from "framer-motion";
-import { Clock, Users, Star, BookOpen, Award, MapPin } from "lucide-react";
-import Link from "next/link";
+import { Star, Clock, MapPin, Calendar, Users, Award, ArrowRight, BookOpen, CheckCircle2 } from "lucide-react";
+import { getImageUrl } from "@/lib/utils/imageUtils";
 
 export default function CourseCard({ course, index }) {
-  const {
-    id,
-    title,
-    description,
-    instructor,
-    duration,
-    level,
-    rating,
-    studentsCount,
-    image,
-    price,
-    category,
-    isFeatured,
-    location,
-    lessons,
-    certificate,
-    slug
-  } = course;
-
+  if (!course) return null;
+  
+  const imageUrl = getImageUrl(course.image);
+  const skills = course.skills || course.learningObjectives || [];
+  const instructorImageUrl = course.instructorImage ? getImageUrl(course.instructorImage) : null;
+  const courseId = course.id || course._id;
+  const courseSlug = course.slug || courseId;
+  const isOnline = course.isOnline !== false && course.location === 'Online';
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="group bg-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-102 transition-all duration-300 border border-gray-100 relative overflow-hidden"
+      transition={{ delay: index * 0.05, duration: 0.5 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="group relative bg-white rounded-2xl lg:rounded-3xl shadow-lg border-2 border-gray-200 hover:border-yellow-400 hover:shadow-2xl transition-all overflow-hidden"
     >
-      {/* Hover Overlay */}
-      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center">
-        <div className="flex flex-col gap-3 px-6">
-          <Link href={`/courses/${slug || id}`} className="block">
-            <button className="w-full bg-white text-blue-900 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg">
-              View Details
-            </button>
-          </Link>
-          <Link href={`/courses/${slug || id}/learn`} className="block">
-            <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors shadow-lg">
-              Start Learning
-            </button>
-          </Link>
-        </div>
-      </div>
+      {/* Course Image */}
+      <div className="relative h-48 lg:h-56 overflow-hidden">
+        <img
+          src={imageUrl}
+          alt={course.title}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.src = 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop';
+          }}
+        />
+        
+        {/* Category Badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="absolute top-4 left-4"
+        >
+          <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+            {course.category || (isOnline ? 'Course' : 'Workshop')}
+          </span>
+        </motion.div>
 
-      {/* Horizontal Layout */}
-        <div className="flex h-64 p-2">
-        {/* Course Image - Full Height Left Side */}
-        <div className="relative w-52 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
-          <img 
-            src={image}
-            alt={title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          
-          {/* Level Badge */}
-          <div className="absolute top-2 left-2">
-            <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${
-              level === 'Beginner' ? 'bg-green-500 text-white' :
-              level === 'Intermediate' ? 'bg-yellow-500 text-white' :
-              level === 'Advanced' ? 'bg-red-500 text-white' :
+        {/* Level Badge */}
+        {course.level && (
+          <div className="absolute top-4 right-4">
+            <span className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-lg ${
+              course.level === 'Beginner' ? 'bg-green-500 text-white' :
+              course.level === 'Intermediate' ? 'bg-yellow-500 text-white' :
+              course.level === 'Advanced' ? 'bg-red-500 text-white' :
               'bg-blue-500 text-white'
             }`}>
-              {level}
+              {course.level}
             </span>
           </div>
+        )}
 
-          {/* Rating */}
-          <div className="absolute bottom-2 right-2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded flex items-center gap-1">
-            <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-            <span className="text-sm font-bold text-gray-900">{rating}</span>
+        {/* Featured Badge */}
+        {course.isFeatured && (
+          <div className="absolute bottom-4 left-4">
+            <span className="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
+              <Award className="w-3 h-3" />
+              Featured
+            </span>
+          </div>
+        )}
+
+        {/* Location Badge - Only for offline courses */}
+        {!isOnline && course.location && course.location !== 'Online' && (
+          <div className="absolute bottom-4 right-4">
+            <span className="bg-white/90 backdrop-blur-sm text-blue-900 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+              <MapPin className="w-3 h-3" />
+              {course.location}
+            </span>
+          </div>
+        )}
+      </div>
+      
+      {/* Course Content */}
+      <div className="p-5 lg:p-6">
+        {/* Instructor */}
+        <div className="flex items-center gap-3 mb-4">
+          {instructorImageUrl ? (
+            <motion.img
+              src={instructorImageUrl}
+              alt={course.instructor || 'Instructor'}
+              className="w-10 h-10 rounded-full object-cover border-2 border-yellow-400"
+              whileHover={{ scale: 1.1 }}
+              onError={(e) => {
+                e.target.src = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=100&h=100&fit=crop&crop=face';
+              }}
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center border-2 border-yellow-400 shadow-lg">
+              <span className="text-xs font-bold text-white">
+                {course.instructor ? course.instructor.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'IN'}
+              </span>
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-semibold text-gray-900 truncate">{course.instructor || 'Instructor'}</div>
+            <div className="text-xs text-gray-500">Expert Instructor</div>
+          </div>
+        </div>
+        
+        {/* Course Title */}
+        <Link href={`/courses/${courseSlug}`}>
+          <h3 className="font-bold text-gray-900 mb-3 line-clamp-2 text-lg lg:text-xl hover:text-blue-900 transition-colors cursor-pointer">
+            {course.title}
+          </h3>
+        </Link>
+        
+        {/* Course Stats */}
+        <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
+          <div className="flex items-center gap-1.5">
+            <Clock className="w-4 h-4 text-blue-900" />
+            <span className="font-medium">{course.duration || 'N/A'}</span>
           </div>
         </div>
 
-        {/* Course Content */}
-        <div className="flex-1 min-w-0 p-2 flex flex-col justify-between">
-          {/* Top Content */}
-          <div>
-          {/* Header Row */}
-          <div className="flex items-start justify-between mb-2">
+        {/* Date Range - Only for offline courses */}
+        {!isOnline && (course.startDate || course.endDate) && (
+          <div className="flex items-center gap-2 mb-4 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+            <Calendar className="w-4 h-4 text-blue-900 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <span className="text-blue-900 text-xs font-medium bg-blue-50 px-2 py-1 rounded">
-                {category}
-              </span>
-              <h3 className="text-lg font-bold text-gray-900 mt-1 group-hover:text-blue-900 transition-colors line-clamp-2">
-                {title}
-              </h3>
+              <div className="text-xs text-gray-500 mb-0.5">Training Dates</div>
+              <div className="text-sm font-semibold text-gray-900">
+                {course.startDate || 'TBA'} - {course.endDate || 'TBA'}
+              </div>
             </div>
-            {/* Price */}
-            <div className="ml-2 text-right">
-              {price ? (
-                <div>
-                  <span className="text-xl font-bold text-gray-900">${price}</span>
-                </div>
-              ) : (
-                <span className="text-sm font-semibold text-green-600">Free</span>
+          </div>
+        )}
+
+        {/* Skills/Tags */}
+        {skills.length > 0 && (
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-2">
+              {skills.slice(0, 2).map((skill, skillIndex) => (
+                <motion.span
+                  key={skillIndex}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: skillIndex * 0.05 }}
+                  className="bg-gradient-to-r from-blue-50 to-blue-100 text-blue-900 px-3 py-1 rounded-full text-xs font-medium border border-blue-200"
+                >
+                  {skill}
+                </motion.span>
+              ))}
+              {skills.length > 2 && (
+                <span className="text-gray-500 text-xs font-medium">+{skills.length - 2} more</span>
               )}
             </div>
           </div>
+        )}
 
-            {/* Instructor */}
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-xs font-bold text-white">
-                  {instructor.split(' ').map(n => n[0]).join('')}
-                </span>
-              </div>
-              <span className="text-sm text-gray-600 truncate">by {instructor}</span>
-            </div>
-
-            {/* Description */}
-            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-              {description}
-            </p>
-
-            {/* Course Stats */}
-            <div className="flex items-center gap-3 mb-3 text-xs text-gray-500">
-              <div className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                <span>{duration}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Users className="w-3 h-3" />
-                <span>{studentsCount}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <BookOpen className="w-3 h-3" />
-                <span>{lessons}</span>
-              </div>
-            </div>
+        {/* Certificate Badge */}
+        {course.certificate && (
+          <div className="mb-4">
+            <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-green-50 to-green-100 text-green-800 px-3 py-1.5 rounded-full text-xs font-bold border border-green-200">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Certificate Included
+            </span>
           </div>
-
-          {/* Bottom Content */}
+        )}
+        
+        {/* Price and CTA */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
           <div>
-            {/* Certificate Badge */}
-            {certificate && (
-              <div className="mb-2">
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
-                  <Award className="w-3 h-3" />
-                  Certificate
-                </span>
+            {course.price ? (
+              <div>
+                <div className="text-lg lg:text-xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                  ${course.price}
+                </div>
+                {course.originalPrice && course.originalPrice > course.price && (
+                  <div className="text-xs text-gray-500 line-through">${course.originalPrice}</div>
+                )}
               </div>
+            ) : (
+              <div className="text-base lg:text-lg font-bold text-green-600">Free</div>
             )}
           </div>
+          <Link href={`/courses/${courseSlug}`}>
+            <motion.button
+              whileHover={{ scale: 1.05, x: 5 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-4 py-2 rounded-lg text-sm font-semibold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-md flex items-center gap-1.5"
+            >
+              View Details
+              <ArrowRight className="w-3.5 h-3.5" />
+            </motion.button>
+          </Link>
         </div>
       </div>
+
+      {/* Decorative Corner */}
+      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
     </motion.div>
   );
 }
