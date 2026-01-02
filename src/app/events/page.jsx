@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Loader2, AlertCircle } from "lucide-react";
@@ -12,7 +12,7 @@ import {
 import { getAllEvents } from "@/lib/api/events";
 import { getEventCategoryBySlug } from "@/lib/api/eventCategory";
 
-export default function EventsPage() {
+function EventsContent() {
   const searchParams = useSearchParams();
   const themeSlug = searchParams.get('theme');
   
@@ -196,5 +196,20 @@ export default function EventsPage() {
         hideMaxAttendees={!!selectedTheme}
       />
     </>
+  );
+}
+
+export default function EventsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-900 mx-auto mb-4" />
+          <p className="text-gray-600">Loading events...</p>
+        </div>
+      </div>
+    }>
+      <EventsContent />
+    </Suspense>
   );
 }

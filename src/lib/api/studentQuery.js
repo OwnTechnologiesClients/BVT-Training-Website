@@ -47,7 +47,7 @@ export const createQuery = async (queryData, attachments = []) => {
   formData.append('message', queryData.message);
   
   // Append attachments
-  attachments.forEach((file, index) => {
+  attachments.forEach((file) => {
     formData.append('attachments', file);
   });
   

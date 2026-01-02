@@ -1,5 +1,5 @@
 // Hook to check course enrollment status
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { getEnrollmentStatus } from '@/lib/api/enrollment';
 
@@ -15,7 +15,7 @@ export const useCourseEnrollment = (courseId) => {
   const [loading, setLoading] = useState(false); // Start as false, set to true only when needed
   const [error, setError] = useState(null);
 
-  const fetchEnrollmentStatus = async () => {
+  const fetchEnrollmentStatus = useCallback(async () => {
     // If no course ID provided, don't check enrollment
     if (!courseId) {
       setLoading(false);
@@ -55,11 +55,11 @@ export const useCourseEnrollment = (courseId) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [courseId, isAuthenticated, authLoading]);
 
   useEffect(() => {
     fetchEnrollmentStatus();
-  }, [courseId, isAuthenticated, authLoading]);
+  }, [courseId, isAuthenticated, authLoading, fetchEnrollmentStatus]);
 
   // Function to update enrollment state directly (without API call)
   const updateEnrollment = (newEnrollment) => {
