@@ -53,14 +53,14 @@ export const getCourseBySlug = async (slug) => {
     // If not found by slug, try direct ID lookup (slug might be an ID)
     try {
       return await getCourseById(slug);
-    } catch (error) {
+    } catch {
       throw new Error('Course not found');
     }
   } catch (error) {
     // If slug endpoint fails, try ID lookup as fallback
     try {
       return await getCourseById(slug);
-    } catch (idError) {
+    } catch {
       throw new Error(error.message || 'Failed to fetch course');
     }
   }
