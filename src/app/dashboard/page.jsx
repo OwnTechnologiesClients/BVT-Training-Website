@@ -70,19 +70,6 @@ export default function DashboardPage() {
                     // Handle both response structures: data.structure.chapters or data.chapters
                     const structure = responseData.structure || responseData;
                     
-                    // Log structure for debugging
-                    console.log(`📚 Course structure for ${enrollment.courseId?.title}:`, {
-                      hasModules: !!structure.modules,
-                      hasChapters: !!structure.chapters,
-                      modulesCount: structure.modules?.length || 0,
-                      chaptersCount: structure.chapters?.length || 0,
-                      structureKeys: Object.keys(structure),
-                      firstChapter: structure.chapters?.[0] ? {
-                        hasLessons: !!structure.chapters[0].lessons,
-                        lessonsCount: structure.chapters[0].lessons?.length || 0
-                      } : null
-                    });
-                    
                     // Get modules/chapters from structure (chapters are used as modules)
                     const chapters = structure.chapters || structure.modules || [];
                     const modules = structure.modules || structure.chapters || [];
@@ -105,8 +92,6 @@ export default function DashboardPage() {
                       }, 0);
                     }
                     
-                    console.log(`📚 Total lessons calculated: ${totalLessons} for ${enrollment.courseId?.title}`);
-                    
                     return {
                       ...enrollment,
                       courseId: {
@@ -125,51 +110,6 @@ export default function DashboardPage() {
             return enrollment;
           })
         );
-        
-        // Log detailed enrollment data for debugging
-        enrichedEnrollments.forEach((e, idx) => {
-          const course = e.courseId;
-          
-          // Calculate total lessons from different structures
-          let totalLessons = 0;
-          if (course?.modules && Array.isArray(course.modules)) {
-            totalLessons = course.modules.reduce((total, module) => {
-              if (module.lessons && Array.isArray(module.lessons)) {
-                return total + module.lessons.length;
-              }
-              return total;
-            }, 0);
-          } else if (course?.chapters && Array.isArray(course.chapters)) {
-            totalLessons = course.chapters.reduce((total, chapter) => {
-              if (chapter.lessons && Array.isArray(chapter.lessons)) {
-                return total + chapter.lessons.length;
-              }
-              return total;
-            }, 0);
-          } else if (course?.lessonCount) {
-            totalLessons = Number(course.lessonCount);
-          }
-          
-          const calculatedProgress = totalLessons > 0 && e.lessonsCompleted?.length 
-            ? Math.round((e.lessonsCompleted.length / totalLessons) * 100)
-            : 0;
-          
-          console.log(`📊 Enrollment ${idx + 1}:`, {
-            course: course?.title,
-            backendProgress: e.progress,
-            lessonsCompletedCount: e.lessonsCompleted?.length || 0,
-            totalLessons,
-            hasModules: !!course?.modules,
-            hasChapters: !!course?.chapters,
-            modulesCount: course?.modules?.length || 0,
-            chaptersCount: course?.chapters?.length || 0,
-            modulesStructure: course?.modules?.[0] ? {
-              hasLessons: !!course.modules[0].lessons,
-              lessonsCount: course.modules[0].lessons?.length || 0
-            } : null,
-            calculatedProgress
-          });
-        });
         
         setEnrollments(enrichedEnrollments);
       } else {
@@ -235,9 +175,7 @@ export default function DashboardPage() {
       
       if (totalLessons > 0) {
         const completedCount = enrollment.lessonsCompleted.length;
-        const calculated = Math.round((completedCount / totalLessons) * 100);
-        console.log(`📈 Progress calculation for ${course.title || 'course'}: ${completedCount}/${totalLessons} = ${calculated}%`);
-        return calculated;
+        return Math.round((completedCount / totalLessons) * 100);
       }
     }
     
@@ -422,14 +360,14 @@ export default function DashboardPage() {
                     return dateB.getTime() - dateA.getTime();
                   })
                   .slice(0, 5)
-                  .map((query) => {
+                  .map((query, index) => {
                     const lastMessage = query.messages[query.messages.length - 1];
                     const hasNewReply =
                       lastMessage.sender === "instructor" && query.status === "open";
 
                     return (
                       <div
-                        key={query.id}
+                        key={query.id || query._id || `query-${index}`}
                         className={`border rounded-lg p-4 transition-all hover:shadow-md ${
                           hasNewReply ? "border-blue-200 bg-blue-50/30" : "border-gray-200"
                         }`}
@@ -491,7 +429,8 @@ export default function DashboardPage() {
                               </div>
                               <button
                                 onClick={() => {
-                                  setSelectedQueryId(query.id);
+                                  const queryId = query._id || query.id;
+                                  setSelectedQueryId(queryId);
                                   setIsQueryModalOpen(true);
                                 }}
                                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"

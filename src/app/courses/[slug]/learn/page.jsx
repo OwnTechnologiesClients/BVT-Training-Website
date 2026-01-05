@@ -106,8 +106,6 @@ export default function CourseLearningPage({ params }) {
     }
 
     try {
-      console.log('📝 Marking lesson as complete:', { enrollmentId: enrollment._id, lessonId });
-      
       // Add to locally completed ref immediately to prevent flickering
       locallyCompletedLessonsRef.current.add(lessonIdStr);
       
@@ -211,20 +209,18 @@ export default function CourseLearningPage({ params }) {
       try {
         const response = await markLessonComplete(enrollment._id, lessonIdStr);
         if (response.success) {
-          console.log('✅ Lesson marked as complete successfully');
           // Update enrollment state directly with the response data
           if (response.data?.enrollment) {
             updateEnrollment(response.data.enrollment);
-            console.log('✅ Enrollment state updated');
           }
         } else {
-          console.error('❌ Failed to mark lesson complete on server');
+          console.error('Failed to mark lesson complete on server');
         }
       } catch (apiError) {
-        console.error('❌ Error marking lesson complete:', apiError);
+        console.error('Error marking lesson complete:', apiError);
       }
     } catch (error) {
-      console.error('❌ Error in handleMarkLessonComplete:', error);
+      console.error('Error in handleMarkLessonComplete:', error);
       // Don't show error to user - they can try again
     }
   };
@@ -274,25 +270,8 @@ export default function CourseLearningPage({ params }) {
 
     // Block access for offline courses
     if (courseData && isOffline) {
-      console.log('Offline course - redirecting to course details page');
       router.push(`/courses/${slug}`);
       return;
-    }
-
-    // Check enrollment status but don't redirect to billing
-    // Billing redirects removed as requested
-    if (!enrollmentLoading && isEnrolled) {
-      console.log('User is enrolled, allowing access:', {
-        courseId: courseData._id || courseData.id,
-        enrollment
-      });
-    } else if (!authLoading && !enrollmentLoading && courseData && isAuthenticated && !isEnrolled) {
-      console.log('User not enrolled - access will be denied (billing redirect removed):', {
-        courseId: courseData._id || courseData.id,
-        enrollment,
-        isEnrolled
-      });
-      // Don't redirect - just log. Access denied screen will show instead
     }
   }, [isAuthenticated, authLoading, isEnrolled, enrollmentLoading, router, slug, courseData, enrollment, isOffline]);
 
@@ -306,23 +285,14 @@ export default function CourseLearningPage({ params }) {
         setError(null);
 
         // First, get course basic info
-        console.log('📚 Fetching course by slug:', slug);
         const courseResponse = await getCourseBySlug(slug);
-        console.log('📚 Course response:', courseResponse);
         
         if (!courseResponse || !courseResponse.success || !courseResponse.data) {
           const errorMsg = courseResponse?.message || 'Course not found';
-          console.error('📚 Course not found:', errorMsg);
           throw new Error(errorMsg);
         }
 
         const course = courseResponse.data;
-        console.log('📚 Course data received:', {
-          _id: course._id,
-          id: course.id,
-          slug: course.slug,
-          title: course.title
-        });
         setCourseData(course);
       } catch (err) {
         console.error('Error fetching course:', err);
@@ -352,15 +322,12 @@ export default function CourseLearningPage({ params }) {
         const courseId = courseData._id || courseData.id;
         if (!courseId) return;
 
-        console.log('Fetching course structure for course:', courseId);
         const structureResponse = await getCourseStructure(courseId);
         
         if (structureResponse.success && structureResponse.data) {
           const responseData = structureResponse.data;
           // Handle both response structures: data.structure.chapters or data.chapters
           const structure = responseData.structure || responseData;
-          
-          console.log('Course structure received:', structure);
               
               // Transform backend structure (Course → Chapters → Lessons → LessonContent)
               // to frontend format (Modules → Lessons)
@@ -429,6 +396,7 @@ export default function CourseLearningPage({ params }) {
                         type: lesson.type || 'video',
                         videoSrc: videoSrc,
                         textContent: textContent,
+                        contentId: lesson.content?._id || null, // Store content ID for video refresh
                         isLocked: false // Will be calculated after all lessons are added
                       });
                     });
@@ -551,8 +519,6 @@ export default function CourseLearningPage({ params }) {
                   setExpandedModules([moduleContainingLesson.id]);
                 }
               }
-            } else {
-              console.log('No chapters found in course structure');
             }
           } catch (err) {
             // Handle errors without causing logout or redirect
@@ -905,14 +871,12 @@ export default function CourseLearningPage({ params }) {
       
       if (timerWasCompleted || lessonIsCompleted) {
         // Timer already completed or lesson completed - skip timer
-        console.log('✅ Timer/lesson already completed for lesson:', lessonIdStr);
         setLessonTimer(60);
         setTimerCompleted(true);
         return; // Don't start timer
       }
 
       // Start fresh timer for this lesson
-      console.log('⏱️ Starting timer for lesson:', lessonIdStr);
       setLessonTimer(0);
       setTimerCompleted(false);
 
@@ -920,11 +884,9 @@ export default function CourseLearningPage({ params }) {
       timerIntervalRef.current = setInterval(() => {
         setLessonTimer(prev => {
           const newTime = prev + 1;
-          console.log('⏱️ Timer:', newTime, 'seconds');
           
           if (newTime >= 60) {
             // Timer completed (60 seconds = 1 minute)
-            console.log('✅ Timer completed for lesson:', lessonIdStr);
             markTimerCompleted(lessonIdStr); // Save to localStorage
             setTimerCompleted(true); // Mark as completed in state
             if (timerIntervalRef.current) {
@@ -1262,6 +1224,7 @@ export default function CourseLearningPage({ params }) {
                   key={currentLessonId} // Force remount when lesson changes
                   videoSrc={currentLesson.videoSrc}
                   title={currentLesson.title || "Course Video"}
+                  contentId={currentLesson.contentId} // Pass content ID for video refresh
                   onProgressUpdate={handleVideoProgress}
                   autoplay={false}
                   onVideoEnd={() => {

@@ -11,16 +11,50 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, e
   const scrollContainerRef = useRef(null);
   
   // Use provided events or fallback to SAMPLE_EVENTS
-  const displayEvents = events.length > 0 ? events : SAMPLE_EVENTS;
+  const allEvents = events.length > 0 ? events : SAMPLE_EVENTS;
   
+  // Helper function to filter events by timeframe
+  const filterEventsByTimeframe = (eventsList, timeframe) => {
+    const now = new Date();
+    
+    switch (timeframe) {
+      case "upcoming":
+        return eventsList.filter(e => {
+          const eventDate = new Date(e.date || e.startDate);
+          return eventDate >= now;
+        });
+      case "this-month":
+        return eventsList.filter(e => {
+          const eventDate = new Date(e.date || e.startDate);
+          return eventDate.getMonth() === now.getMonth() && eventDate.getFullYear() === now.getFullYear();
+        });
+      case "past":
+        return eventsList.filter(e => {
+          const eventDate = new Date(e.date || e.startDate);
+          return eventDate < now;
+        });
+      default:
+        return eventsList;
+    }
+  };
+
+  // Calculate counts based on all events (not filtered)
   const timeframes = [
-    { id: "upcoming", label: "Upcoming", count: displayEvents.filter(e => new Date(e.date || e.startDate) >= new Date()).length },
-    { id: "this-month", label: "This Month", count: displayEvents.filter(e => {
-      const eventDate = new Date(e.date || e.startDate);
-      const now = new Date();
-      return eventDate.getMonth() === now.getMonth() && eventDate.getFullYear() === now.getFullYear();
-    }).length },
-    { id: "past", label: "Past Events", count: displayEvents.filter(e => new Date(e.date || e.startDate) < new Date()).length }
+    { 
+      id: "upcoming", 
+      label: "Upcoming", 
+      count: filterEventsByTimeframe(allEvents, "upcoming").length 
+    },
+    { 
+      id: "this-month", 
+      label: "This Month", 
+      count: filterEventsByTimeframe(allEvents, "this-month").length 
+    },
+    { 
+      id: "past", 
+      label: "Past Events", 
+      count: filterEventsByTimeframe(allEvents, "past").length 
+    }
   ];
 
   const scroll = (direction) => {
@@ -34,25 +68,27 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, e
     }
   };
 
+  // Get filtered events based on selected timeframe
   const getFilteredEvents = () => {
-    if (events.length > 0) {
-      return events;
-    }
+    const filtered = filterEventsByTimeframe(allEvents, selectedTimeframe);
 
+    // Sort events based on timeframe
     const now = new Date();
-    switch (selectedTimeframe) {
-      case "upcoming":
-        return SAMPLE_EVENTS.filter(e => new Date(e.date) >= now).sort((a, b) => new Date(a.date) - new Date(b.date));
-      case "this-month":
-        return SAMPLE_EVENTS.filter(e => {
-          const eventDate = new Date(e.date);
-          return eventDate.getMonth() === now.getMonth() && eventDate.getFullYear() === now.getFullYear();
-        }).sort((a, b) => new Date(a.date) - new Date(b.date));
-      case "past":
-        return SAMPLE_EVENTS.filter(e => new Date(e.date) < now).sort((a, b) => new Date(b.date) - new Date(a.date));
-      default:
-        return SAMPLE_EVENTS;
+    if (selectedTimeframe === "upcoming" || selectedTimeframe === "this-month") {
+      return filtered.sort((a, b) => {
+        const dateA = new Date(a.date || a.startDate);
+        const dateB = new Date(b.date || b.startDate);
+        return dateA - dateB; // Ascending (earliest first)
+      });
+    } else if (selectedTimeframe === "past") {
+      return filtered.sort((a, b) => {
+        const dateA = new Date(a.date || a.startDate);
+        const dateB = new Date(b.date || b.startDate);
+        return dateB - dateA; // Descending (most recent first)
+      });
     }
+    
+    return filtered;
   };
 
   const filteredEvents = getFilteredEvents();
