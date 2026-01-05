@@ -213,7 +213,9 @@ const StudentQueryModal = ({
                     {msg.attachments.map((attachment, attIdx) => (
                       <a
                         key={attIdx}
-                        href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${attachment.filePath}`}
+                        href={attachment.filePath?.startsWith('http://') || attachment.filePath?.startsWith('https://')
+                          ? attachment.filePath
+                          : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:9000'}${attachment.filePath}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`flex items-center gap-1.5 text-xs ${

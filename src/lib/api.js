@@ -48,16 +48,8 @@ const setStudent = (student) => {
 
 // Base fetch function with error handling
 const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
-  console.log('🌐 apiRequest called');
-  console.log('🌐 Endpoint:', endpoint);
-  console.log('🌐 Options:', options);
-  console.log('🌐 API Base URL:', API_BASE_URL);
-
   const token = getToken();
   const isFormData = options.body instanceof FormData;
-
-  console.log('🌐 Token exists:', !!token);
-  console.log('🌐 Is FormData:', isFormData);
 
   const config = {
     ...options,
@@ -69,27 +61,9 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
     },
   };
 
-  console.log('🌐 Request config:', {
-    method: config.method,
-    headers: config.headers,
-    hasBody: !!config.body
-  });
-
   try {
     const url = `${API_BASE_URL}${endpoint}`;
-    console.log('🌐 Full URL:', url);
-    console.log('🌐 Making fetch request...');
-
-    const fetchStartTime = Date.now();
     const response = await fetch(url, config);
-    const fetchEndTime = Date.now();
-
-    console.log('🌐 Fetch response received');
-    console.log('🌐 Response time:', fetchEndTime - fetchStartTime, 'ms');
-    console.log('🌐 Response status:', response.status);
-    console.log('🌐 Response statusText:', response.statusText);
-    console.log('🌐 Response ok:', response.ok);
-    console.log('🌐 Response headers:', Object.fromEntries(response.headers.entries()));
 
     // Handle network errors (no response from server)
     if (!response) {
@@ -99,39 +73,23 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
     // Try to parse JSON, but handle cases where response might not be JSON
     let data;
     const contentType = response.headers.get('content-type');
-    console.log('🌐 Content-Type:', contentType);
 
     if (contentType && contentType.includes('application/json')) {
-      console.log('🌐 Parsing JSON response...');
       data = await response.json();
-      console.log('🌐 Parsed JSON data:', data);
-      console.log('🌐 Data type:', typeof data);
-      console.log('🌐 Data keys:', data ? Object.keys(data) : 'null');
     } else if (skipJsonParsing) {
-      console.log('🌐 Skipping JSON parsing, reading as text...');
       // If skipJsonParsing is true, return response as-is
       const text = await response.text();
-      console.log('🌐 Text response:', text);
       try {
         data = JSON.parse(text);
-        console.log('🌐 Parsed text as JSON:', data);
       } catch {
         data = { message: text };
-        console.log('🌐 Text not JSON, using as message:', data);
       }
     } else {
-      console.log('🌐 Non-JSON response, reading as text...');
       const text = await response.text();
-      console.log('🌐 Text response:', text);
       throw new Error(`Server returned non-JSON response: ${text}`);
     }
 
-    console.log('🌐 Checking response.ok:', response.ok);
-    console.log('🌐 Response status:', response.status);
-
     if (!response.ok) {
-      console.log('🌐 Response not OK, handling error...');
-      console.log('🌐 Error data:', data);
 
       // Handle 401 (Unauthorized) - token expired or invalid
       // Only auto-logout if it's a clear authentication failure, not permission issues
@@ -170,7 +128,7 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
           (errorMessage.includes('Access denied') && hasToken) || // If we have token, "Access denied" = permission
           (isNoTokenError && hasToken); // If we sent token but backend says no token, don't logout (might be backend issue)
 
-        // Only logout if:
+        // Only logout if: 
         // 1. It's clearly a token authentication error (invalid/expired token) OR we didn't send a token
         // 2. AND it's not a permission error
         // This prevents logout when user is authenticated but gets access denied for other reasons
@@ -186,7 +144,6 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
               clearAuthState();
             }).catch(() => {
               // If AuthContext is not available yet, that's okay - token is already removed
-              console.log('AuthContext not available, token cleared from localStorage');
             });
           }
 
@@ -208,12 +165,9 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
         // If it's a permission/enrollment error, don't logout - just throw the error
         // so the component can handle it appropriately
       }
-      console.error('🌐 Throwing error:', data.message || `Server error: ${response.status} ${response.statusText}`);
       throw new Error(data.message || `Server error: ${response.status} ${response.statusText}`);
     }
 
-    console.log('🌐 Request successful, returning data');
-    console.log('🌐 Final data:', data);
     return data;
   } catch (error) {
     // Handle network errors (fetch failed)

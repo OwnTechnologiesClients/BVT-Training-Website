@@ -169,8 +169,6 @@ export default function CourseDetailsPage({ params }) {
   // Debug: Log enrollment status
   useEffect(() => {
     if (courseId && isAuthenticated) {
-      console.log('📚 Enrollment check:', {
-        courseId,
         isEnrolled,
         enrollmentStatus: enrollment?.status,
         enrollment
@@ -192,10 +190,6 @@ export default function CourseDetailsPage({ params }) {
           const course = response.data;
           setCourseData(course);
 
-          // Debug: Log course data to see what we're getting
-          console.log('Course data received:', course);
-          console.log('Course chapters:', course.chapters);
-
           // Expand first section if curriculum exists
           if (course.curriculum && course.curriculum.length > 0) {
             setExpandedSections([course.curriculum[0].section || course.curriculum[0].title]);
@@ -206,13 +200,10 @@ export default function CourseDetailsPage({ params }) {
               section: chapter.title || `Chapter ${index + 1}`,
               lessons: chapter.lessons || []
             }));
-            console.log('Transformed curriculum:', transformedCurriculum);
             setCurriculum(transformedCurriculum);
             if (transformedCurriculum.length > 0) {
               setExpandedSections([transformedCurriculum[0].section]);
             }
-          } else {
-            console.log('No curriculum or chapters found in course data');
           }
 
           // Fetch related courses (same category or fallback to all courses)

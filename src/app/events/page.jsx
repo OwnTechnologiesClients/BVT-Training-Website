@@ -112,19 +112,9 @@ function EventsContent() {
     setSelectedTimeframe(timeframe);
   }, []);
 
-  // Filter events based on timeframe
-  const filteredEvents = events.filter(event => {
-    if (selectedTimeframe === 'all') return true;
-    if (selectedTimeframe === 'upcoming') {
-      const eventDate = new Date(event.date || event.startDate);
-      return eventDate >= new Date();
-    }
-    if (selectedTimeframe === 'past') {
-      const eventDate = new Date(event.date || event.startDate);
-      return eventDate < new Date();
-    }
-    return event.status === selectedTimeframe;
-  });
+  // Don't filter events here - let EventsTimeline handle filtering
+  // This ensures counts match the displayed events
+  const filteredEvents = events;
 
   // Loading state
   if (loading) {

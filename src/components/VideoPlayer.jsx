@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, RotateCcw, Settings, SkipForward, SkipBack } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, RotateCcw, Settings, SkipForward, SkipBack, AlertCircle } from "lucide-react";
+import { refreshVideoUrl } from "@/lib/api/lessonContent";
 
 // Helper function to extract YouTube video ID from URL
 const getYouTubeVideoId = (url) => {
@@ -36,7 +37,8 @@ const VideoPlayer = ({
   autoplay = false,
   onVideoEnd = null,
   onVideoStart = null,
-  onProgressUpdate = null // Callback for progress tracking: (progressPercentage, currentTime, duration) => void
+  onProgressUpdate = null, // Callback for progress tracking: (progressPercentage, currentTime, duration) => void
+  contentId = null // Lesson content ID for refreshing expired pre-signed URLs
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -48,6 +50,7 @@ const VideoPlayer = ({
   const [playbackRate, setPlaybackRate] = useState(1);
   const [volume, setVolume] = useState(0.5);
   const [showSettings, setShowSettings] = useState(false);
+  const [videoUrl, setVideoUrl] = useState(null); // Store current video URL (for refresh)
   const videoRef = useRef(null);
   const controlsTimeoutRef = useRef(null);
 
@@ -154,12 +157,74 @@ const VideoPlayer = ({
     }
   }, [isMuted, volume]);
 
+  // Handle video URL refresh for expired pre-signed URLs
+  const handleVideoError = async (event) => {
+    // Get the video element and its error
+    const video = videoRef.current;
+    if (!video) return;
+    
+    const videoError = video.error;
+    
+    // Only log if there's actual error information from the video element
+    if (videoError) {
+      const errorInfo = {
+        code: videoError.code,
+        message: videoError.message,
+        networkState: video.networkState
+      };
+      
+      // Log meaningful error information
+      if (errorInfo.code !== null && errorInfo.code !== undefined) {
+        console.error('Video playback error:', errorInfo);
+      }
+      
+      // Handle different error types
+      // Code 4 = MEDIA_ELEMENT_ERROR (format error, corrupted file, etc.)
+      // Code 2 = NETWORK_ERROR (network issues, 403/404, etc.)
+      // Code 3 = DECODE_ERROR (decoding issues)
+      
+      // Only attempt URL refresh for network errors (code 2) or when networkState is 3
+      // Format errors (code 4) won't be fixed by refreshing the URL
+      const isNetworkError = videoError.code === 2 || video.networkState === 3;
+      const isExpiredUrl = video.networkState === 3 && contentId;
+      
+      if (isExpiredUrl && contentId) {
+        try {
+          const response = await refreshVideoUrl(contentId);
+          if (response.success && response.data?.videoUrl) {
+            setVideoUrl(response.data.videoUrl);
+            video.src = response.data.videoUrl;
+            video.load();
+            setIsLoading(true);
+          } else {
+            console.error('Failed to refresh video URL:', response.message);
+          }
+        } catch (refreshError) {
+          console.error('Error refreshing video URL:', refreshError);
+        }
+      } else if (videoError.code === 4) {
+        // Format error - video format not supported or corrupted
+        console.warn('Video format error - the video file may be corrupted or in an unsupported format');
+      }
+    }
+  };
+
   // Reload video when videoSrc changes
   useEffect(() => {
     if (videoRef.current && videoSrc) {
       setIsLoading(true);
       setIsPlaying(false);
       setCurrentTime(0);
+      
+      // Extract video URL from videoSrc
+      const videoData = typeof videoSrc === 'object' && videoSrc !== null ? videoSrc : { type: 'upload', filePath: videoSrc };
+      const isYouTube = videoData.type === 'youtube' || (videoData.youtubeUrl && getYouTubeVideoId(videoData.youtubeUrl));
+      const newVideoUrl = isYouTube ? null : (videoData.filePath || (typeof videoSrc === 'string' ? videoSrc : null));
+      
+      if (newVideoUrl) {
+        setVideoUrl(newVideoUrl);
+      }
+      
       // Reset video to beginning
       videoRef.current.currentTime = 0;
       videoRef.current.load();
@@ -219,21 +284,10 @@ const VideoPlayer = ({
   const isYouTube = hasYouTubeType || (hasYouTubeUrl && getYouTubeVideoId(videoData.youtubeUrl));
   
   // Get the actual video source or YouTube embed URL
-  const actualVideoSrc = isYouTube ? null : (videoData.filePath || (typeof videoSrc === 'string' ? videoSrc : null));
+  // Use videoUrl state if available (refreshed URL), otherwise use original
+  const actualVideoSrc = isYouTube ? null : (videoUrl || videoData.filePath || (typeof videoSrc === 'string' ? videoSrc : null));
   const youtubeEmbedUrl = isYouTube ? getYouTubeEmbedUrl(videoData.youtubeUrl) : null;
 
-  // Debug logging (remove in production)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('VideoPlayer Debug:', {
-      videoSrc,
-      videoData,
-      hasYouTubeType,
-      hasYouTubeUrl,
-      isYouTube,
-      youtubeEmbedUrl,
-      actualVideoSrc
-    });
-  }
 
   // Early return for YouTube videos - render simple iframe without custom player
   if (isYouTube && youtubeEmbedUrl) {
@@ -264,6 +318,38 @@ const VideoPlayer = ({
           <Play className="w-16 h-16 mx-auto mb-4 opacity-50" />
           <p className="text-lg">No video selected</p>
           <p className="text-sm text-gray-400 mt-2">Select a lesson from the sidebar to start watching</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if video source is missing (for uploaded videos)
+  if (!isYouTube && !actualVideoSrc) {
+    return (
+      <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+        <div className="text-center text-white">
+          <AlertCircle className="w-16 h-16 mx-auto mb-4 opacity-50 text-yellow-500" />
+          <p className="text-lg">Video not available</p>
+          <p className="text-sm text-gray-400 mt-2">
+            {videoData.filePath ? 'Video URL is invalid or expired. Please refresh the page.' : 'No video file found for this lesson.'}
+          </p>
+          {contentId && (
+            <button
+              onClick={async () => {
+                try {
+                  const response = await refreshVideoUrl(contentId);
+                  if (response.success && response.data?.videoUrl) {
+                    setVideoUrl(response.data.videoUrl);
+                  }
+                } catch (err) {
+                  console.error('Error refreshing video:', err);
+                }
+              }}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Refresh Video URL
+            </button>
+          )}
         </div>
       </div>
     );
@@ -302,6 +388,7 @@ const VideoPlayer = ({
         onEnded={handleEnded}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
+        onError={handleVideoError}
         onClick={handleVideoClick}
         controls={false}
         playsInline
