@@ -169,10 +169,6 @@ export default function CourseDetailsPage({ params }) {
   // Debug: Log enrollment status
   useEffect(() => {
     if (courseId && isAuthenticated) {
-        isEnrolled,
-        enrollmentStatus: enrollment?.status,
-        enrollment
-      });
     }
   }, [courseId, isAuthenticated, isEnrolled, enrollment]);
 
