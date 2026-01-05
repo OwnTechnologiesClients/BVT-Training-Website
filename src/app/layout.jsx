@@ -3,6 +3,7 @@ import "./globals.css";
 import ConditionalLayout from "@/components/ConditionalLayout";
 import { QueryProvider } from "@/context/QueryContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { PopupProvider } from "@/context/PopupContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,9 +34,11 @@ export default function RootLayout({ children }) {
       >
         <AuthProvider>
           <QueryProvider>
-            <ConditionalLayout>
-              {children}
-            </ConditionalLayout>
+            <PopupProvider>
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
+            </PopupProvider>
           </QueryProvider>
         </AuthProvider>
       </body>

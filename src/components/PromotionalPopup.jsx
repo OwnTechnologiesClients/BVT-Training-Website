@@ -5,17 +5,26 @@ import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import Image from "next/image";
+import { usePopup } from "@/context/PopupContext";
 
 export default function PromotionalPopup() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const { showPopup, closePopup } = usePopup();
 
   // Ensure component is mounted before accessing browser APIs
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Handle manual trigger from context
+  useEffect(() => {
+    if (showPopup) {
+      setIsOpen(true);
+    }
+  }, [showPopup]);
 
   useEffect(() => {
     if (!isMounted) return;
@@ -25,6 +34,11 @@ export default function PromotionalPopup() {
     const shouldHide = hideOnPages.some(page => pathname.includes(page));
     
     if (shouldHide) {
+      return;
+    }
+
+    // If popup is manually triggered, don't auto-show
+    if (showPopup) {
       return;
     }
 
@@ -48,7 +62,7 @@ export default function PromotionalPopup() {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [pathname, isMounted]);
+  }, [pathname, isMounted, showPopup]);
 
   // Prevent body scroll when popup is open
   useEffect(() => {
@@ -87,8 +101,9 @@ export default function PromotionalPopup() {
 
   const handleClose = () => {
     setIsOpen(false);
-    // Remember that user closed it in this session/tab
-    if (isMounted) {
+    closePopup(); // Close via context as well
+    // Remember that user closed it in this session/tab (only for auto-show, not manual trigger)
+    if (isMounted && !showPopup) {
       try {
         sessionStorage.setItem('promo-popup-closed', 'true');
       } catch (e) {

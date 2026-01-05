@@ -1,18 +1,20 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Phone, Mail, User, Menu, X, ChevronDown, Ship, LogOut, Settings, Sparkles } from 'lucide-react';
+import { Phone, Mail, User, Menu, X, ChevronDown, Ship, LogOut, Settings, Sparkles, Gift } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import LanguageToggle from './LanguageToggle';
 import { NotificationBell } from './notifications';
 import { useAuth } from '@/context/AuthContext';
+import { usePopup } from '@/context/PopupContext';
 import { motion } from 'framer-motion';
 
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, student, logout } = useAuth();
+  const { openPopup } = usePopup();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -350,6 +352,44 @@ export default function Navbar() {
                 </Link>
               )}
               
+              {/* Promotional Popup Button - Extreme Right */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={openPopup}
+                className="hidden md:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 relative group cursor-pointer"
+                title="View Special Offers"
+              >
+                {/* Out-of-box glow effect - extends beyond button */}
+                <motion.div
+                  className="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 rounded-lg blur-md opacity-0"
+                  animate={{
+                    opacity: [0, 0.7, 0],
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+                {/* Inner glow animation */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-300 rounded-lg"
+                  animate={{
+                    opacity: [0.2, 0.6, 0.2],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+                <span className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></span>
+                <Gift className="w-4 h-4 relative z-10" />
+                <span className="relative z-10 font-semibold text-sm">Get Offer</span>
+              </motion.button>
+              
               {/* Mobile Menu Button - Enhanced */}
               <motion.button 
                 whileTap={{ scale: 0.9 }}
@@ -453,6 +493,41 @@ export default function Navbar() {
                 <div className="px-3.5 py-2">
                   <LanguageToggle />
                 </div>
+                
+                {/* Mobile Promotional Popup Button */}
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={openPopup}
+                  className="mx-3.5 px-3.5 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer relative"
+                >
+                  {/* Out-of-box glow effect - extends beyond button */}
+                  <motion.div
+                    className="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 rounded-lg blur-md opacity-0"
+                    animate={{
+                      opacity: [0, 0.7, 0],
+                      scale: [1, 1.1, 1],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                  {/* Inner glow animation */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-300 rounded-lg"
+                    animate={{
+                      opacity: [0.2, 0.6, 0.2],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                  <Gift className="w-4 h-4 relative z-10" />
+                  <span className="relative z-10">Get Offer</span>
+                </motion.button>
                 
                 {/* Mobile Notification Bell */}
                 {isAuthenticated && (
