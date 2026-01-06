@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Star, Clock, Users, Award, MapPin, Calendar, Play, Sparkles, ArrowRight, BookOpen, TrendingUp } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getImageUrl } from "@/lib/utils/imageUtils";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 export default function FeaturedCourses({ courses }) {
   const { isAuthenticated } = useAuth();
@@ -59,7 +60,7 @@ export default function FeaturedCourses({ courses }) {
   
   if (!currentCourse || !currentCourse.title) return null;
   
-  const imageUrl = getImageUrl(currentCourse.image) || 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop';
+  const imageUrl = getImageUrl(currentCourse.image);
 
   return (
     <section className="relative py-12 lg:py-16 bg-gradient-to-br from-white via-blue-50/50 to-white overflow-hidden">
@@ -142,15 +143,24 @@ export default function FeaturedCourses({ courses }) {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full">
                     {/* Course Image */}
                     <div className="relative h-48 lg:h-full overflow-hidden bg-gradient-to-br from-blue-900 to-blue-950">
-                      <img
-                        src={imageUrl}
-                        alt={currentCourse.title || 'Course'}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.src = 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop';
-                        }}
-                        loading="eager"
-                        fetchPriority="high"
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={currentCourse.title || 'Course'}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            const placeholder = e.target.nextElementSibling;
+                            if (placeholder) placeholder.style.display = 'flex';
+                          }}
+                          loading="eager"
+                          fetchPriority="high"
+                        />
+                      ) : null}
+                      <ImagePlaceholder 
+                        type="course" 
+                        className={`w-full h-full ${imageUrl ? 'hidden' : 'flex'}`}
+                        iconClassName="w-16 h-16"
                       />
                       
                       {/* Badges Overlay */}

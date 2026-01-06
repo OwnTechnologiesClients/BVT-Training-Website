@@ -104,7 +104,8 @@ export default function LeadershipTeam() {
           </p>
         </motion.div>
 
-        {/* Team Grid */}
+        {/* Team Grid - Commented out */}
+        {false && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
           {TEAM_MEMBERS.map((member, index) => (
             <motion.div
@@ -199,6 +200,21 @@ export default function LeadershipTeam() {
               <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </motion.div>
           ))}
+        </div>
+        )}
+
+        {/* Placeholder Message */}
+        <div className="text-center py-16 mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="bg-white rounded-2xl p-12 border-2 border-dashed border-gray-300"
+          >
+            <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <p className="text-xl font-semibold text-gray-600">Leadership will come here</p>
+          </motion.div>
         </div>
 
         {/* Team Stats */}

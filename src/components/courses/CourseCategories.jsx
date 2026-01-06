@@ -251,7 +251,7 @@ export default function CourseCategories({ courseType = 'online' }) {
     allTitle: "All Training Categories",
     courseLabel: isOnline ? "courses" : "programs",
     ctaText: isOnline ? "Explore Courses" : "View Programs",
-    ctaTitle: isOnline ? "Need Custom Online Training?" : "Ready for Hands-On Training?",
+    ctaTitle: isOnline ? "Need Custom Training?" : "Ready for Hands-On Training?",
     ctaDescription: isOnline
       ? "We can create customized online training programs for your organization. Contact us to discuss your specific requirements."
       : "Experience world-class offline training at our state-of-the-art facilities. Learn from expert instructors with real equipment and practical exercises.",
@@ -445,14 +445,16 @@ export default function CourseCategories({ courseType = 'online' }) {
                 <p className="text-blue-100 mb-6 max-w-2xl mx-auto text-base lg:text-lg leading-relaxed">
                   {content.ctaDescription}
             </p>
-                <motion.button
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-8 py-4 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2 mx-auto"
-                >
-                  {content.ctaButton}
-                  <ArrowRight className="w-5 h-5" />
-                </motion.button>
+                <Link href="/contact">
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-8 py-4 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2 mx-auto"
+                  >
+                    {content.ctaButton}
+                    <ArrowRight className="w-5 h-5" />
+                  </motion.button>
+                </Link>
               </div>
           </div>
           </motion.div>

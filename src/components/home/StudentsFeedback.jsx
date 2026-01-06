@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Star, Quote, ThumbsUp, Sparkles, Award, CheckCircle2, ArrowRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 const FEEDBACKS = [
   {
@@ -11,8 +12,7 @@ const FEEDBACKS = [
     client: "Petty Officer Sarah Martinez",
     title: "Navigation Specialist",
     organization: "Pacific Fleet",
-    rating: 5,
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop"
+    rating: 5
   },
   {
     feedback:
@@ -20,8 +20,7 @@ const FEEDBACKS = [
     client: "Lieutenant David Chen",
     title: "Engineering Officer",
     organization: "Atlantic Command",
-    rating: 5,
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop"
+    rating: 5
   },
   {
     feedback:
@@ -29,8 +28,7 @@ const FEEDBACKS = [
     client: "Chief Warrant Officer Michael Roberts",
     title: "Operations Chief",
     organization: "Naval Reserve",
-    rating: 5,
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop"
+    rating: 5
   },
 ];
 
@@ -77,7 +75,8 @@ export default function StudentsFeedback() {
           </p>
         </motion.div>
 
-        {/* Testimonials Grid */}
+        {/* Testimonials Grid - Commented out, showing message instead */}
+        {false && (
         <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-10">
           {FEEDBACKS.map((feedback, key) => (
             <motion.div
@@ -120,13 +119,10 @@ export default function StudentsFeedback() {
                     <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full blur-lg opacity-40 group-hover:opacity-60 transition-opacity"></div>
                     {/* Avatar Border */}
                     <div className="relative w-16 h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden border-[3px] border-yellow-500 shadow-lg">
-                      <img 
-                        src={feedback.image}
-                        alt={feedback.client}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(feedback.client) + '&background=1e40af&color=fff&size=200';
-                        }}
+                      <ImagePlaceholder 
+                        type="user" 
+                        className="w-full h-full rounded-full"
+                        iconClassName="w-8 h-8 lg:w-10 lg:h-10"
                       />
                     </div>
                     {/* Status Badge - Enhanced */}
@@ -222,6 +218,24 @@ export default function StudentsFeedback() {
             </motion.div>
           ))}
         </div>
+        )}
+        
+        {/* Placeholder message */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center py-16 mb-10"
+        >
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 border-2 border-gray-200 shadow-lg inline-block max-w-2xl">
+            <Quote className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Testimonials Coming Soon</h3>
+            <p className="text-lg text-gray-600 font-medium">
+              Success stories and testimonials from our trainees will be displayed here.
+            </p>
+          </div>
+        </motion.div>
 
         {/* Enhanced Bottom CTA */}
         <motion.div

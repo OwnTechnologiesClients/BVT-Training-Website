@@ -87,7 +87,7 @@ function EventsContent() {
                 maxAttendees: maxAttendees,
                 price: event.cost === 0 || event.cost === null || event.cost === undefined ? 'Free' : `$${event.cost}`,
                 originalPrice: null,
-            image: event.eventImage || event.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
+            image: event.eventImage || event.image || null,
                 badge: (event.status === 'ongoing' || event.status === 'completed') ? null : event.status,
                 featured: false,
                 rating: 4.5,

@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { Star, BookOpen, Award, MapPin, CheckCircle2, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/utils/imageUtils";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 export default function MentorCard({ mentor, index, showLocations = false }) {
   // Transform backend instructor data to match component expectations
@@ -10,7 +12,7 @@ export default function MentorCard({ mentor, index, showLocations = false }) {
     ? `${mentor.userId.firstName || ''} ${mentor.userId.lastName || ''}`.trim()
     : mentor.name || 'Instructor';
   
-  const instructorImage = mentor.profilePic || mentor.image || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
+  const instructorImageUrl = mentor.profilePic ? getImageUrl(mentor.profilePic) : null;
   const experience = mentor.experience || 0;
   const rating = mentor.rating || 5;
   const bio = mentor.bio || '';
@@ -55,14 +57,21 @@ export default function MentorCard({ mentor, index, showLocations = false }) {
               className="relative"
             >
               <div className="w-24 h-24 lg:w-28 lg:h-28 rounded-full mx-auto overflow-hidden border-4 border-gradient-to-r from-yellow-400 to-yellow-600 bg-gradient-to-r from-yellow-400 to-yellow-600 p-0.5">
-                <img
-                  src={instructorImage}
-                  alt={instructorName}
-                  className="w-full h-full rounded-full object-cover bg-white"
-                  onError={(e) => {
-                    e.target.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
-                  }}
-                />
+                {instructorImageUrl ? (
+                  <img
+                    src={instructorImageUrl}
+                    alt={instructorName}
+                    className="w-full h-full rounded-full object-cover bg-white"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      const placeholder = e.target.nextElementSibling;
+                      if (placeholder) placeholder.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div className={`w-full h-full rounded-full ${instructorImageUrl ? 'hidden' : 'flex'}`}>
+                  <ImagePlaceholder type="instructor" className="w-full h-full rounded-full" iconClassName="w-8 h-8" />
+                </div>
               </div>
               {experience > 0 && (
                 <motion.div

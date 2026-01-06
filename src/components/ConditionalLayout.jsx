@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import FloatingInquiryButton from "./FloatingInquiryButton";
 import PromotionalPopup from "./PromotionalPopup";
 
 export default function ConditionalLayout({ children }) {
@@ -27,7 +26,6 @@ export default function ConditionalLayout({ children }) {
       <Navbar />
       <main>{children}</main>
       <Footer />
-      <FloatingInquiryButton />
       <PromotionalPopup />
     </>
   );

@@ -46,6 +46,18 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   // Video autoplay handling
   useEffect(() => {
     const video = videoRef.current;
@@ -405,16 +417,55 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Mobile Menu - Enhanced */}
+          {/* Mobile Menu - Full Screen Overlay */}
           {isMobileMenuOpen && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="lg:hidden mt-3 pb-3 border-t-2 border-blue-200 pt-3 bg-gradient-to-b from-white to-blue-50/30 rounded-b-xl"
-            >
-              <div className="flex flex-col space-y-1.5">
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              {/* Menu Panel */}
+              <motion.div 
+                initial={{ x: '-100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '-100%' }}
+                transition={{ duration: 0.3, type: 'tween' }}
+                className="fixed inset-y-0 left-0 w-full max-w-sm bg-white shadow-2xl z-50 lg:hidden overflow-y-auto"
+              >
+                <div className="p-4 border-b-2 border-blue-200 bg-gradient-to-b from-white to-blue-50/30">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 p-0.5 shadow-lg">
+                        <div className="w-full h-full rounded-md bg-white p-0.5">
+                          <img 
+                            src="/BVT_logo.png" 
+                            alt="BVT Training Logo" 
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-sm font-bold bg-gradient-to-r from-blue-950 to-blue-700 bg-clip-text text-transparent block leading-none">
+                          BVT Training
+                        </span>
+                        <span className="text-[10px] text-gray-500 font-medium">BVT Excellence</span>
+                      </div>
+                    </div>
+                    <motion.button 
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="p-2 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded-lg transition-all duration-300 shadow-md"
+                    >
+                      <X className="w-5 h-5 text-blue-950" />
+                    </motion.button>
+                  </div>
+                </div>
+                <div className="p-4 flex flex-col space-y-1.5">
                 <Link 
                   href="/" 
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -440,32 +491,20 @@ export default function Navbar() {
                 >
                   About
                 </Link>
-                <div className="px-3.5 py-2">
-                  <div className={`font-bold mb-2 text-base ${
-                    isCoursesActive ? 'text-blue-950' : 'text-gray-700'
-                  }`}>
-                    <div className="flex items-center gap-1.5">
-                      <Ship className="w-4 h-4" />
-                      Courses
-                    </div>
+                <Link 
+                  href="/courses" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`px-3.5 py-2 text-sm rounded-lg font-semibold transition-all duration-300 ${
+                    isCoursesActive 
+                      ? 'text-blue-950 bg-gradient-to-r from-blue-100 to-blue-50 shadow-md' 
+                      : 'text-gray-700 hover:text-blue-950 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Ship className="w-4 h-4" />
+                    Courses
                   </div>
-                  <div className="ml-3 space-y-1.5">
-                    <Link 
-                      href="/courses" 
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`block px-3.5 py-2 text-sm rounded-lg transition-all duration-300 ${
-                        pathname === '/courses' || pathname.startsWith('/courses')
-                          ? 'text-blue-950 bg-gradient-to-r from-blue-100 to-blue-50 shadow-md' 
-                          : 'text-gray-600 hover:text-blue-950 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100'
-                      }`}
-                    >
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
-                        All Courses
-                      </div>
-                    </Link>
-                  </div>
-                </div>
+                </Link>
                 <Link 
                   href="/events" 
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -489,87 +528,97 @@ export default function Navbar() {
                   Contact
                 </Link>
                 
-                {/* Mobile Language Toggle */}
-                <div className="px-3.5 py-2">
-                  <LanguageToggle />
-                </div>
+                {/* Divider */}
+                <div className="my-4 border-t border-gray-200"></div>
                 
-                {/* Mobile Promotional Popup Button */}
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={openPopup}
-                  className="mx-3.5 px-3.5 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer relative"
-                >
-                  {/* Out-of-box glow effect - extends beyond button */}
-                  <motion.div
-                    className="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 rounded-lg blur-md opacity-0"
-                    animate={{
-                      opacity: [0, 0.7, 0],
-                      scale: [1, 1.1, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
-                  {/* Inner glow animation */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-300 rounded-lg"
-                    animate={{
-                      opacity: [0.2, 0.6, 0.2],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
-                  <Gift className="w-4 h-4 relative z-10" />
-                  <span className="relative z-10">Get Offer</span>
-                </motion.button>
-                
-                {/* Mobile Notification Bell */}
-                {isAuthenticated && (
-                  <div className="px-3.5 py-2 flex items-center gap-2">
-                    <NotificationBell />
-                    <span className="text-sm text-gray-600">Notifications</span>
+                {/* Action Buttons Section */}
+                <div className="space-y-3 px-3.5">
+                  {/* Language Toggle */}
+                  <div className="flex justify-center">
+                    <div className="language-toggle-container-navbar-mobile">
+                      <LanguageToggle />
+                    </div>
                   </div>
-                )}
-                
-                {isAuthenticated ? (
-                  <div className="mt-1.5 space-y-2 px-3.5">
-                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                  
+                  {/* Get Offer Button */}
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={openPopup}
+                    className="w-full px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer relative"
+                  >
+                    {/* Out-of-box glow effect - extends beyond button */}
+                    <motion.div
+                      className="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 rounded-lg blur-md opacity-0"
+                      animate={{
+                        opacity: [0, 0.7, 0],
+                        scale: [1, 1.1, 1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
+                    {/* Inner glow animation */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-300 rounded-lg"
+                      animate={{
+                        opacity: [0.2, 0.6, 0.2],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
+                    <Gift className="w-4 h-4 relative z-10" />
+                    <span className="relative z-10">Get Offer</span>
+                  </motion.button>
+                  
+                  {/* Notification Bell */}
+                  {isAuthenticated && (
+                    <div className="flex items-center justify-center gap-2 py-2">
+                      <NotificationBell />
+                      <span className="text-sm text-gray-600">Notifications</span>
+                    </div>
+                  )}
+                  
+                  {/* User Actions */}
+                  {isAuthenticated ? (
+                    <div className="space-y-2">
+                      <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                        <motion.button 
+                          whileTap={{ scale: 0.95 }}
+                          className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <User className="w-4 h-4" />
+                          Dashboard
+                        </motion.button>
+                      </Link>
+                      <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handleLogout}
+                        className="w-full bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-bold hover:from-gray-300 hover:to-gray-400 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Logout
+                      </motion.button>
+                    </div>
+                  ) : (
+                    <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
                       <motion.button 
                         whileTap={{ scale: 0.95 }}
-                        className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold hover:shadow-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                        className="w-full bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
                       >
-                        <User className="w-4 h-4" />
-                        Dashboard
+                        <Sparkles className="w-4 h-4" />
+                        Enroll Now
                       </motion.button>
                     </Link>
-                    <motion.button
-                      whileTap={{ scale: 0.95 }}
-                      onClick={handleLogout}
-                      className="w-full bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-bold hover:from-gray-300 hover:to-gray-400 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Logout
-                    </motion.button>
-                  </div>
-                ) : (
-                  <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                    <motion.button 
-                      whileTap={{ scale: 0.95 }}
-                      className="mt-1.5 mx-3.5 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold hover:shadow-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      <Sparkles className="w-4 h-4" />
-                      Enroll Now
-                    </motion.button>
-                  </Link>
-                )}
-              </div>
-            </motion.div>
+                  )}
+                </div>
+                </div>
+              </motion.div>
+            </>
           )}
         </div>
       </nav>

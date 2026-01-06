@@ -6,6 +6,7 @@ import { Globe, Mic, Puzzle, Heart, Cog, Compass, Shield, Users, BookOpen, Zap, 
 import { getCategoryStats, getActiveCategories } from "@/lib/api/courseCategories";
 import { Loader2 } from "lucide-react";
 import { getImageUrl } from "@/lib/utils/imageUtils";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 import Link from "next/link";
 
 // Icon mapping based on category name keywords
@@ -22,17 +23,7 @@ const getCategoryIcon = (categoryName) => {
   return BookOpen; // Default icon
 };
 
-// Default images for categories
-const getCategoryImage = (index) => {
-  const images = [
-    "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=800&fit=crop",
-    "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop"
-  ];
-  return images[index % images.length];
-};
+// No default images - use icons only
 
 export default function CourseCategories() {
   const [categories, setCategories] = useState([]);
@@ -67,9 +58,9 @@ export default function CourseCategories() {
               id: cat._id,
               name: cat.name,
               slug: cat.slug,
+              image: cat.image || null,
               courseCount: courseCountMap[cat._id?.toString()] || 0,
-              icon: getCategoryIcon(cat.name),
-              image: getCategoryImage(index)
+              icon: getCategoryIcon(cat.name)
             }));
           
           setCategories(allCategories);
@@ -212,7 +203,7 @@ export default function CourseCategories() {
                     {row1Categories.map((category, index) => {
                       const Icon = category.icon;
                       return (
-                        <Link key={category.id || `${currentIndex}-${index}`} href={`/courses?category=${category.slug}`}>
+                        <Link key={category.id || `${currentIndex}-${index}`} href={`/courses?category=${category.slug}#courses-section`}>
                           <motion.div
                             initial={{ opacity: 0, y: 50, scale: 0.9 }}
                             whileInView={{ opacity: 1, y: 0, scale: 1 }}
@@ -223,19 +214,38 @@ export default function CourseCategories() {
                           >
                             {/* Background Image - More Visible */}
                             <div className="absolute inset-0">
-                              <img 
-                                src={category.image}
-                                alt={category.name}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.15]"
-                                onError={(e) => {
-                                  e.target.src = getCategoryImage(currentIndex + index);
-                                }}
-                              />
-                              {/* Lighter gradient overlay to show image better */}
+                              {category.image ? (
+                                <>
+                                  <img
+                                    src={getImageUrl(category.image)}
+                                    alt={category.name}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.target.style.display = 'none';
+                                      const placeholder = e.target.nextElementSibling;
+                                      if (placeholder) placeholder.style.display = 'flex';
+                                    }}
+                                  />
+                                  <div className="w-full h-full hidden">
+                                    <ImagePlaceholder 
+                                      type="category" 
+                                      className="w-full h-full"
+                                      iconClassName="w-16 h-16 text-blue-300"
+                                    />
+                                  </div>
+                                </>
+                              ) : (
+                                <ImagePlaceholder 
+                                  type="category" 
+                                  className="w-full h-full"
+                                  iconClassName="w-16 h-16 text-blue-300"
+                                />
+                              )}
+                              {/* Lighter gradient overlay to show icon better */}
                               <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-900/30 to-blue-950/50 group-hover:from-blue-950/30 group-hover:via-blue-900/20 group-hover:to-blue-950/40 transition-all duration-500"></div>
                               {/* Stronger bottom gradient for text readability */}
                               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                              {/* Side gradients for better image visibility */}
+                              {/* Side gradients for better visibility */}
                               <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20"></div>
                             </div>
 
@@ -297,19 +307,38 @@ export default function CourseCategories() {
                           >
                             {/* Background Image - More Visible */}
                             <div className="absolute inset-0">
-                              <img 
-                                src={category.image}
-                                alt={category.name}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.15]"
-                                onError={(e) => {
-                                  e.target.src = getCategoryImage(currentIndex + categoriesPerRow + index);
-                                }}
-                              />
-                              {/* Lighter gradient overlay to show image better */}
+                              {category.image ? (
+                                <>
+                                  <img
+                                    src={getImageUrl(category.image)}
+                                    alt={category.name}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.target.style.display = 'none';
+                                      const placeholder = e.target.nextElementSibling;
+                                      if (placeholder) placeholder.style.display = 'flex';
+                                    }}
+                                  />
+                                  <div className="w-full h-full hidden">
+                                    <ImagePlaceholder 
+                                      type="category" 
+                                      className="w-full h-full"
+                                      iconClassName="w-16 h-16 text-blue-300"
+                                    />
+                                  </div>
+                                </>
+                              ) : (
+                                <ImagePlaceholder 
+                                  type="category" 
+                                  className="w-full h-full"
+                                  iconClassName="w-16 h-16 text-blue-300"
+                                />
+                              )}
+                              {/* Lighter gradient overlay to show icon better */}
                               <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-900/30 to-blue-950/50 group-hover:from-blue-950/30 group-hover:via-blue-900/20 group-hover:to-blue-950/40 transition-all duration-500"></div>
                               {/* Stronger bottom gradient for text readability */}
                               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                              {/* Side gradients for better image visibility */}
+                              {/* Side gradients for better visibility */}
                               <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20"></div>
                             </div>
 

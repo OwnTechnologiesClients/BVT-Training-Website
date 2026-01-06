@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar, Clock, MapPin, Users, ChevronRight, Star, ChevronLeft, Sparkles, Award, ArrowRight } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, ChevronRight, ChevronLeft, Sparkles, Award, ArrowRight } from "lucide-react";
 import { useState, useRef } from "react";
 import { SAMPLE_EVENTS } from "./EventCard";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils/imageUtils";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, events = [], hideMaxAttendees = false }) {
   const scrollContainerRef = useRef(null);
@@ -220,7 +221,7 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, e
                 {/* Events */}
                 {filteredEvents.map((event, index) => {
                   const dateInfo = formatDate(event.date || event.startDate || new Date());
-                  const eventImage = getImageUrl(event.image || event.eventImage);
+                  const eventImage = (event.image || event.eventImage) ? getImageUrl(event.image || event.eventImage) : null;
                   const eventSlug = event.slug || event.id || event._id;
                   
                   return (
@@ -259,14 +260,21 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, e
                         >
                           {/* Event Image */}
                           <div className="relative h-48 overflow-hidden">
-                            <img
-                              src={eventImage}
-                              alt={event.title}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                              onError={(e) => {
-                                e.target.src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop';
-                              }}
-                            />
+                            {eventImage ? (
+                              <img
+                                src={eventImage}
+                                alt={event.title}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  const placeholder = e.target.nextElementSibling;
+                                  if (placeholder) placeholder.style.display = 'flex';
+                                }}
+                              />
+                            ) : null}
+                            <div className={`w-full h-full ${eventImage ? 'hidden' : 'flex'}`}>
+                              <ImagePlaceholder type="event" className="w-full h-full" />
+                            </div>
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                             
                             {/* Badges */}
@@ -306,36 +314,31 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, e
                               {event.description}
                             </p>
 
-                            {/* Event Details */}
-                            <div className="space-y-2 mb-4 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
-                              <div className="flex items-center gap-2 text-xs text-gray-700">
-                                <Clock className="w-4 h-4 text-blue-900" />
-                                <span className="font-medium">{event.time || 'TBA'}</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-xs text-gray-700">
-                                <MapPin className="w-4 h-4 text-blue-900" />
-                                <span className="line-clamp-1 font-medium">{event.location || 'TBA'}</span>
-                              </div>
-                              {!hideMaxAttendees && (
+                            {/* Event Details and Price */}
+                            <div className="mb-4">
+                              <div className="space-y-2 mb-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
                                 <div className="flex items-center gap-2 text-xs text-gray-700">
-                                  <Users className="w-4 h-4 text-blue-900" />
-                                  <span className="font-medium">{event.attendees} attendees</span>
+                                  <Clock className="w-4 h-4 text-blue-900" />
+                                  <span className="font-medium">{event.time || 'TBA'}</span>
                                 </div>
-                              )}
-                            </div>
-
-                            {/* Rating and Price */}
-                            <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
-                              <div className="flex items-center gap-1">
-                                <div className="flex items-center gap-0.5">
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star key={i} className={`w-3.5 h-3.5 ${i < Math.floor(event.rating || 4.5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                                  ))}
+                                <div className="flex items-center gap-2 text-xs text-gray-700">
+                                  <MapPin className="w-4 h-4 text-blue-900" />
+                                  <span className="line-clamp-1 font-medium">{event.location || 'TBA'}</span>
                                 </div>
-                                <span className="text-xs font-bold text-gray-900 ml-1">{event.rating || 4.5}</span>
+                                {!hideMaxAttendees && (
+                                  <div className="flex items-center gap-2 text-xs text-gray-700">
+                                    <Users className="w-4 h-4 text-blue-900" />
+                                    <span className="font-medium">{event.attendees} attendees</span>
+                                  </div>
+                                )}
                               </div>
-                              <div className="text-right">
-                                <div className="text-lg font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">{event.price || 'Free'}</div>
+                              
+                              {/* Price - Better positioned */}
+                              <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+                                <span className="text-xs text-gray-500 font-medium">Price</span>
+                                <div className="text-xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                                  {event.price || 'Free'}
+                                </div>
                               </div>
                             </div>
 

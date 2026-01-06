@@ -6,6 +6,7 @@ import { Clock, Users, Award, TrendingUp, Loader2, ArrowRight, Sparkles, BookOpe
 import { getFeaturedCourses } from "@/lib/api/courses";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils/imageUtils";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 export default function ExploreCourses() {
   const [courses, setCourses] = useState([]);
@@ -27,7 +28,7 @@ export default function ExploreCourses() {
             description: course.description || '',
             duration: course.duration || 'N/A',
             level: course.level || 'Beginner',
-            image: getImageUrl(course.image) || 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop',
+            image: getImageUrl(course.image),
             maxStudents: course.maxStudents || 100,
             slug: course.slug || course._id || course.id
           }));
@@ -153,24 +154,33 @@ export default function ExploreCourses() {
                 >
                   {/* Course Image - Clear and Prominent */}
                   <div className="relative h-48 lg:h-56 overflow-hidden">
-                    <img 
-                      src={course.image}
-                      alt={course.title}
-                      className="w-full h-full object-cover brightness-100 group-hover:brightness-110"
-                      style={{ 
-                        transform: 'scale(1)',
-                        transition: 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), brightness 0.3s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'scale(1.1)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'scale(1)';
-                      }}
-                      loading="lazy"
-                      onError={(e) => {
-                        e.target.src = 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop';
-                      }}
+                    {course.image ? (
+                      <img 
+                        src={course.image}
+                        alt={course.title}
+                        className="w-full h-full object-cover brightness-100 group-hover:brightness-110"
+                        style={{ 
+                          transform: 'scale(1)',
+                          transition: 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), brightness 0.3s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'scale(1.1)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          const placeholder = e.target.nextElementSibling;
+                          if (placeholder) placeholder.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <ImagePlaceholder 
+                      type="course" 
+                      className={`w-full h-full ${course.image ? 'hidden' : 'flex'}`}
+                      iconClassName="w-12 h-12"
                     />
                     {/* Minimal overlay - only at bottom 30% for text readability, rest of image stays clear */}
                     <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-none"></div>

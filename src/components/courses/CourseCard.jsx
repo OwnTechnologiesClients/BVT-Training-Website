@@ -4,11 +4,12 @@ import Link from 'next/link';
 import { motion } from "framer-motion";
 import { Star, Clock, MapPin, Calendar, Users, Award, ArrowRight, BookOpen, CheckCircle2 } from "lucide-react";
 import { getImageUrl } from "@/lib/utils/imageUtils";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 export default function CourseCard({ course, index }) {
   if (!course) return null;
   
-  const imageUrl = getImageUrl(course.image);
+  const imageUrl = course.image ? getImageUrl(course.image) : null;
   const skills = course.skills || course.learningObjectives || [];
   const instructorImageUrl = course.instructorImage ? getImageUrl(course.instructorImage) : null;
   const courseId = course.id || course._id;
@@ -26,14 +27,21 @@ export default function CourseCard({ course, index }) {
     >
       {/* Course Image */}
       <div className="relative h-48 lg:h-56 overflow-hidden">
-        <img
-          src={imageUrl}
-          alt={course.title}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            e.target.src = 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop';
-          }}
-        />
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={course.title}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              const placeholder = e.target.nextElementSibling;
+              if (placeholder) placeholder.style.display = 'flex';
+            }}
+          />
+        ) : null}
+        <div className={`w-full h-full ${imageUrl ? 'hidden' : 'flex'}`}>
+          <ImagePlaceholder type="course" className="w-full h-full" />
+        </div>
         
         {/* Category Badge */}
         <motion.div
@@ -93,16 +101,15 @@ export default function CourseCard({ course, index }) {
               className="w-10 h-10 rounded-full object-cover border-2 border-yellow-400"
               whileHover={{ scale: 1.1 }}
               onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=100&h=100&fit=crop&crop=face';
+                e.target.style.display = 'none';
+                const placeholder = e.target.nextElementSibling;
+                if (placeholder) placeholder.style.display = 'flex';
               }}
             />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center border-2 border-yellow-400 shadow-lg">
-              <span className="text-xs font-bold text-white">
-                {course.instructor ? course.instructor.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'IN'}
-              </span>
-            </div>
-          )}
+          ) : null}
+          <div className={`w-10 h-10 rounded-full border-2 border-yellow-400 shadow-lg overflow-hidden ${instructorImageUrl ? 'hidden' : 'flex'}`}>
+            <ImagePlaceholder type="instructor" className="w-full h-full" iconClassName="w-5 h-5" />
+          </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold text-gray-900 truncate">{course.instructor || 'Instructor'}</div>
             <div className="text-xs text-gray-500">Expert Instructor</div>

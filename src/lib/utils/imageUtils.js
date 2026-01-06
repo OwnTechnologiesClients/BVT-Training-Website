@@ -4,7 +4,7 @@
  */
 export const getImageUrl = (imagePath) => {
   if (!imagePath) {
-    return 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop';
+    return null;
   }
 
   // If already a full URL (S3 or other), return as is
