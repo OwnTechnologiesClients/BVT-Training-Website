@@ -160,7 +160,8 @@ export default function WhyChooseUs() {
           })}
         </div>
 
-        {/* Testimonials */}
+        {/* Testimonials - Commented out */}
+        {false && (
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -210,6 +211,27 @@ export default function WhyChooseUs() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </motion.div>
+        )}
+
+        {/* Placeholder Message */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mb-16"
+        >
+          <div className="text-center mb-8 lg:mb-12">
+            <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">What Our Graduates Say</h3>
+            <p className="text-gray-600 text-base lg:text-lg">Real testimonials from successful BVT Training graduates</p>
+          </div>
+          <div className="text-center py-16">
+            <div className="bg-white rounded-2xl p-12 border-2 border-dashed border-gray-300">
+              <Star className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-xl font-semibold text-gray-600">Testimonials will come here</p>
+            </div>
           </div>
         </motion.div>
 

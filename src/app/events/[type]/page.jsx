@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Loader2, AlertCircle, ArrowLeft, Calendar } from "lucide-react";
+import { Loader2, AlertCircle, ArrowLeft, Calendar, Sparkles, Award } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import EventCard from "@/components/events/EventCard";
 import { getAllEvents, mapEventTypeToBackend } from "@/lib/api/events";
 import { getEventCategoryBySlug } from "@/lib/api/eventCategory";
@@ -113,7 +114,7 @@ export default function EventTypePage() {
               maxAttendees: maxAttendees,
               price: event.cost === 0 || event.cost === null || event.cost === undefined ? 'Free' : `$${event.cost}`,
               originalPrice: null,
-              image: event.eventImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
+              image: event.eventImage || null,
               badge: (event.status === 'ongoing' || event.status === 'completed') ? null : event.status,
               featured: false,
               rating: 4.5,
@@ -182,33 +183,95 @@ export default function EventTypePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white py-16">
-        <div className="container mx-auto px-4">
+      {/* Header Section - Enhanced */}
+      <div className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 text-white py-8 lg:py-10 overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
+          backgroundSize: '40px 40px'
+        }}></div>
+        
+        {/* Animated Circles */}
+        <div className="absolute top-5 left-10 w-16 h-16 border-2 border-yellow-400/30 rounded-full animate-pulse"></div>
+        <div className="absolute bottom-5 right-20 w-12 h-12 border-2 border-yellow-400/20 rounded-full animate-pulse delay-1000"></div>
+
+        <div className="relative z-10 container mx-auto px-4">
           {/* Breadcrumb */}
-          <div className="mb-6">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-4"
+          >
             <Link
               href="/events"
-              className="inline-flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
+              className="inline-flex items-center gap-2 text-blue-200 hover:text-white transition-colors group text-base"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               <span>Back to All Events</span>
             </Link>
-          </div>
+          </motion.div>
 
-          {/* Title and Description */}
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              {displayName}
-            </h1>
-            <p className="text-xl text-blue-100 mb-6">
-              {description}
-            </p>
-            <div className="flex items-center gap-4 text-blue-200">
-              <span className="text-lg font-semibold">
-                {events.length} {events.length === 1 ? 'Event' : 'Events'} Available
+          {/* Title and Description - Enhanced */}
+          <div className="max-w-3xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="flex items-center justify-center gap-2 mb-3"
+            >
+              <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-lg">
+                <Sparkles className="w-4 h-4 text-blue-950" />
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full border border-white/20">
+                <span className="text-sm font-semibold uppercase tracking-wide">Event Type</span>
+              </div>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2"
+            >
+              <span className="bg-gradient-to-r from-white via-yellow-100 to-white bg-clip-text text-transparent">
+                {displayName}
               </span>
-            </div>
+            </motion.h1>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="h-0.5 w-16 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto mb-3"
+            ></motion.div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-lg lg:text-xl text-blue-100 mb-4 leading-relaxed"
+            >
+              {description}
+            </motion.p>
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="flex flex-wrap items-center justify-center gap-3"
+            >
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
+                <Calendar className="w-4 h-4 text-yellow-400" />
+                <div>
+                  <div className="text-xl font-bold">{events.length}</div>
+                  <div className="text-sm text-blue-200">{events.length === 1 ? 'Event' : 'Events'} Available</div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -216,7 +279,7 @@ export default function EventTypePage() {
       {/* Events Section */}
       <div className="container mx-auto px-4 py-12">
         {events.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {events.map((event, index) => {
               // Ensure the event has the correct ID for the link
               const eventId = event.id || event._id;
@@ -226,6 +289,7 @@ export default function EventTypePage() {
                   {...event}
                   id={eventId}
                   index={index}
+                  compact={false}
                 />
               );
             })}

@@ -23,6 +23,7 @@ import {
 import { getInstructorById, getInstructorBySlug } from "@/lib/api/instructors";
 import { apiRequest } from "@/lib/api";
 import { getImageUrl } from "@/lib/utils/imageUtils";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 // Get department display name
 const getDepartmentName = (dept) => {
@@ -160,7 +161,7 @@ export default function InstructorDetailsPage({ params }) {
     ? `${instructorData.userId.firstName || ''} ${instructorData.userId.lastName || ''}`.trim()
     : 'Instructor';
   
-  const instructorImage = instructorData.profilePic || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
+  const instructorImageUrl = instructorData.profilePic ? getImageUrl(instructorData.profilePic) : null;
   const rating = instructorData.rating || 5;
   const experience = instructorData.experience || 0;
   const department = instructorData.department || '';
@@ -464,17 +465,24 @@ export default function InstructorDetailsPage({ params }) {
                                 className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
                               >
                                 {course.image ? (
-                                  <img
-                                    src={getImageUrl(course.image)}
-                                    alt={course.title}
-                                    className="w-full h-48 object-cover"
-                                    onError={(e) => {
-                                      e.target.src = 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop';
-                                    }}
-                                  />
+                                  <>
+                                    <img
+                                      src={getImageUrl(course.image)}
+                                      alt={course.title}
+                                      className="w-full h-48 object-cover"
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        const placeholder = e.target.nextElementSibling;
+                                        if (placeholder) placeholder.style.display = 'flex';
+                                      }}
+                                    />
+                                    <div className="w-full h-48 hidden">
+                                      <ImagePlaceholder type="course" className="w-full h-full" />
+                                    </div>
+                                  </>
                                 ) : (
-                                  <div className="w-full h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                                    <BookOpen className="w-16 h-16 text-blue-900 opacity-50" />
+                                  <div className="w-full h-48">
+                                    <ImagePlaceholder type="course" className="w-full h-full" />
                                   </div>
                                 )}
                                 <div className="p-4">
@@ -518,12 +526,22 @@ export default function InstructorDetailsPage({ params }) {
                 <div className="sticky top-6">
                   <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                     {/* Instructor Image */}
-                    <div className="relative">
-                      <img 
-                        src={instructorImage} 
-                        alt={instructorName}
-                        className="w-full h-64 object-cover"
-                      />
+                    <div className="relative h-64">
+                      {instructorImageUrl ? (
+                        <img 
+                          src={instructorImageUrl} 
+                          alt={instructorName}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            const placeholder = e.target.nextElementSibling;
+                            if (placeholder) placeholder.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div className={`w-full h-full ${instructorImageUrl ? 'hidden' : 'flex'}`}>
+                        <ImagePlaceholder type="instructor" className="w-full h-full" iconClassName="w-16 h-16" />
+                      </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                       <div className="absolute bottom-4 left-4 right-4">
             

@@ -28,6 +28,8 @@ import {
 import { getEventById, getEventBySlug } from "@/lib/api/events";
 import { getAllEvents } from "@/lib/api/events";
 import EventCard from "@/components/events/EventCard";
+import { getImageUrl } from "@/lib/utils/imageUtils";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 // Map backend eventType to display names
 const getEventTypeDisplayName = (type) => {
@@ -245,7 +247,7 @@ export default function EventDetailsPage({ params }) {
                 maxAttendees: e.maxAttendees || 1,
                 price: e.cost === 0 || e.cost === null || e.cost === undefined ? 'Free' : `$${e.cost}`,
                 originalPrice: null,
-                image: e.eventImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
+                image: e.eventImage || null,
                 badge: (e.status === 'ongoing' || e.status === 'completed') ? null : e.status,
                 featured: false,
                 rating: 4.5,
@@ -742,12 +744,22 @@ export default function EventDetailsPage({ params }) {
                 <div className="sticky top-6">
                   <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                     {/* Event Thumbnail */}
-                    <div className="relative">
-                      <img 
-                        src={eventData.eventImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop'} 
-                        alt={eventData.title}
-                        className="w-full h-56 object-cover"
-                      />
+                    <div className="relative h-56">
+                      {eventData.eventImage ? (
+                        <img 
+                          src={getImageUrl(eventData.eventImage)} 
+                          alt={eventData.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            const placeholder = e.target.nextElementSibling;
+                            if (placeholder) placeholder.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div className={`w-full h-full ${eventData.eventImage ? 'hidden' : 'flex'}`}>
+                        <ImagePlaceholder type="event" className="w-full h-full" iconClassName="w-16 h-16" />
+                      </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     </div>
 

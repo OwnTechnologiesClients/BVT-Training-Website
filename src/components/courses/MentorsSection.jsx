@@ -213,48 +213,6 @@ export default function MentorsSection({ mentors: propMentors, showLocations = f
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-center"
           >
-            <div className="bg-gradient-to-r from-blue-900 to-blue-950 rounded-2xl lg:rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden border-2 border-yellow-400/30">
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-4 left-4 w-32 h-32 border-2 border-yellow-500 rounded-full"></div>
-                <div className="absolute bottom-4 right-4 w-24 h-24 border-2 border-yellow-500 rounded-full"></div>
-              </div>
-
-              <div className="relative z-10">
-                <h3 className="text-2xl lg:text-3xl font-bold mb-4">
-                  {showLocations ? "Ready to Learn Hands-On?" : "Ready to Learn from the Best?"}
-                </h3>
-                <p className="text-blue-100 mb-6 max-w-2xl mx-auto text-base lg:text-lg leading-relaxed">
-                  {showLocations ? 
-                    "Join hundreds of BVT personnel who have advanced their careers through our expert-led offline training programs. Experience real-world training with state-of-the-art equipment." :
-                    "Join thousands of BVT personnel who have advanced their careers through our expert-led training programs. Start your journey with world-class instructors."
-                  }
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href="/instructors">
-                    <motion.button
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-8 py-4 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center justify-center gap-2"
-                    >
-                      <Users className="w-5 h-5" />
-                      Meet All Instructors
-                      <ArrowRight className="w-5 h-5" />
-                    </motion.button>
-                  </Link>
-                  <Link href="/courses">
-                    <motion.button
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="border-2 border-yellow-600 text-yellow-500 px-8 py-4 rounded-xl font-bold hover:bg-yellow-600 hover:text-blue-950 transition-all flex items-center justify-center gap-2"
-                    >
-                      <TrendingUp className="w-5 h-5" />
-                      {showLocations ? "Browse Workshops" : "Browse Courses"}
-                    </motion.button>
-                  </Link>
-                </div>
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>

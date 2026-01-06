@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Search, ChevronDown, Sparkles, Filter, X } from "lucide-react";
 import CourseCard from "./CourseCard";
@@ -9,17 +10,157 @@ export default function CourseTabs({
   tabs, 
   courses, 
   allCourses = [], // All courses (both online and offline) for filtering
+  allCoursesForTabs = [], // All courses without category filter for "All Courses" tab
   searchResults, 
   activeFilters, 
   courseType = 'online',
   onCourseTypeChange,
   onlineCount = 0,
   offlineCount = 0,
-  onSearchChange
+  onSearchChange,
+  selectedCategorySlug = null,
+  selectedCategoryName = null
 }) {
-  const [activeTab, setActiveTab] = useState("all");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const categoryFromUrl = searchParams.get('category');
+  
+  // Initialize activeTab from URL category if present
+  const getInitialTab = () => {
+    if (categoryFromUrl) {
+      // Find matching tab by slug or name
+      const matchingTab = tabs.find(tab => 
+        tab.id === categoryFromUrl || 
+        tab.label.toLowerCase().replace(/\s+/g, '-') === categoryFromUrl.toLowerCase()
+      );
+      if (matchingTab) {
+        return matchingTab.id;
+      }
+      // Try to match by category name in courses
+      const matchingCourse = allCourses.find(c => 
+        c.category && (c.category.toLowerCase().replace(/\s+/g, '-') === categoryFromUrl.toLowerCase() ||
+        c.category.toLowerCase() === categoryFromUrl.toLowerCase())
+      );
+      if (matchingCourse) {
+        return matchingCourse.category.toLowerCase().replace(/\s+/g, '-');
+      }
+    }
+    return "all";
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab());
   const [displayedCount, setDisplayedCount] = useState(8);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Update activeTab when category from URL changes
+  useEffect(() => {
+    // Priority 1: Use selectedCategorySlug if provided (from parent)
+    if (selectedCategorySlug) {
+      // Find matching tab by slug
+      const matchingTab = tabs.find(tab => 
+        tab.id === selectedCategorySlug.toLowerCase() || 
+        tab.id === selectedCategorySlug
+      );
+      if (matchingTab) {
+        setActiveTab(matchingTab.id);
+        return;
+      }
+      // If no matching tab, use the slug directly
+      setActiveTab(selectedCategorySlug.toLowerCase());
+      return;
+    }
+    
+    // Priority 2: Use categoryFromUrl from URL params
+    if (categoryFromUrl) {
+      // First, try to find matching tab by slug or name
+      const matchingTab = tabs.find(tab => 
+        tab.id === categoryFromUrl.toLowerCase() || 
+        tab.id === categoryFromUrl ||
+        tab.label.toLowerCase().replace(/\s+/g, '-') === categoryFromUrl.toLowerCase()
+      );
+      if (matchingTab) {
+        setActiveTab(matchingTab.id);
+        return;
+      }
+      
+      // Try to match by category slug in courses - use categorySlug if available
+      const matchingCourse = allCourses.find(c => {
+        // Use categorySlug from transformed course if available
+        if (c.categorySlug) {
+          return c.categorySlug === categoryFromUrl.toLowerCase();
+        }
+        
+        if (!c.category) return false;
+        
+        // If category is an object
+        if (typeof c.category === 'object') {
+          const catSlug = c.category.slug || c.category.name?.toLowerCase().replace(/\s+/g, '-');
+          return catSlug === categoryFromUrl.toLowerCase();
+        }
+        
+        // If category is a string (name), convert to slug
+        const catSlug = c.category.toLowerCase().replace(/\s+/g, '-');
+        return catSlug === categoryFromUrl.toLowerCase();
+      });
+      
+      if (matchingCourse) {
+        // Use categorySlug if available, otherwise derive from category
+        const categoryValue = matchingCourse.categorySlug || 
+          (typeof matchingCourse.category === 'object' 
+            ? (matchingCourse.category.slug || matchingCourse.category.name?.toLowerCase().replace(/\s+/g, '-'))
+            : matchingCourse.category.toLowerCase().replace(/\s+/g, '-'));
+        setActiveTab(categoryValue);
+      } else if (allCourses.length > 0) {
+        // If courses are already filtered by backend, get category from first course
+        const firstCourse = allCourses[0];
+        if (firstCourse.categorySlug) {
+          setActiveTab(firstCourse.categorySlug);
+        } else if (firstCourse.category) {
+          const categoryValue = typeof firstCourse.category === 'object' 
+            ? (firstCourse.category.slug || firstCourse.category.name?.toLowerCase().replace(/\s+/g, '-'))
+            : firstCourse.category.toLowerCase().replace(/\s+/g, '-');
+          setActiveTab(categoryValue);
+        }
+      }
+    } else {
+      // Check if all courses have the same category (indicating backend filtering)
+      if (allCourses.length > 0) {
+        const firstCourse = allCourses[0];
+        // Use categorySlug if available
+        if (firstCourse.categorySlug) {
+          // Check if all courses have the same category slug
+          const allSameCategory = allCourses.every(course => {
+            return course.categorySlug === firstCourse.categorySlug;
+          });
+          
+          if (allSameCategory) {
+            setActiveTab(firstCourse.categorySlug);
+            return;
+          }
+        } else if (firstCourse.category) {
+          const firstCategory = typeof firstCourse.category === 'object' 
+            ? (firstCourse.category.slug || firstCourse.category.name?.toLowerCase().replace(/\s+/g, '-'))
+            : firstCourse.category.toLowerCase().replace(/\s+/g, '-');
+          
+          // Check if all courses have the same category
+          const allSameCategory = allCourses.every(course => {
+            if (!course.category) return false;
+            const courseCategory = typeof course.category === 'object' 
+              ? (course.category.slug || course.category.name?.toLowerCase().replace(/\s+/g, '-'))
+              : course.category.toLowerCase().replace(/\s+/g, '-');
+            return courseCategory === firstCategory;
+          });
+          
+          // If all courses have same category, it means backend filtered them
+          if (allSameCategory && firstCategory) {
+            setActiveTab(firstCategory);
+            return;
+          }
+        }
+      }
+      setActiveTab("all");
+    }
+  }, [categoryFromUrl, selectedCategorySlug, tabs, allCourses]);
 
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -58,14 +199,42 @@ export default function CourseTabs({
       );
     }
 
-    // Check if it's a category tab
-    const matchingCategory = filteredCourses.find(c => 
-      c.category && c.category.toLowerCase().replace(/\s+/g, '-') === activeTab
-    );
+    // Check if it's a category tab - match against category slug or name
+    const matchingCategory = filteredCourses.find(c => {
+      if (!c.category) return false;
+      
+      // If category is an object
+      if (typeof c.category === 'object') {
+        const catSlug = c.category.slug || c.category.name?.toLowerCase().replace(/\s+/g, '-');
+        const catName = c.category.name?.toLowerCase().replace(/\s+/g, '-');
+        return catSlug === activeTab || catName === activeTab;
+      }
+      
+      // If category is a string (name)
+      const catSlug = c.category.toLowerCase().replace(/\s+/g, '-');
+      return catSlug === activeTab;
+    });
+    
     if (matchingCategory) {
-      const categoryFiltered = filteredCourses.filter(course => 
-        course.category && course.category.toLowerCase().replace(/\s+/g, '-') === activeTab
-      );
+      const categoryFiltered = filteredCourses.filter(course => {
+        // Use categorySlug if available (from transformed course)
+        if (course.categorySlug) {
+          return course.categorySlug === activeTab || course.categorySlug === activeTab.toLowerCase();
+        }
+        
+        if (!course.category) return false;
+        
+        // If category is an object
+        if (typeof course.category === 'object') {
+          const catSlug = course.category.slug || course.category.name?.toLowerCase().replace(/\s+/g, '-');
+          return catSlug === activeTab || catSlug === activeTab.toLowerCase();
+        }
+        
+        // If category is a string (name), convert to slug
+        const catSlug = course.category.toLowerCase().replace(/\s+/g, '-');
+        return catSlug === activeTab || catSlug === activeTab.toLowerCase();
+      });
+      
       // Filter by course type
       return categoryFiltered.filter(course => 
         type === 'online' ? course.isOnline !== false : course.isOnline === false
@@ -105,14 +274,26 @@ export default function CourseTabs({
   const filteredOfflineCount = getFilteredCoursesByType('offline').length;
 
   const getFilteredCourses = () => {
-    // Start with all courses (both online and offline) for filtering
-    let filteredCourses = allCourses.length > 0 ? allCourses : courses;
+    // If "All Courses" or "Featured" is selected and category is in URL, use allCoursesForTabs
+    // Otherwise, use the filtered courses from backend
+    let filteredCourses;
+    if ((activeTab === 'all' || activeTab === 'featured' || activeTab === 'certified') && categoryFromUrl && allCoursesForTabs.length > 0) {
+      // Use all courses when "All Courses" or "Featured" is selected to show all courses, not just filtered ones
+      filteredCourses = allCoursesForTabs;
+    } else {
+      filteredCourses = allCourses.length > 0 ? allCourses : courses;
+    }
+
+    // If category is in URL, courses are already filtered by backend - skip category filtering
+    const isCategoryFilteredFromUrl = categoryFromUrl && categoryFromUrl !== 'all';
 
     // Apply search query filter
     if (searchQuery) {
       filteredCourses = filteredCourses.filter(course =>
         course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.category?.toLowerCase().includes(searchQuery.toLowerCase())
+        (typeof course.category === 'object' 
+          ? course.category?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+          : course.category?.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
 
@@ -123,26 +304,54 @@ export default function CourseTabs({
       );
     }
 
-    // Apply tab filtering
-    if (activeTab === 'all') {
-      // Filter by course type after applying other filters
+    // Apply tab filtering - but skip if already filtered by backend category
+    if (activeTab === 'all' || (isCategoryFilteredFromUrl && activeTab !== 'all')) {
+      // If category filtered from URL, just filter by course type
+      // Otherwise, filter by course type after applying other filters
       return filteredCourses.filter(course => 
         courseType === 'online' ? course.isOnline !== false : course.isOnline === false
       );
     }
 
-    // Check if it's a category tab
-    const matchingCategory = filteredCourses.find(c => 
-      c.category && c.category.toLowerCase().replace(/\s+/g, '-') === activeTab
-    );
-    if (matchingCategory) {
-      const categoryFiltered = filteredCourses.filter(course => 
-        course.category && course.category.toLowerCase().replace(/\s+/g, '-') === activeTab
-      );
-      // Filter by course type
-      return categoryFiltered.filter(course => 
-        courseType === 'online' ? course.isOnline !== false : course.isOnline === false
-      );
+    // Check if it's a category tab - match against category slug or name
+    // Only do this if NOT already filtered by backend
+    if (!isCategoryFilteredFromUrl) {
+      const matchingCategory = filteredCourses.find(c => {
+        if (!c.category) return false;
+        
+        // If category is an object
+        if (typeof c.category === 'object') {
+          const catSlug = c.category.slug || c.category.name?.toLowerCase().replace(/\s+/g, '-');
+          const catName = c.category.name?.toLowerCase().replace(/\s+/g, '-');
+          return catSlug === activeTab || catName === activeTab;
+        }
+        
+        // If category is a string (name)
+        const catSlug = c.category.toLowerCase().replace(/\s+/g, '-');
+        return catSlug === activeTab;
+      });
+      
+      if (matchingCategory) {
+        const categoryFiltered = filteredCourses.filter(course => {
+          if (!course.category) return false;
+          
+          // If category is an object
+          if (typeof course.category === 'object') {
+            const catSlug = course.category.slug || course.category.name?.toLowerCase().replace(/\s+/g, '-');
+            const catName = course.category.name?.toLowerCase().replace(/\s+/g, '-');
+            return catSlug === activeTab || catName === activeTab;
+          }
+          
+          // If category is a string (name)
+          const catSlug = course.category.toLowerCase().replace(/\s+/g, '-');
+          return catSlug === activeTab;
+        });
+        
+        // Filter by course type
+        return categoryFiltered.filter(course => 
+          courseType === 'online' ? course.isOnline !== false : course.isOnline === false
+        );
+      }
     }
 
     // Check standard filters
@@ -206,16 +415,27 @@ export default function CourseTabs({
   const displayedCourses = filteredCourses.slice(0, displayedCount);
   const hasMore = filteredCourses.length > displayedCount;
   
-  // Get selected category for dropdown
+  // Get selected category for dropdown - check if activeTab is a category or use selectedCategoryName
   const selectedCategory = categoryTabs.find(tab => tab.id === activeTab);
+  // If no category tab matches but we have selectedCategoryName or selectedCategorySlug, find it
+  const displayCategory = selectedCategory || 
+    (selectedCategorySlug && categoryTabs.find(tab => tab.id === selectedCategorySlug)) ||
+    (selectedCategoryName && categoryTabs.find(tab => 
+      tab.label === selectedCategoryName || tab.label.toLowerCase().replace(/\s+/g, '-') === selectedCategorySlug
+    ));
   
-  // Handle category dropdown change
+  // Handle category dropdown change - update URL and let parent handle fetching
   const handleCategoryChange = (e) => {
     const value = e.target.value;
-    if (value) {
+    if (value && value !== 'all') {
       setActiveTab(value);
+      // Update URL with category slug using Next.js router
+      const categorySlug = value; // tab.id is already the slug format
+      router.push(`/courses?category=${categorySlug}#courses-section`);
     } else {
       setActiveTab('all');
+      // Clear category from URL to show all courses
+      router.push('/courses#courses-section');
     }
   };
 
@@ -233,7 +453,7 @@ export default function CourseTabs({
   };
 
   return (
-    <section className="relative py-10 lg:py-12 bg-gradient-to-br from-white via-blue-50/30 to-white overflow-hidden">
+    <section id="courses-list" className="relative py-10 lg:py-12 bg-gradient-to-br from-white via-blue-50/30 to-white overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
@@ -326,7 +546,13 @@ export default function CourseTabs({
             <div className="flex flex-wrap justify-center items-center gap-3 lg:gap-4">
               {/* All Courses Button */}
               <motion.button
-                onClick={() => setActiveTab('all')}
+                onClick={() => {
+                  setActiveTab('all');
+                  // Clear category from URL to show all courses
+                  if (categoryFromUrl) {
+                    router.push('/courses#courses-section');
+                  }
+                }}
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 className={`px-6 py-3 lg:px-8 lg:py-4 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 ${
@@ -345,10 +571,10 @@ export default function CourseTabs({
               {categoryTabs.length > 0 && (
                 <div className="relative">
                   <select
-                    value={selectedCategory?.id || ''}
+                    value={displayCategory?.id || (activeTab !== 'all' && categoryTabs.find(t => t.id === activeTab)?.id) || ''}
                     onChange={handleCategoryChange}
                     className={`appearance-none px-6 py-3 lg:px-8 lg:py-4 pr-12 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 border-2 ${
-                      selectedCategory && activeTab === selectedCategory.id
+                      (displayCategory && activeTab === displayCategory.id) || (activeTab !== 'all' && categoryTabs.find(t => t.id === activeTab))
                         ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 shadow-lg border-yellow-600"
                         : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200 hover:border-yellow-400"
                     }`}
@@ -361,7 +587,7 @@ export default function CourseTabs({
                     ))}
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                    <ChevronDown className={`w-5 h-5 ${selectedCategory && activeTab === selectedCategory.id ? 'text-blue-950' : 'text-gray-500'}`} />
+                    <ChevronDown className={`w-5 h-5 ${(displayCategory && activeTab === displayCategory.id) || (activeTab !== 'all' && categoryTabs.find(t => t.id === activeTab)) ? 'text-blue-950' : 'text-gray-500'}`} />
                   </div>
                 </div>
               )}
@@ -370,7 +596,13 @@ export default function CourseTabs({
               {otherTabs.map((tab) => (
                 <motion.button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    // Clear category from URL for "Featured" and other special tabs to show all
+                    if (categoryFromUrl && (tab.id === 'featured' || tab.id === 'certified')) {
+                      router.push('/courses#courses-section');
+                    }
+                  }}
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   className={`px-6 py-3 lg:px-8 lg:py-4 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 ${

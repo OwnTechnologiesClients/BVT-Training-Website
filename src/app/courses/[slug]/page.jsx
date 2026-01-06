@@ -29,6 +29,7 @@ import { useCourseEnrollment } from "@/hooks/useCourseEnrollment";
 import { getCourseBySlug } from "@/lib/api/courses";
 import { getAllCourses } from "@/lib/api/courses";
 import { getImageUrl } from "@/lib/utils/imageUtils";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 // Sample course data (fallback)
 const FALLBACK_COURSE_DATA = {
@@ -39,7 +40,7 @@ const FALLBACK_COURSE_DATA = {
   lastUpdated: "December 11, 2024",
   rating: 4.9,
   totalRatings: 156,
-  image: "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=800&h=600&fit=crop",
+  image: null,
   price: 799,
   originalPrice: 999,
   lectures: 24,
@@ -107,7 +108,7 @@ By the end of this course, you'll have the expertise to lead complex BVT operati
   instructor: {
     name: "Admiral Sarah Mitchell",
     title: "Fleet Commander",
-    image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
+    image: null,
     rating: 5.0,
     courses: 8,
     students: 1250,
@@ -121,26 +122,24 @@ const FALLBACK_RELATED_COURSES = [
     title: "Submarine Command Operations",
     slug: "submarine-command-operations",
     instructor: "Commander James Rodriguez",
-    instructorImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+    instructorImage: null,
     category: "Submarine Operations",
     lessons: 20,
     students: 85,
-    rating: 4.8,
     price: 999,
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop"
+    image: null
   },
   {
     id: 3,
     title: "Leadership Excellence Program",
     slug: "leadership-excellence-program",
     instructor: "Vice Admiral Michael Thompson",
-    instructorImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
+    instructorImage: null,
     category: "Leadership",
     lessons: 18,
     students: 120,
-    rating: 4.9,
     price: 899,
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop"
+    image: null
   }
 ];
 
@@ -205,14 +204,18 @@ export default function CourseDetailsPage({ params }) {
           // Fetch related courses (same category or fallback to all courses)
           try {
             let relatedResponse;
-            const categoryId = course.category?._id || course.category;
+            // Get category ID - it could be an ObjectId or a string
+            const categoryId = course.category?._id 
+              ? (typeof course.category._id === 'string' ? course.category._id : course.category._id.toString())
+              : (course.category && typeof course.category === 'string' ? course.category : null);
             
             if (categoryId) {
               // Try to fetch by category first
               try {
                 relatedResponse = await getAllCourses({
                   category: categoryId,
-                  limit: 6
+                  limit: 6,
+                  status: 'active'
                 });
               } catch (catErr) {
                 console.error('Error fetching by category:', catErr);
@@ -224,7 +227,8 @@ export default function CourseDetailsPage({ params }) {
             if (!relatedResponse || !relatedResponse.success || !relatedResponse.data || relatedResponse.data.length === 0) {
               try {
                 relatedResponse = await getAllCourses({
-                  limit: 6
+                  limit: 6,
+                  status: 'active'
                 });
               } catch (allErr) {
                 console.error('Error fetching all courses:', allErr);
@@ -243,17 +247,14 @@ export default function CourseDetailsPage({ params }) {
               if (filtered.length > 0) {
                 setRelatedCourses(filtered.slice(0, 3));
               } else {
-                // Use fallback if no courses found after filtering
-                setRelatedCourses(FALLBACK_RELATED_COURSES);
+                setRelatedCourses([]);
               }
             } else {
-              // Use fallback if API call failed
-              setRelatedCourses(FALLBACK_RELATED_COURSES);
+              setRelatedCourses([]);
             }
           } catch (err) {
             console.error('Error fetching related courses:', err);
-            // Use fallback on error
-            setRelatedCourses(FALLBACK_RELATED_COURSES);
+            setRelatedCourses([]);
           }
         } else {
           setError('Course not found');
@@ -341,7 +342,7 @@ export default function CourseDetailsPage({ params }) {
   // Get instructor profilePic from instructor model (not userId) and convert to full URL
   const instructorImageUrl = courseData.instructor?.profilePic
     ? getImageUrl(courseData.instructor.profilePic)
-    : 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
+    : null;
   // Get instructor bio from instructor model
   const instructorBio = courseData.instructor?.bio || null;
 
@@ -392,7 +393,7 @@ export default function CourseDetailsPage({ params }) {
   const materials = courseData.materials || [];
 
 
-  const courseImage = getImageUrl(courseData.image) || 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=800&h=600&fit=crop';
+  const courseImage = courseData.image ? getImageUrl(courseData.image) : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
@@ -446,15 +447,22 @@ export default function CourseDetailsPage({ params }) {
                     <div className="flex flex-wrap items-center gap-4 lg:gap-6 text-sm mb-4 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200">
                       {instructorName && (
                         <div className="flex items-center gap-3">
-                          <motion.img
-                            whileHover={{ scale: 1.1 }}
-                            src={instructorImageUrl}
-                            alt={instructorName}
-                            className="w-12 h-12 rounded-full object-cover border-2 border-yellow-400 shadow-lg"
-                            onError={(e) => {
-                              e.target.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
-                            }}
-                          />
+                          {instructorImageUrl ? (
+                            <motion.img
+                              whileHover={{ scale: 1.1 }}
+                              src={instructorImageUrl}
+                              alt={instructorName}
+                              className="w-12 h-12 rounded-full object-cover border-2 border-yellow-400 shadow-lg"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                const placeholder = e.target.nextElementSibling;
+                                if (placeholder) placeholder.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <div className={`w-12 h-12 rounded-full border-2 border-yellow-400 shadow-lg overflow-hidden ${instructorImageUrl ? 'hidden' : 'flex'}`}>
+                            <ImagePlaceholder type="instructor" className="w-full h-full" iconClassName="w-6 h-6" />
+                          </div>
                           <div>
                             <span className="text-blue-700 text-xs font-medium">Instructor</span>
                             <div className="font-bold text-gray-900">{instructorName}</div>
@@ -671,16 +679,23 @@ export default function CourseDetailsPage({ params }) {
                           <h2 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">Your Instructor</h2>
                         </div>
                         <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl border border-indigo-200">
-                          <motion.img
-                            whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
-                            transition={{ duration: 0.3 }}
-                            src={instructorImageUrl}
-                            alt={instructorName}
-                            className="w-24 h-24 rounded-full object-cover border-4 border-yellow-400 shadow-xl"
-                            onError={(e) => {
-                              e.target.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
-                            }}
-                          />
+                          {instructorImageUrl ? (
+                            <motion.img
+                              whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+                              transition={{ duration: 0.3 }}
+                              src={instructorImageUrl}
+                              alt={instructorName}
+                              className="w-24 h-24 rounded-full object-cover border-4 border-yellow-400 shadow-xl"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                const placeholder = e.target.nextElementSibling;
+                                if (placeholder) placeholder.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <div className={`w-24 h-24 rounded-full border-4 border-yellow-400 shadow-xl overflow-hidden flex-shrink-0 ${instructorImageUrl ? 'hidden' : 'flex'}`}>
+                            <ImagePlaceholder type="instructor" className="w-full h-full" iconClassName="w-12 h-12" />
+                          </div>
                           <div className="flex-1">
                             <h3 className="text-xl font-bold text-gray-900 mb-2">{instructorName}</h3>
                             {instructor.email && (
@@ -744,21 +759,24 @@ export default function CourseDetailsPage({ params }) {
                   <div className="bg-white rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden border-2 border-gray-200 hover:border-yellow-400 transition-all">
                     {/* Course Thumbnail */}
                     <div className="relative h-56 lg:h-64 overflow-hidden">
-                      <img
-                        src={courseImage}
-                        alt={courseData.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="absolute inset-0 flex items-center justify-center"
-                      >
-                        <div className="bg-white/90 backdrop-blur-sm rounded-full p-4 hover:bg-white transition-colors shadow-xl">
-                          <Play className="w-8 h-8 text-blue-900" />
-                        </div>
-                      </motion.button>
+                      {courseImage ? (
+                        <img
+                          src={courseImage}
+                          alt={courseData.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            const placeholder = e.target.nextElementSibling;
+                            if (placeholder) placeholder.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div className={`w-full h-full ${courseImage ? 'hidden' : 'flex'}`}>
+                        <ImagePlaceholder 
+                          type="course" 
+                          className="w-full h-full"
+                        />
+                      </div>
                     </div>
 
                     {/* Course Details */}
@@ -882,7 +900,8 @@ export default function CourseDetailsPage({ params }) {
         </div>
       </section>
 
-      {/* Related Courses - Full Width */}
+      {/* Related Courses - Full Width - Only show if courses available */}
+      {relatedCourses.length > 0 && (
       <section id="related-courses" className="relative py-6 lg:py-8 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
         {/* Decorative Background Elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
@@ -927,9 +946,10 @@ export default function CourseDetailsPage({ params }) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
               {relatedCourses.map((course, index) => {
                 const courseId = course._id || course.id;
-                const courseSlug = course.slug || courseId;
+                // Use slug if available, otherwise use ID (getCourseBySlug handles both)
+                const courseSlug = course.slug || courseId?.toString();
                 const courseTitle = course.title || 'Untitled Course';
-                const courseImage = getImageUrl(course.image) || 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop';
+                const courseImage = course.image ? getImageUrl(course.image) : null;
                 const courseCategory = course.category?.name || course.category || 'Uncategorized';
                 const instructor = course.instructor?.userId || course.instructor || {};
                 const instructorName = instructor.firstName && instructor.lastName
@@ -938,7 +958,7 @@ export default function CourseDetailsPage({ params }) {
                 // Get instructor profilePic from instructor model (not userId) and convert to full URL
                 const instructorImage = course.instructor?.profilePic
                   ? getImageUrl(course.instructor.profilePic)
-                  : 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
+                  : null;
                 const courseDuration = course.duration || null;
                 const courseLevel = course.level || null;
 
@@ -955,23 +975,22 @@ export default function CourseDetailsPage({ params }) {
                     {/* Course Image */}
                     <Link href={`/courses/${courseSlug}`}>
                       <div className="relative h-52 lg:h-56 overflow-hidden cursor-pointer">
-                        <img 
-                          src={courseImage} 
-                          alt={courseTitle} 
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out" 
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent group-hover:from-black/90 group-hover:via-black/50 transition-all duration-300"></div>
-                        
-                        {/* Play Button Overlay on Hover */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            whileHover={{ scale: 1.1 }}
-                            className="bg-white/95 backdrop-blur-sm rounded-full p-4 shadow-2xl"
-                          >
-                            <Play className="w-8 h-8 text-blue-900 ml-1" fill="currentColor" />
-                          </motion.div>
+                        {courseImage ? (
+                          <img 
+                            src={courseImage} 
+                            alt={courseTitle} 
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out" 
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              const placeholder = e.target.nextElementSibling;
+                              if (placeholder) placeholder.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <div className={`w-full h-full ${courseImage ? 'hidden' : 'flex'}`}>
+                          <ImagePlaceholder type="course" className="w-full h-full" />
                         </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent group-hover:from-black/90 group-hover:via-black/50 transition-all duration-300"></div>
 
                         {/* Category Badge */}
                         <div className="absolute top-4 left-4 z-10">
@@ -982,15 +1001,6 @@ export default function CourseDetailsPage({ params }) {
                           </motion.span>
                         </div>
 
-                        {/* Rating Badge */}
-                        {course.rating && (
-                          <div className="absolute top-4 right-4 z-10">
-                            <div className="bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-xl border border-white/50">
-                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                              <span className="text-sm font-bold text-gray-900">{course.rating.toFixed(1)}</span>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </Link>
 
@@ -1000,15 +1010,22 @@ export default function CourseDetailsPage({ params }) {
                       {instructorName && (
                         <Link href={`/courses/${courseSlug}`}>
                           <div className="flex items-center gap-3 mb-4 group/instructor cursor-pointer">
-                            <motion.img 
-                              whileHover={{ scale: 1.1, rotate: 5 }}
-                              src={instructorImage} 
-                              alt={instructorName} 
-                              className="w-11 h-11 rounded-full object-cover border-2 border-yellow-400 shadow-md transition-all duration-300" 
-                              onError={(e) => {
-                                e.target.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face';
-                              }}
-                            />
+                            {instructorImage ? (
+                              <motion.img 
+                                whileHover={{ scale: 1.1, rotate: 5 }}
+                                src={instructorImage} 
+                                alt={instructorName} 
+                                className="w-11 h-11 rounded-full object-cover border-2 border-yellow-400 shadow-md transition-all duration-300" 
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  const placeholder = e.target.nextElementSibling;
+                                  if (placeholder) placeholder.style.display = 'flex';
+                                }}
+                              />
+                            ) : null}
+                            <div className={`w-11 h-11 rounded-full border-2 border-yellow-400 shadow-md overflow-hidden ${instructorImage ? 'hidden' : 'flex'}`}>
+                              <ImagePlaceholder type="instructor" className="w-full h-full" iconClassName="w-6 h-6" />
+                            </div>
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-bold text-gray-900 group-hover/instructor:text-blue-900 transition-colors truncate">{instructorName}</div>
                               <div className="text-xs text-gray-500">Instructor</div>
@@ -1097,20 +1114,10 @@ export default function CourseDetailsPage({ params }) {
                 );
               })}
             </div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center py-12"
-            >
-              <div className="text-5xl mb-4">📚</div>
-              <p className="text-gray-500 text-lg font-medium">No related courses found at the moment.</p>
-              <p className="text-gray-400 text-sm mt-2">Check back later for more courses!</p>
-            </motion.div>
-          )}
+          ) : null}
         </div>
       </section>
+      )}
     </div>
   );
 }

@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Users, ArrowRight, Clock, Loader2, Sparkles, Award, TrendingUp, Globe, Video } from "lucide-react";
 import { getUpcomingEvents } from "@/lib/api/events";
+import { getImageUrl } from "@/lib/utils/imageUtils";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 import Link from "next/link";
 
 // Format date helper
@@ -21,16 +23,7 @@ const formatTime = (dateString) => {
   return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 };
 
-// Get default image based on index
-const getEventImage = (index) => {
-  const images = [
-    "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=400&h=300&fit=crop"
-  ];
-  return images[index % images.length];
-};
+// No default images - use ImagePlaceholder
 
 export default function Events() {
   const [events, setEvents] = useState([]);
@@ -82,7 +75,7 @@ export default function Events() {
               location: location,
               maxAttendees: maxAttendees,
               registeredAttendees: registeredAttendees,
-            image: event.eventImage || getEventImage(index),
+            image: event.eventImage ? getImageUrl(event.eventImage) : null,
               slug: event.slug || event._id || event.id, // Use slug if available, fallback to _id
               buttonLabel: "View Details",
               isOnline: event.isOnline || false,
@@ -189,23 +182,32 @@ export default function Events() {
                   >
                     {/* Event Image - Clear and Prominent */}
                     <div className="relative h-56 lg:h-64 overflow-hidden">
-                      <img 
-                        src={event.image}
-                        alt={event.title}
-                        className="w-full h-full object-cover brightness-100 group-hover:brightness-110"
-                        style={{ 
-                          transform: 'scale(1)',
-                          transition: 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), brightness 0.3s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.1)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                        }}
-                        onError={(e) => {
-                          e.target.src = getEventImage(idx);
-                        }}
+                      {event.image ? (
+                        <img 
+                          src={event.image}
+                          alt={event.title}
+                          className="w-full h-full object-cover brightness-100 group-hover:brightness-110"
+                          style={{ 
+                            transform: 'scale(1)',
+                            transition: 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), brightness 0.3s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.1)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                          }}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            const placeholder = e.target.nextElementSibling;
+                            if (placeholder) placeholder.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <ImagePlaceholder 
+                        type="event" 
+                        className={`w-full h-full ${event.image ? 'hidden' : 'flex'}`}
+                        iconClassName="w-12 h-12"
                       />
                       {/* Minimal overlay - only at bottom for text readability */}
                       <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-none"></div>

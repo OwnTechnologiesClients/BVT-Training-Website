@@ -2,37 +2,26 @@
 
 import { motion } from "framer-motion";
 import { Award, Sparkles, Shield, Building2, CheckCircle2 } from "lucide-react";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 const COMPANIES = [
   {
-    name: "US Navy",
-    logo: "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=150&h=80&fit=crop",
-    fallback: "https://via.placeholder.com/150x80/1e3a8a/ffffff?text=US+Navy"
+    name: "US Navy"
   },
   {
-    name: "BVT Academy",
-    logo: "https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=150&h=80&fit=crop",
-    fallback: "https://via.placeholder.com/150x80/1e40af/ffffff?text=BVT+Academy"
+    name: "BVT Academy"
   },
   {
-    name: "Fleet Command",
-    logo: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=150&h=80&fit=crop",
-    fallback: "https://via.placeholder.com/150x80/1e3a8a/ffffff?text=Fleet+Command"
+    name: "Fleet Command"
   },
   {
-    name: "Coast Guard",
-    logo: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=150&h=80&fit=crop",
-    fallback: "https://via.placeholder.com/150x80/1e40af/ffffff?text=Coast+Guard"
+    name: "Coast Guard"
   },
   {
-    name: "BVT Reserve",
-    logo: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=150&h=80&fit=crop",
-    fallback: "https://via.placeholder.com/150x80/1e3a8a/ffffff?text=BVT+Reserve"
+    name: "BVT Reserve"
   },
   {
-    name: "Maritime Admin",
-    logo: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=150&h=80&fit=crop",
-    fallback: "https://via.placeholder.com/150x80/1e40af/ffffff?text=Maritime+Admin"
+    name: "Maritime Admin"
   },
 ];
 
@@ -107,26 +96,10 @@ export default function TrustedCompanies() {
                   transition={{ duration: 0.3 }}
                   className="w-full h-full flex items-center justify-center"
                 >
-                  <img 
-                    src={company.logo}
-                    alt={company.name}
-                    className="w-full h-full max-w-[95%] max-h-[95%] object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
-                    style={{ 
-                      filter: 'grayscale(100%)',
-                      transition: 'filter 0.3s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.filter = 'grayscale(0%)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.filter = 'grayscale(100%)';
-                    }}
-                    onError={(e) => {
-                      if (e.target.src !== company.fallback) {
-                        e.target.src = company.fallback;
-                      }
-                    }}
-                    loading="lazy"
+                  <ImagePlaceholder 
+                    type="category" 
+                    className="w-full h-full max-w-[95%] max-h-[95%]"
+                    iconClassName="w-12 h-12 text-gray-400"
                   />
                 </motion.div>
               </div>

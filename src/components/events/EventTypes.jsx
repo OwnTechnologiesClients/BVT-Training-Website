@@ -325,21 +325,17 @@ export default function EventTypes() {
                   Have an idea for a BVT training event? Partner with us to create meaningful 
                   experiences for the BVT community.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <motion.button
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-8 py-3 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg"
-                  >
-                    Propose Event
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="border-2 border-white text-white px-8 py-3 rounded-xl font-bold hover:bg-white hover:text-blue-900 transition-all"
-                  >
-                    Partnership Info
-                  </motion.button>
+                <div className="flex justify-center">
+                  <Link href="/contact">
+                    <motion.button
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-8 py-3 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg flex items-center gap-2"
+                    >
+                      Contact Us
+                      <ArrowRight className="w-5 h-5" />
+                    </motion.button>
+                  </Link>
                 </div>
               </div>
             </div>
