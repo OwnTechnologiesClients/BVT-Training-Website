@@ -1,23 +1,5 @@
-import {
-  Hero,
-  Stats,
-  CourseCategories,
-  ExploreCourses,
-  Events,
-  StudentsFeedback,
-  TrustedCompanies
-} from "@/components/home";
+import { redirect } from 'next/navigation';
 
-export default function HomePage() {
-  return (
-    <>
-      <Hero />
-      {/* <Stats /> */}
-      <CourseCategories />
-      <ExploreCourses />
-      <Events />
-      <StudentsFeedback />
-      <TrustedCompanies />
-    </>
-  );
+export default function Home() {
+  redirect('/home');
 }
