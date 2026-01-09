@@ -18,14 +18,14 @@ function EventsContent() {
   
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [eventTypesLoading, setEventTypesLoading] = useState(true);
+  const [eventTypesLoaded, setEventTypesLoaded] = useState(false);
   const [error, setError] = useState(null);
   const [selectedTimeframe, setSelectedTimeframe] = useState("upcoming");
   const [selectedTheme, setSelectedTheme] = useState(null);
 
   // Handle EventTypes loading completion
   const handleEventTypesLoadComplete = useCallback(() => {
-    setEventTypesLoading(false);
+    setEventTypesLoaded(true);
   }, []);
 
   // Fetch theme category if theme slug is provided
@@ -121,41 +121,41 @@ function EventsContent() {
   // This ensures counts match the displayed events
   const filteredEvents = events;
 
-  // Loading state - wait for both events and event types to load
-  const isPageLoading = loading || eventTypesLoading;
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-900 mx-auto mb-4" />
+          <p className="text-gray-600">Loading events...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error && events.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Events</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-blue-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-800 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
-      {isPageLoading && (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center fixed inset-0 z-50">
-          <div className="text-center">
-            <Loader2 className="w-12 h-12 animate-spin text-blue-900 mx-auto mb-4" />
-            <p className="text-gray-600">Loading events...</p>
-          </div>
-        </div>
-      )}
-
-      {/* Render EventTypes even during loading (hidden) so it can mount and call onLoadComplete */}
-      <div style={{ display: isPageLoading ? 'none' : 'block' }}>
-        {/* Error state */}
-        {error && events.length === 0 ? (
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="text-center max-w-md mx-auto px-4">
-              <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Events</h2>
-              <p className="text-gray-600 mb-6">{error}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="bg-blue-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-800 transition-colors"
-              >
-                Retry
-              </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <EventsHero />
-            <EventTypes onLoadComplete={handleEventTypesLoadComplete} />
+      <EventsHero />
+      <EventTypes onLoadComplete={handleEventTypesLoadComplete} />
       {selectedTheme && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -184,15 +184,15 @@ function EventsContent() {
           </div>
         </motion.div>
       )}
-            <EventsTimeline 
-              selectedTimeframe={selectedTimeframe} 
-              onTimeframeChange={handleTimeframeChange}
-              events={filteredEvents}
-              hideMaxAttendees={!!selectedTheme}
-            />
-          </>
-        )}
-      </div>
+      {/* Only render Timeline after EventTypes has finished loading */}
+      {eventTypesLoaded && (
+        <EventsTimeline 
+          selectedTimeframe={selectedTimeframe} 
+          onTimeframeChange={handleTimeframeChange}
+          events={filteredEvents}
+          hideMaxAttendees={!!selectedTheme}
+        />
+      )}
     </>
   );
 }
