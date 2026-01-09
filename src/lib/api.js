@@ -171,31 +171,53 @@ axiosInstance.interceptors.response.use(
 const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
   try {
     const method = options.method || 'GET';
+    
+    // Build config object
     const config = {
       method: method,
       url: endpoint,
-      ...options,
     };
+
+    // Handle headers - only set if provided or if we need to modify them
+    if (options.headers) {
+      config.headers = options.headers;
+    }
 
     // Handle body - convert to data for axios
     if (options.body) {
       if (options.body instanceof FormData) {
         config.data = options.body;
+        // Don't set Content-Type for FormData (browser will set it with boundary)
+        // The interceptor handles this, but we ensure headers object exists if needed
+        if (!config.headers) {
+          config.headers = {};
+        }
+        delete config.headers['Content-Type'];
       } else if (typeof options.body === 'string') {
         // If body is already a string, parse it if it's JSON, otherwise use as-is
         try {
           config.data = JSON.parse(options.body);
+          // Content-Type will be set by axios defaults, but ensure it's there
+          if (!config.headers) {
+            config.headers = {};
+          }
+          config.headers['Content-Type'] = 'application/json';
         } catch {
           config.data = options.body;
         }
       } else {
         config.data = options.body;
+        // Content-Type will be set by axios defaults, but ensure it's there
+        if (!config.headers) {
+          config.headers = {};
+        }
+        config.headers['Content-Type'] = 'application/json';
       }
-      delete config.body;
     }
 
-    // Remove method from config as it's already set
-    delete config.method;
+    // Merge any other options (excluding method, body, headers which we've handled)
+    const { method: _, body: __, headers: ___, ...otherOptions } = options;
+    Object.assign(config, otherOptions);
 
     const response = await axiosInstance.request(config);
     
