@@ -36,7 +36,7 @@ const colorMap = {
   'teal': { gradient: "from-teal-500 to-teal-600", bg: "from-teal-50 to-teal-100", hover: "hover:shadow-teal-200", bullet: "from-teal-500 to-teal-600" },
 };
 
-export default function EventTypes() {
+export default function EventTypes({ onLoadComplete }) {
   const [eventCategories, setEventCategories] = useState([]);
   const [eventCounts, setEventCounts] = useState({});
   const [loading, setLoading] = useState(true);
@@ -44,6 +44,8 @@ export default function EventTypes() {
 
   // Fetch event categories and their counts from backend
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -51,12 +53,14 @@ export default function EventTypes() {
 
         // Fetch active event categories
         const categoriesResponse = await getActiveEventCategories();
+        if (!isMounted) return;
+        
         if (categoriesResponse.success && categoriesResponse.data) {
           const categories = categoriesResponse.data;
           
-          // Fetch event counts for each category (exclude draft events)
-          const counts = {};
-          for (const category of categories) {
+          // Fetch event counts for each category in parallel (exclude draft events)
+          // Using Promise.all() to fetch all category counts simultaneously instead of sequentially
+          const countPromises = categories.map(async (category) => {
             try {
               // Fetch events with a high limit to get all events, then filter out drafts
               const eventsResponse = await getAllEvents({
@@ -70,29 +74,50 @@ export default function EventTypes() {
                 const nonDraftEvents = eventsResponse.data.filter(
                   event => event.status && event.status.toLowerCase() !== 'draft'
                 );
-                counts[category._id] = nonDraftEvents.length;
-              } else {
-                counts[category._id] = 0;
+                return { categoryId: category._id, count: nonDraftEvents.length };
               }
+              return { categoryId: category._id, count: 0 };
             } catch (err) {
               console.error(`Error fetching count for category ${category.name}:`, err);
-              counts[category._id] = 0;
+              return { categoryId: category._id, count: 0 };
             }
-          }
+          });
+          
+          // Wait for all category counts to be fetched in parallel
+          const countResults = await Promise.all(countPromises);
+          
+          if (!isMounted) return;
+          
+          // Convert results array to counts object
+          const counts = {};
+          countResults.forEach(({ categoryId, count }) => {
+            counts[categoryId] = count;
+          });
           
           setEventCategories(categories);
           setEventCounts(counts);
         }
       } catch (err) {
+        if (!isMounted) return;
         console.error('Error fetching event categories:', err);
         setError(err.message || 'Failed to load event types');
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+          // Notify parent component that loading is complete
+          if (onLoadComplete) {
+            onLoadComplete();
+          }
+        }
       }
     };
 
     fetchData();
-  }, []);
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [onLoadComplete]);
 
   const getIcon = (categoryName, slug) => {
     const name = (categoryName || slug || '').toLowerCase();
