@@ -54,18 +54,23 @@ export default function EventTypes() {
         if (categoriesResponse.success && categoriesResponse.data) {
           const categories = categoriesResponse.data;
           
-          // Fetch event counts for each category
+          // Fetch event counts for each category (exclude draft events)
           const counts = {};
           for (const category of categories) {
             try {
+              // Fetch events with a high limit to get all events, then filter out drafts
               const eventsResponse = await getAllEvents({
                 eventType: category._id,
-                limit: 1,
+                limit: 1000, // High limit to get all events for counting
                 page: 1
               });
               
-              if (eventsResponse.success && eventsResponse.pagination) {
-                counts[category._id] = eventsResponse.pagination.total || 0;
+              if (eventsResponse.success && eventsResponse.data) {
+                // Filter out draft events - only count ongoing and completed events
+                const nonDraftEvents = eventsResponse.data.filter(
+                  event => event.status && event.status.toLowerCase() !== 'draft'
+                );
+                counts[category._id] = nonDraftEvents.length;
               } else {
                 counts[category._id] = 0;
               }
@@ -244,9 +249,11 @@ export default function EventTypes() {
                           >
                             <Icon className="w-12 h-12 lg:w-14 lg:h-14" />
                           </motion.div>
-                          <span className="bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-bold shadow-lg">
-                            {displayCount}
-                          </span>
+                          {eventCount > 0 && (
+                            <span className="bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-bold shadow-lg">
+                              {displayCount}
+                            </span>
+                          )}
                         </div>
                         <h3 className="text-2xl lg:text-3xl font-bold mb-2">{category.name}</h3>
                         <p className="text-white/90 text-sm lg:text-base leading-relaxed line-clamp-2">
