@@ -213,14 +213,11 @@ export default function CourseLearningPage({ params }) {
           if (response.data?.enrollment) {
             updateEnrollment(response.data.enrollment);
           }
-        } else {
-          console.error('Failed to mark lesson complete on server');
         }
       } catch (apiError) {
-        console.error('Error marking lesson complete:', apiError);
+        // Error marking lesson complete
       }
     } catch (error) {
-      console.error('Error in handleMarkLessonComplete:', error);
       // Don't show error to user - they can try again
     }
   };
@@ -295,7 +292,6 @@ export default function CourseLearningPage({ params }) {
         const course = courseResponse.data;
         setCourseData(course);
       } catch (err) {
-        console.error('Error fetching course:', err);
         setError(err.message || 'Failed to load course');
       } finally {
         setLoading(false);
@@ -521,9 +517,6 @@ export default function CourseLearningPage({ params }) {
               }
             }
           } catch (err) {
-            // Handle errors without causing logout or redirect
-            console.error('Error fetching course structure:', err);
-            
             // Check if it's an enrollment/access error vs network error
             const errorMessage = err.message || '';
             const isAccessError = 
@@ -537,15 +530,8 @@ export default function CourseLearningPage({ params }) {
             // Handle access errors but don't redirect to billing
             // Billing redirects removed as requested
             if (isAccessError && !enrollmentLoading && !isEnrolled) {
-              console.log('Access denied - user not enrolled (billing redirect removed)');
-              // Don't redirect - access denied screen will show instead
               return;
             }
-            
-            // For other errors (network, server errors, missing files, etc.), just log
-            // The page will show "No content available" - don't redirect or logout
-            console.log('Structure fetch failed (may be network/server issue), showing empty state instead');
-            // Don't set error state that would block the page - missing videos are OK
           }
         };
 
@@ -654,7 +640,6 @@ export default function CourseLearningPage({ params }) {
           setRequiredTests([]);
         }
       } catch (error) {
-        console.error('Error fetching required tests:', error);
         setRequiredTests([]);
       } finally {
         setLoadingTests(false);
@@ -675,19 +660,16 @@ export default function CourseLearningPage({ params }) {
   const goToNextLesson = async () => {
     // Only proceed if timer is completed
     if (!timerCompleted) {
-      console.log('⏸️ Timer not completed yet, cannot proceed');
       return;
     }
 
     // Check if all required tests are completed
     if (!allRequiredTestsCompleted) {
-      console.log('⏸️ Required tests not completed, cannot proceed');
       return;
     }
 
     // Don't proceed if it's the last lesson
     if (currentIndex >= allLessons.length - 1) {
-      console.log('⏸️ This is the last lesson, cannot proceed');
       return;
     }
 
@@ -847,7 +829,7 @@ export default function CourseLearningPage({ params }) {
     try {
       localStorage.setItem(key, 'completed');
     } catch (e) {
-      console.error('Failed to save timer completion:', e);
+      // Failed to save timer completion
     }
   };
 

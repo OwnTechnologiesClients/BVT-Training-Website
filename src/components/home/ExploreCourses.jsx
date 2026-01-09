@@ -39,7 +39,6 @@ export default function ExploreCourses() {
           setCourses([]);
         }
       } catch (err) {
-        console.error('Error fetching featured courses:', err);
         setError(err.message || 'Failed to load featured courses');
         setCourses([]);
       } finally {

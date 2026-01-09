@@ -3,11 +3,6 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000/api';
 
-// Log API URL in development for debugging
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  console.log('API Base URL:', API_BASE_URL);
-}
-
 // Helper function to get auth token from localStorage
 const getToken = () => {
   if (typeof window !== 'undefined') {
@@ -97,12 +92,7 @@ axiosInstance.interceptors.response.use(
     const errorMessage = data.message || '';
     const status = response.status;
 
-    // Handle 401 (Unauthorized) - token expired or invalid
-    // Only auto-logout if it's a clear authentication failure, not permission issues
     if (status === 401) {
-      console.log('🌐 401 Unauthorized response');
-      
-      // Check if we actually sent a token - if we did, backend errors might be permission issues
       const token = getToken();
       const hasToken = !!token;
 

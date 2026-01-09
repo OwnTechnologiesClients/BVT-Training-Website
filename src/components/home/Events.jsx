@@ -86,7 +86,6 @@ export default function Events() {
           setEvents(transformedEvents);
         }
       } catch (err) {
-        console.error('Error fetching events:', err);
         setError(err.message || 'Failed to load events');
       } finally {
         setLoading(false);

@@ -69,153 +69,83 @@ export default function EventDetailsPage({ params }) {
   const resolvedParams = use(params);
   const eventSlug = resolvedParams?.slug;
 
-  console.log('🔵 ========== EVENT DETAILS PAGE RENDERED ==========');
-  console.log('🔵 Raw params:', params);
-  console.log('🔵 Resolved params:', resolvedParams);
-  console.log('🔵 Event slug extracted:', eventSlug);
-
   const [eventData, setEventData] = useState(null);
   const [relatedEvents, setRelatedEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("info");
 
-  // Fetch event data
   useEffect(() => {
     const fetchEvent = async () => {
-      console.log('🟢 useEffect - fetchEvent started');
-      console.log('🟢 Event slug:', eventSlug);
-      
       if (!eventSlug) {
-        console.log('🟢 Skipping fetch - no eventSlug');
         setError('No event slug provided');
         setLoading(false);
         return;
       }
 
       try {
-        console.log('🟢 Setting loading to true');
         setLoading(true);
         setError(null);
         
-        console.log('🟢 ========== FETCHING EVENT ==========');
-        console.log('🟢 Event slug:', eventSlug);
-        
-        const apiStartTime = Date.now();
         let response;
-        
-        // Check if eventSlug looks like an ObjectId (24 hex characters)
         const isObjectId = /^[0-9a-fA-F]{24}$/.test(eventSlug);
         
         try {
           if (isObjectId) {
-            // If it's an ObjectId, try fetching by ID first (fallback for old links)
-            console.log('🟢 Event slug looks like ObjectId, trying getEventById...');
             response = await getEventById(eventSlug);
-            console.log('🟢 getEventById returned successfully');
           } else {
-            // Otherwise, try fetching by slug
-            console.log('🟢 Calling getEventBySlug with:', eventSlug);
             response = await getEventBySlug(eventSlug);
-            console.log('🟢 getEventBySlug returned successfully');
           }
         } catch (fetchError) {
-          console.error('🔴 Event fetch error:', fetchError);
-          // If slug fetch fails and it's not an ObjectId, try by ID as fallback
           if (!isObjectId) {
-            console.log('🟢 Slug not found, trying as ID...');
             try {
               response = await getEventById(eventSlug);
-              console.log('🟢 getEventById (fallback) returned successfully');
             } catch (idError) {
-              console.error('🔴 Both slug and ID fetch failed:', idError);
-              // Set a more user-friendly error message
               const errorMessage = fetchError.message || idError.message || 'Event not found';
               setError(errorMessage);
               setLoading(false);
               return;
             }
           } else {
-            // Set error and stop loading
             const errorMessage = fetchError.message || 'Failed to load event';
             setError(errorMessage);
             setLoading(false);
             return;
           }
         }
-        const apiEndTime = Date.now();
-        
-        console.log('🟢 ========== API RESPONSE RECEIVED ==========');
-        console.log('🟢 Response time:', apiEndTime - apiStartTime, 'ms');
-        console.log('🟢 Full response object:', response);
-        console.log('🟢 Response type:', typeof response);
-        console.log('🟢 Response keys:', response ? Object.keys(response) : 'null');
-        console.log('🟢 Response.success:', response?.success);
-        console.log('🟢 Response.message:', response?.message);
-        console.log('🟢 Response.data:', response?.data);
-        
-        if (response) {
-          console.log('🟢 Response stringified:', JSON.stringify(response, null, 2));
-        }
 
-        // Handle different response structures
-        console.log('🟢 ========== PROCESSING RESPONSE ==========');
         let event = null;
         
         if (response) {
-          console.log('🟢 Response exists, checking structure...');
-          
           if (response.success) {
-            console.log('🟢 Response.success is true');
             event = response.data || response;
-            console.log('🟢 Event extracted:', event);
           } else if (response.data) {
-            console.log('🟢 Response.success is false, but response.data exists');
             event = response.data;
           } else {
-            console.log('🟢 Response exists but no success or data, using response directly');
             event = response;
           }
         } else {
-          console.error('🔴 Response is null or undefined');
           setError('No response from server');
           setLoading(false);
           return;
         }
         
-        console.log('🟢 ========== EVENT DATA EXTRACTED ==========');
-        console.log('🟢 Event object:', event);
-        console.log('🟢 Event title:', event?.title);
-        console.log('🟢 Event _id:', event?._id);
-        
         if (!event) {
-          console.error('🔴 Event is null or undefined');
           setError('Event data is null');
           setLoading(false);
           return;
         }
         
         if (!event.title) {
-          console.error('🔴 Event title is missing');
-          console.error('🔴 Full event object:', JSON.stringify(event, null, 2));
           setError('Event data is invalid - missing title');
           setLoading(false);
           return;
         }
         
-        console.log('🟢 ========== SETTING EVENT DATA ==========');
         setEventData(event);
-        console.log('🟢 eventData state set successfully');
           
-        // Fetch related events (same eventType or category)
-        console.log('🟢 ========== FETCHING RELATED EVENTS ==========');
-        console.log('🟢 Event type for related events:', event.eventType);
-        
-        // Only fetch related events if eventType is a valid string type
         const validEventTypes = ['conference', 'workshop', 'seminar', 'training', 'meeting'];
         const eventTypeForFilter = validEventTypes.includes(event.eventType) ? event.eventType : null;
-        
-        console.log('🟢 Valid event type for filter:', eventTypeForFilter);
         
         try {
           const relatedResponse = await getAllEvents({ 
@@ -224,10 +154,7 @@ export default function EventDetailsPage({ params }) {
             page: 1
           });
           
-          console.log('🟢 Related events response:', relatedResponse);
-          
           if (relatedResponse.success && relatedResponse.data) {
-            console.log('🟢 Processing related events...');
             const filtered = relatedResponse.data
               .filter(e => e._id !== event._id && e.id !== event.id)
               .slice(0, 3)
@@ -254,31 +181,22 @@ export default function EventDetailsPage({ params }) {
                 totalRatings: 0
               }));
             
-            console.log('🟢 Filtered related events:', filtered);
             setRelatedEvents(filtered);
           }
         } catch (err) {
-          console.error('🔴 Error fetching related events:', err);
+          // Silently handle related events fetch errors
         }
       } catch (err) {
-        console.error('🔴 ========== ERROR FETCHING EVENT ==========');
-        console.error('🔴 Error object:', err);
-        console.error('🔴 Error message:', err.message);
         setError(err.message || 'Failed to load event');
       } finally {
-        console.log('🟢 ========== FETCH COMPLETE ==========');
-        console.log('🟢 Setting loading to false');
         setLoading(false);
       }
     };
 
-    console.log('🟢 Calling fetchEvent function');
     fetchEvent();
   }, [eventSlug]);
 
-  // Loading state
   if (loading) {
-    console.log('🟡 Rendering loading state');
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -290,9 +208,7 @@ export default function EventDetailsPage({ params }) {
     );
   }
 
-  // Error state
   if (error || !eventData) {
-    console.log('🟡 Rendering error state');
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -374,13 +290,6 @@ export default function EventDetailsPage({ params }) {
   };
 
   const statusBadge = getStatusBadge();
-
-  console.log('🟢 ========== RENDERING EVENT DETAILS ==========');
-  console.log('🟢 Event data available:', {
-    title: eventData.title,
-    _id: eventData._id,
-    eventType: eventData.eventType
-  });
 
   return (
     <div className="min-h-screen bg-gray-50">

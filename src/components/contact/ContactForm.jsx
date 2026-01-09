@@ -63,7 +63,7 @@ export default function ContactForm() {
         throw new Error(response.message || 'Failed to submit inquiry');
       }
     } catch (error) {
-      console.error('Error submitting inquiry:', error);
+      // Error submitting inquiry
       setSubmitStatus('error');
       showError('Failed to Send Message', error.message || 'Sorry, there was an error sending your message. Please try again.');
     } finally {

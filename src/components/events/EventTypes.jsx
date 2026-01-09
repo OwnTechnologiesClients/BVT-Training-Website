@@ -78,7 +78,6 @@ export default function EventTypes({ onLoadComplete }) {
               }
               return { categoryId: category._id, count: 0 };
             } catch (err) {
-              console.error(`Error fetching count for category ${category.name}:`, err);
               return { categoryId: category._id, count: 0 };
             }
           });
@@ -99,7 +98,6 @@ export default function EventTypes({ onLoadComplete }) {
         }
       } catch (err) {
         if (!isMounted) return;
-        console.error('Error fetching event categories:', err);
         setError(err.message || 'Failed to load event types');
       } finally {
         if (isMounted) {

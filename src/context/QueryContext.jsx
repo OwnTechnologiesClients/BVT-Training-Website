@@ -34,17 +34,8 @@ export const QueryProvider = ({ children }) => {
         const response = await queryAPI.getAllQueries();
         if (response.success && response.data) {
           setQueries(response.data.queries || []);
-        } else {
-          console.warn("Failed to fetch queries:", response.message);
-          // Don't set queries to empty - keep existing state if API fails
         }
       } catch (error) {
-        console.error("Error fetching queries:", error);
-        // If it's a 404 or route not found, the backend might not have the endpoint yet
-        if (error.message?.includes("404") || error.message?.includes("Not Found")) {
-          console.warn("Queries endpoint not found - backend may need to be updated");
-        }
-        // Keep queries as empty array if fetch fails
         setQueries([]);
       } finally {
         setLoading(false);
@@ -70,7 +61,6 @@ export const QueryProvider = ({ children }) => {
           return newQuery;
         }
       } catch (error) {
-        console.error("Error creating query:", error);
         throw error;
       } finally {
         setLoading(false);
@@ -99,7 +89,6 @@ export const QueryProvider = ({ children }) => {
         throw new Error(response.message || "Failed to add message");
       }
     } catch (error) {
-      console.error("Error adding message:", error);
       throw error;
     } finally {
       setLoading(false);
@@ -141,7 +130,7 @@ export const QueryProvider = ({ children }) => {
           return fetchedQuery;
         }
       } catch (error) {
-        console.error("Error fetching query:", error);
+        // Error fetching query
       }
       return null;
     },

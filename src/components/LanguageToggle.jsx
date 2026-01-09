@@ -82,8 +82,6 @@ export default function LanguageToggle() {
           select.dispatchEvent(new Event("change"));
         }
       } else {
-        // If no select found, try to reinitialize Google Translate
-        console.log('Google Translate select not found, reinitializing...');
         initializeGoogleTranslate();
       }
     }, 100);

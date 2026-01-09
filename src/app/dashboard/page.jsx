@@ -104,7 +104,7 @@ export default function DashboardPage() {
                   }
                 }
               } catch (err) {
-                console.error(`Error fetching structure for course ${enrollment.courseId?._id}:`, err);
+                // Error fetching structure for course
               }
             }
             return enrollment;
@@ -116,7 +116,6 @@ export default function DashboardPage() {
         setError("Failed to load your courses");
       }
     } catch (err) {
-      console.error("Error fetching enrollments:", err);
       // Don't set error if it's just "no enrollments" - show empty state instead
       if (err.message && err.message.includes('not found')) {
         setEnrollments([]);

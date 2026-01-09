@@ -38,7 +38,7 @@ function EventsContent() {
             setSelectedTheme(themeResponse.data);
           }
         } catch (err) {
-          console.error('Error fetching theme:', err);
+          // Theme fetch failed, continue without theme filter
         }
       } else {
         setSelectedTheme(null);
@@ -104,7 +104,6 @@ function EventsContent() {
           setEvents(transformedEvents);
         }
       } catch (err) {
-        console.error('Error fetching events:', err);
         setError(err.message || 'Failed to load events');
       } finally {
         setLoading(false);

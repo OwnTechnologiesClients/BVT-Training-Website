@@ -99,13 +99,6 @@ export const checkCourseEnrollment = async (courseId) => {
         return enrollmentCourseId === courseIdStr;
       });
       
-      console.log('Enrollment check result:', {
-        courseId,
-        foundEnrollment: !!enrollment,
-        enrollmentCount: response.data.enrollments.length,
-        enrollment: enrollment || null
-      });
-      
       return enrollment || null;
     }
     
@@ -113,11 +106,7 @@ export const checkCourseEnrollment = async (courseId) => {
   } catch (error) {
     // Silently handle auth errors (401) - user is simply not authenticated
     // Only log other types of errors
-    if (!error.message?.includes('token') && 
-        !error.message?.includes('Unauthorized') && 
-        !error.message?.includes('401')) {
-      console.error('Error checking course enrollment:', error);
-    }
+    // Silently handle auth errors
     return null;
   }
 };
@@ -139,11 +128,7 @@ export const getEnrollmentStatus = async (courseId) => {
   } catch (error) {
     // Silently handle auth errors - user is simply not authenticated or enrolled
     // Only log unexpected errors
-    if (!error.message?.includes('token') && 
-        !error.message?.includes('Unauthorized') && 
-        !error.message?.includes('401')) {
-      console.error('Error getting enrollment status:', error);
-    }
+    // Silently handle auth errors
     return {
       isEnrolled: false,
       enrollment: null,
@@ -173,7 +158,6 @@ export const markLessonComplete = async (enrollmentId, lessonId) => {
 
     return response;
   } catch (error) {
-    console.error('Error marking lesson as complete:', error);
     throw error;
   }
 };

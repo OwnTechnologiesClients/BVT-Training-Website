@@ -253,14 +253,12 @@ export default function CourseDetailsPage({ params }) {
               setRelatedCourses([]);
             }
           } catch (err) {
-            console.error('Error fetching related courses:', err);
             setRelatedCourses([]);
           }
         } else {
           setError('Course not found');
         }
       } catch (err) {
-        console.error('Error fetching course:', err);
         setError(err.message || 'Failed to load course');
       } finally {
         setLoading(false);

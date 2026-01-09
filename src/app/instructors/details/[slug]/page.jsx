@@ -74,7 +74,6 @@ export default function InstructorDetailsPage({ params }) {
           setError('Instructor not found');
         }
       } catch (err) {
-        console.error('Error fetching instructor:', err);
         // Handle different error types
         if (err.response?.status === 404) {
           setError('Instructor not found');
@@ -107,7 +106,7 @@ export default function InstructorDetailsPage({ params }) {
           setCourses(response.data || []);
         }
       } catch (err) {
-        console.error("Error fetching courses:", err);
+        // Error fetching courses
       } finally {
         setCoursesLoading(false);
       }

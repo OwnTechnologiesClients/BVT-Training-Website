@@ -69,25 +69,9 @@ export const getAllEvents = async (params = {}) => {
  * @param {string} eventId - Event ID
  */
 export const getEventById = async (eventId) => {
-  console.log('🔵 getEventById called with:', eventId);
-  console.log('🔵 Event ID type:', typeof eventId);
-  console.log('🔵 API endpoint:', `/events/list/${eventId}`);
-  
-  try {
-    const response = await apiRequest(`/events/list/${eventId}`, {
-      method: 'GET',
-    });
-    
-    console.log('🔵 getEventById response received:', response);
-    console.log('🔵 Response type:', typeof response);
-    console.log('🔵 Response keys:', response ? Object.keys(response) : 'null');
-    
-    return response;
-  } catch (error) {
-    console.error('🔴 getEventById error:', error);
-    console.error('🔴 Error message:', error.message);
-    throw error;
-  }
+  return await apiRequest(`/events/list/${eventId}`, {
+    method: 'GET',
+  });
 };
 
 /**
@@ -129,8 +113,6 @@ export const getEventBySlug = async (slug) => {
     
     return response;
   } catch (error) {
-    console.error('Error fetching event by slug:', error);
-    // If it's a 404, provide a clearer message
     if (error.response?.status === 404 || error.message?.includes('not found')) {
       const notFoundError = new Error('Event not found');
       notFoundError.response = { status: 404 };
@@ -193,7 +175,6 @@ export const getEventCountByType = async (frontendType) => {
     }
     return 0;
   } catch (error) {
-    console.error(`Error fetching event count for ${frontendType}:`, error);
     return 0;
   }
 };

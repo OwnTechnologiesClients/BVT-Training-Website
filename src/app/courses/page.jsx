@@ -85,7 +85,6 @@ function CoursesContent() {
             setSelectedCategoryName(null);
           }
         } catch (err) {
-          console.error('Error fetching category by slug:', err);
           setCategoryId(null);
           setSelectedCategoryName(null);
         }
@@ -149,10 +148,9 @@ function CoursesContent() {
             setFeaturedCourses(transformedFeatured);
           }
         } catch (err) {
-          console.error('Error fetching featured courses:', err);
+          // Error fetching featured courses
         }
       } catch (err) {
-        console.error('Error fetching courses:', err);
         setError(err.message || 'Failed to load courses');
       } finally {
         setLoading(false);
@@ -216,7 +214,7 @@ function CoursesContent() {
         
         setAllCoursesForTabs([...allOnline, ...allOffline]);
       } catch (err) {
-        console.error('Error fetching all courses for tabs:', err);
+        // Error fetching all courses for tabs
       }
     };
     

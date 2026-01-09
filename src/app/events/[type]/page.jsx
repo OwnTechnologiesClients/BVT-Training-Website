@@ -67,7 +67,7 @@ export default function EventTypePage() {
             setCategory(categoryData);
           }
         } catch (err) {
-          console.log('Category not found by slug, will try eventType mapping:', err);
+          // Category not found by slug, will try eventType mapping
         }
 
         // Build query params
@@ -127,7 +127,6 @@ export default function EventTypePage() {
           setError(response.message || 'Failed to load events');
         }
       } catch (err) {
-        console.error('Error fetching events:', err);
         setError(err.message || 'Failed to load events');
       } finally {
         setLoading(false);

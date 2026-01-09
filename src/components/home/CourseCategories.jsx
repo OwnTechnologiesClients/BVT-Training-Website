@@ -66,7 +66,6 @@ export default function CourseCategories() {
           setCategories(allCategories);
         }
       } catch (err) {
-        console.error('Error fetching categories:', err);
         setError(err.message || 'Failed to load categories');
       } finally {
         setLoading(false);

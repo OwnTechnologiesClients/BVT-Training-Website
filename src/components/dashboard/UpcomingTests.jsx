@@ -21,14 +21,6 @@ export default function UpcomingTests({ enrollments }) {
           e.status === "active" || e.status === "pending" || e.status === "completed"
         );
         
-        console.log('📚 Valid enrollments for tests:', validEnrollments.length, validEnrollments.map(e => ({
-          course: e.courseId?.title,
-          status: e.status,
-          progress: e.progress,
-          isOnline: e.courseId?.isOnline,
-          isOnlineUndefined: e.courseId?.isOnline === undefined
-        })));
-        
         if (validEnrollments.length === 0) {
           setUpcomingTests([]);
           setLoading(false);
@@ -83,13 +75,9 @@ export default function UpcomingTests({ enrollments }) {
       const course = enrollment.courseId;
           if (!course || !course._id) return [];
 
-          // Skip offline courses - they don't have learning pages or tests
-          // isOnline === false means offline, undefined or true means online
           const isOffline = course.isOnline === false;
-          console.log(`🔍 Course "${course.title}": isOnline=${course.isOnline}, isOffline=${isOffline}`);
           
           if (isOffline) {
-            console.log(`⏭️ Skipping offline course: ${course.title}`);
             return [];
           }
 
@@ -121,7 +109,7 @@ export default function UpcomingTests({ enrollments }) {
                   }
                 }
               } catch (err) {
-                console.error(`Error fetching structure for progress check:`, err);
+                // Error fetching structure for progress check
               }
             }
 
@@ -151,8 +139,6 @@ export default function UpcomingTests({ enrollments }) {
                 attemptsMap[testId].push(attempt);
               }
             });
-
-            console.log(`📝 Tests found for ${course.title}:`, tests.length, tests.map(t => ({ title: t.title, isActive: t.isActive })));
 
             // Separate tests into upcoming and completed
             const upcoming = [];
@@ -215,7 +201,6 @@ export default function UpcomingTests({ enrollments }) {
             
             return { upcoming, completed };
           } catch (err) {
-            console.error(`Error fetching tests for course ${course.title}:`, err);
             return [];
           }
         });
@@ -249,7 +234,6 @@ export default function UpcomingTests({ enrollments }) {
         setUpcomingTests(sortedUpcoming);
         setCompletedTests(sortedCompleted);
       } catch (err) {
-        console.error('Error fetching upcoming tests:', err);
         setUpcomingTests([]);
       } finally {
         setLoading(false);

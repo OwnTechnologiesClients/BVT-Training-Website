@@ -49,7 +49,7 @@ export default function MentorsSection({ mentors: propMentors, showLocations = f
                   }, 0);
                 }
               } catch (err) {
-                console.error(`Error fetching courses for instructor ${instructor._id}:`, err);
+                // Error fetching courses for instructor
               }
               
               return {
@@ -80,7 +80,6 @@ export default function MentorsSection({ mentors: propMentors, showLocations = f
           setInstructors(transformedInstructors);
         }
       } catch (err) {
-        console.error('Error fetching instructors:', err);
         setError(err.message || 'Failed to load instructors');
       } finally {
         setLoading(false);

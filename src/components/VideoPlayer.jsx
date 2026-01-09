@@ -173,11 +173,6 @@ const VideoPlayer = ({
         networkState: video.networkState
       };
       
-      // Log meaningful error information
-      if (errorInfo.code !== null && errorInfo.code !== undefined) {
-        console.error('Video playback error:', errorInfo);
-      }
-      
       // Handle different error types
       // Code 4 = MEDIA_ELEMENT_ERROR (format error, corrupted file, etc.)
       // Code 2 = NETWORK_ERROR (network issues, 403/404, etc.)
@@ -196,15 +191,12 @@ const VideoPlayer = ({
             video.src = response.data.videoUrl;
             video.load();
             setIsLoading(true);
-          } else {
-            console.error('Failed to refresh video URL:', response.message);
           }
         } catch (refreshError) {
-          console.error('Error refreshing video URL:', refreshError);
+          // Error refreshing video URL
         }
       } else if (videoError.code === 4) {
         // Format error - video format not supported or corrupted
-        console.warn('Video format error - the video file may be corrupted or in an unsupported format');
       }
     }
   };
@@ -342,7 +334,7 @@ const VideoPlayer = ({
                     setVideoUrl(response.data.videoUrl);
                   }
                 } catch (err) {
-                  console.error('Error refreshing video:', err);
+                  // Error refreshing video
                 }
               }}
               className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
