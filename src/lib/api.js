@@ -1,4 +1,5 @@
 // API service utility for backend communication
+import axios from 'axios';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000/api';
 
@@ -46,132 +47,42 @@ const setStudent = (student) => {
   }
 };
 
-// Base fetch function with error handling
-const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
-  const token = getToken();
-  const isFormData = options.body instanceof FormData;
+// Create axios instance
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-  const config = {
-    ...options,
-    headers: {
-      // Don't set Content-Type for FormData (browser will set it with boundary)
-      ...(!isFormData && { 'Content-Type': 'application/json' }),
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...options.headers,
-    },
-  };
-
-  try {
-    const url = `${API_BASE_URL}${endpoint}`;
-    const response = await fetch(url, config);
-
-    // Handle network errors (no response from server)
-    if (!response) {
-      throw new Error(`Unable to connect to server. Please ensure the backend is running at ${API_BASE_URL}`);
+// Request interceptor - add auth token
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-
-    // Try to parse JSON, but handle cases where response might not be JSON
-    let data;
-    const contentType = response.headers.get('content-type');
-
-    if (contentType && contentType.includes('application/json')) {
-      data = await response.json();
-    } else if (skipJsonParsing) {
-      // If skipJsonParsing is true, return response as-is
-      const text = await response.text();
-      try {
-        data = JSON.parse(text);
-      } catch {
-        data = { message: text };
-      }
-    } else {
-      const text = await response.text();
-      throw new Error(`Server returned non-JSON response: ${text}`);
+    
+    // Don't set Content-Type for FormData (browser will set it with boundary)
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
     }
+    
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-    if (!response.ok) {
-
-      // Handle 401 (Unauthorized) - token expired or invalid
-      // Only auto-logout if it's a clear authentication failure, not permission issues
-      if (response.status === 401) {
-        console.log('🌐 401 Unauthorized response');
-        const errorMessage = data.message || '';
-
-        // Check if we actually sent a token - if we did, backend errors might be permission issues
-        const hasToken = !!token;
-
-        // Check if it's a clear token validation error (should logout)
-        // Only logout on specific token errors, not on general "Access denied" messages
-        const isTokenError =
-          errorMessage.includes('Invalid token') ||
-          errorMessage.includes('token expired') ||
-          errorMessage.includes('Token is valid but user no longer exists') ||
-          errorMessage.includes('user no longer exists') ||
-          (errorMessage.includes('Token') && errorMessage.includes('expired')) ||
-          (errorMessage.includes('jwt') && (errorMessage.includes('expired') || errorMessage.includes('invalid'))) ||
-          (errorMessage.includes('JWT') && (errorMessage.includes('expired') || errorMessage.includes('invalid')));
-
-        // Special case: "No token provided" - only logout if we actually didn't send a token
-        const isNoTokenError = errorMessage.includes('No token provided');
-        const shouldLogoutOnNoToken = isNoTokenError && !hasToken;
-
-        // Check if it's an enrollment/permission error (should NOT logout)
-        // Even if message contains "Access denied", if we have a token, it's likely a permission issue
-        const isPermissionError =
-          errorMessage.includes('enrolled') ||
-          errorMessage.includes('Enrolled') ||
-          errorMessage.includes('enrollment') ||
-          errorMessage.includes('permission') ||
-          errorMessage.includes('Permission') ||
-          errorMessage.includes('required role') ||
-          errorMessage.includes('deactivated') ||
-          (errorMessage.includes('Access denied') && hasToken) || // If we have token, "Access denied" = permission
-          (isNoTokenError && hasToken); // If we sent token but backend says no token, don't logout (might be backend issue)
-
-        // Only logout if: 
-        // 1. It's clearly a token authentication error (invalid/expired token) OR we didn't send a token
-        // 2. AND it's not a permission error
-        // This prevents logout when user is authenticated but gets access denied for other reasons
-        if ((isTokenError || shouldLogoutOnNoToken) && !isPermissionError) {
-          // Clear token from localStorage
-          removeToken();
-
-          // Clear auth state in AuthContext (if available)
-          // This ensures UI updates immediately to show "Enroll Now" instead of user menu
-          if (typeof window !== 'undefined') {
-            // Dynamically import to avoid circular dependency
-            import('@/context/AuthContext').then(({ clearAuthState }) => {
-              clearAuthState();
-            }).catch(() => {
-              // If AuthContext is not available yet, that's okay - token is already removed
-            });
-          }
-
-          // Only redirect to login if we're on a protected route
-          // Don't redirect on public routes like course detail pages
-          if (typeof window !== 'undefined') {
-            const pathname = window.location.pathname;
-            const isProtectedRoute = pathname.includes('/learn') ||
-              pathname.includes('/billing') ||
-              pathname.includes('/dashboard') ||
-              pathname.includes('/admin');
-
-            // Only redirect if we're on a protected route and not already on login page
-            if (isProtectedRoute && !pathname.includes('/login')) {
-              window.location.href = '/login';
-            }
-          }
-        }
-        // If it's a permission/enrollment error, don't logout - just throw the error
-        // so the component can handle it appropriately
-      }
-      throw new Error(data.message || `Server error: ${response.status} ${response.statusText}`);
-    }
-
-    return data;
-  } catch (error) {
-    // Handle network errors (fetch failed)
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+// Response interceptor - handle errors with sophisticated 401 handling
+axiosInstance.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error) => {
+    // Handle network errors
+    if (!error.response) {
       throw new Error(
         `Network error: Unable to connect to backend server at ${API_BASE_URL}. ` +
         `Please ensure:\n` +
@@ -180,7 +91,132 @@ const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
         `3. CORS is properly configured on the backend`
       );
     }
-    // Re-throw other errors
+
+    const response = error.response;
+    const data = response.data || {};
+    const errorMessage = data.message || '';
+    const status = response.status;
+
+    // Handle 401 (Unauthorized) - token expired or invalid
+    // Only auto-logout if it's a clear authentication failure, not permission issues
+    if (status === 401) {
+      console.log('🌐 401 Unauthorized response');
+      
+      // Check if we actually sent a token - if we did, backend errors might be permission issues
+      const token = getToken();
+      const hasToken = !!token;
+
+      // Check if it's a clear token validation error (should logout)
+      // Only logout on specific token errors, not on general "Access denied" messages
+      const isTokenError =
+        errorMessage.includes('Invalid token') ||
+        errorMessage.includes('token expired') ||
+        errorMessage.includes('Token is valid but user no longer exists') ||
+        errorMessage.includes('user no longer exists') ||
+        (errorMessage.includes('Token') && errorMessage.includes('expired')) ||
+        (errorMessage.includes('jwt') && (errorMessage.includes('expired') || errorMessage.includes('invalid'))) ||
+        (errorMessage.includes('JWT') && (errorMessage.includes('expired') || errorMessage.includes('invalid')));
+
+      // Special case: "No token provided" - only logout if we actually didn't send a token
+      const isNoTokenError = errorMessage.includes('No token provided');
+      const shouldLogoutOnNoToken = isNoTokenError && !hasToken;
+
+      // Check if it's an enrollment/permission error (should NOT logout)
+      // Even if message contains "Access denied", if we have a token, it's likely a permission issue
+      const isPermissionError =
+        errorMessage.includes('enrolled') ||
+        errorMessage.includes('Enrolled') ||
+        errorMessage.includes('enrollment') ||
+        errorMessage.includes('permission') ||
+        errorMessage.includes('Permission') ||
+        errorMessage.includes('required role') ||
+        errorMessage.includes('deactivated') ||
+        (errorMessage.includes('Access denied') && hasToken) || // If we have token, "Access denied" = permission
+        (isNoTokenError && hasToken); // If we sent token but backend says no token, don't logout (might be backend issue)
+
+      // Only logout if: 
+      // 1. It's clearly a token authentication error (invalid/expired token) OR we didn't send a token
+      // 2. AND it's not a permission error
+      // This prevents logout when user is authenticated but gets access denied for other reasons
+      if ((isTokenError || shouldLogoutOnNoToken) && !isPermissionError) {
+        // Clear token from localStorage
+        removeToken();
+
+        // Clear auth state in AuthContext (if available)
+        // This ensures UI updates immediately to show "Enroll Now" instead of user menu
+        if (typeof window !== 'undefined') {
+          // Dynamically import to avoid circular dependency
+          import('@/context/AuthContext').then(({ clearAuthState }) => {
+            clearAuthState();
+          }).catch(() => {
+            // If AuthContext is not available yet, that's okay - token is already removed
+          });
+        }
+
+        // Only redirect to login if we're on a protected route
+        // Don't redirect on public routes like course detail pages
+        if (typeof window !== 'undefined') {
+          const pathname = window.location.pathname;
+          const isProtectedRoute = pathname.includes('/learn') ||
+            pathname.includes('/billing') ||
+            pathname.includes('/dashboard') ||
+            pathname.includes('/admin');
+
+          // Only redirect if we're on a protected route and not already on login page
+          if (isProtectedRoute && !pathname.includes('/login')) {
+            window.location.href = '/login';
+          }
+        }
+      }
+      // If it's a permission/enrollment error, don't logout - just throw the error
+      // so the component can handle it appropriately
+    }
+    
+    // Throw formatted error message
+    throw new Error(errorMessage || `Server error: ${status} ${response.statusText}`);
+  }
+);
+
+// Base axios function with error handling (maintains backward compatibility)
+const apiRequest = async (endpoint, options = {}, skipJsonParsing = false) => {
+  try {
+    const method = options.method || 'GET';
+    const config = {
+      method: method,
+      url: endpoint,
+      ...options,
+    };
+
+    // Handle body - convert to data for axios
+    if (options.body) {
+      if (options.body instanceof FormData) {
+        config.data = options.body;
+      } else if (typeof options.body === 'string') {
+        // If body is already a string, parse it if it's JSON, otherwise use as-is
+        try {
+          config.data = JSON.parse(options.body);
+        } catch {
+          config.data = options.body;
+        }
+      } else {
+        config.data = options.body;
+      }
+      delete config.body;
+    }
+
+    // Remove method from config as it's already set
+    delete config.method;
+
+    const response = await axiosInstance.request(config);
+    
+    // If skipJsonParsing, return as-is (axios already parses JSON by default)
+    if (skipJsonParsing) {
+      return response;
+    }
+
+    return response;
+  } catch (error) {
+    // Re-throw error (interceptor already handles formatting)
     throw error;
   }
 };
