@@ -5,96 +5,6 @@ import { Clock, Users, Star, BookOpen, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
-const SAMPLE_PROGRAMS = [
-  {
-    id: 1,
-    title: "Advanced Naval Engineering",
-    description: "Master the latest technologies in BVT engineering and ship systems.",
-    category: "Technical",
-    duration: "12 weeks",
-    students: "245 enrolled",
-    rating: 4.9,
-    totalRatings: 89,
-    level: "Advanced",
-    image: "/images/navy-ship.jpg",
-    price: "$2,499",
-    originalPrice: "$3,999",
-    badge: "Popular"
-  },
-  {
-    id: 2,
-    title: "Leadership in Maritime Operations",
-    description: "Develop essential leadership skills for commanding BVT operations.",
-    category: "Leadership",
-    duration: "8 weeks",
-    students: "189 enrolled",
-    rating: 4.8,
-    totalRatings: 67,
-    level: "Intermediate",
-    image: "/images/navy-ship.jpg",
-    price: "$1,899",
-    originalPrice: "$2,499",
-    badge: "New"
-  },
-  {
-    id: 3,
-    title: "Maritime Security Protocols",
-    description: "Learn comprehensive security measures for maritime operations.",
-    category: "Security",
-    duration: "6 weeks",
-    students: "156 enrolled",
-    rating: 4.7,
-    totalRatings: 43,
-    level: "Beginner",
-    image: "/images/navy-ship.jpg",
-    price: "$1,299",
-    originalPrice: "$1,799"
-  },
-  {
-    id: 4,
-    title: "Navigation and Seamanship",
-    description: "Essential navigation skills for modern BVT operations.",
-    category: "Navigation",
-    duration: "10 weeks",
-    students: "298 enrolled",
-    rating: 4.9,
-    totalRatings: 112,
-    level: "Intermediate",
-    image: "/images/navy-ship.jpg",
-    price: "$1,799",
-    originalPrice: "$2,299",
-    badge: "Best Seller"
-  },
-  {
-    id: 5,
-    title: "Communication Systems",
-    description: "Advanced communication protocols and systems for BVT operations.",
-    category: "Technical",
-    duration: "7 weeks",
-    students: "134 enrolled",
-    rating: 4.6,
-    totalRatings: 38,
-    level: "Advanced",
-    image: "/images/navy-ship.jpg",
-    price: "$1,599",
-    originalPrice: "$2,099"
-  },
-  {
-    id: 6,
-    title: "Emergency Response Training",
-    description: "Critical skills for handling emergency situations at sea.",
-    category: "Safety",
-    duration: "5 weeks",
-    students: "201 enrolled",
-    rating: 4.8,
-    totalRatings: 76,
-    level: "Beginner",
-    image: "/images/navy-ship.jpg",
-    price: "$1,199",
-    originalPrice: "$1,599"
-  }
-];
-
 export default function ProgramCard({
   id,
   title,
@@ -218,7 +128,5 @@ export default function ProgramCard({
     </motion.div>
   );
 }
-
-export { SAMPLE_PROGRAMS };
 
 

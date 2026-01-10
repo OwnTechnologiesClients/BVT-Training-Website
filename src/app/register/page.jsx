@@ -4,31 +4,187 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Mail, Lock, User, Shield, ArrowRight, Phone, Briefcase, MapPin, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Shield, ArrowRight, Phone, MapPin, CheckCircle, Loader2 } from "lucide-react";
 import { sendVerificationOTP, verifyEmailAndRegister, resendVerificationOTP } from "@/lib/api/password";
+import { useAuth } from "@/context/AuthContext";
 import { showSuccess, showError } from "@/lib/utils/sweetalert";
+import CountryCodeSelector from "@/components/common/CountryCodeSelector";
+// Country codes will be loaded dynamically in useEffect
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { loginWithGoogle, isAuthenticated, loading: authLoading } = useAuth();
   const [step, setStep] = useState(1); // 1: Fill all fields, 2: OTP verification
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
     email: "",
+    countryCode: "+1",
     phone: "",
     password: "",
     confirmPassword: "",
-    experience: "",
-    location: "",
+    street: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "USA",
     agreeToTerms: false,
   });
   const [otp, setOtp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState("");
   const [errors, setErrors] = useState({});
   const [countdown, setCountdown] = useState(0);
+  const [countryCodes, setCountryCodes] = useState([]);
+  const [countryCodesLoading, setCountryCodesLoading] = useState(true);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, authLoading, router]);
+
+  // Load country codes from country-list-with-dial-code-and-flag package
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const loadCountries = async () => {
+        try {
+          // Import the package dynamically
+          const CountryListModule = await import('country-list-with-dial-code-and-flag');
+          
+          // The package exports CountryList with getAll() method
+          const CountryList = CountryListModule.default || CountryListModule;
+          
+          if (CountryList && typeof CountryList.getAll === 'function') {
+            const countries = CountryList.getAll();
+            
+            if (countries && Array.isArray(countries) && countries.length > 0) {
+              // Log first country to see actual structure
+              console.log('Sample country object from package:', countries[0]);
+              console.log('All keys in country object:', countries[0] ? Object.keys(countries[0]) : 'no countries');
+              
+              // Helper function to generate flag emoji from country code (ISO 3166-1 alpha-2) - fallback only
+              const getFlagEmoji = (countryCode) => {
+                if (!countryCode || countryCode.length !== 2) return '';
+                // Convert country code to flag emoji
+                const codePoints = countryCode
+                  .toUpperCase()
+                  .split('')
+                  .map(char => 127397 + char.charCodeAt());
+                return String.fromCodePoint(...codePoints);
+              };
+              
+              // The package structure should be: { name, dial_code, code, flag }
+              // Map all countries with their fields directly - check ALL possible fields
+              const allCountries = countries
+                .map((country, index) => {
+                  // Extract ALL fields - check every possible variation
+                  const dialCode = country.dial_code || country.dialCode || '';
+                  const code = dialCode ? (dialCode.toString().startsWith('+') ? dialCode.toString() : `+${dialCode}`) : '';
+                  const countryName = country.name || country.countryName || '';
+                  const countryCode = country.code || country.countryCode || country.iso2 || country.iso || '';
+                  
+                  // Check ALL possible flag field names - the package might use any of these
+                  const flag = country.flag || 
+                               country.flagEmoji || 
+                               country.emoji || 
+                               country.flag_emoji || 
+                               country.flagEmojiUnicode ||
+                               country.unicode ||
+                               '';
+                  
+                  // Debug log for first few countries to see actual structure
+                  if (index < 3) {
+                    console.log(`Country ${index}:`, {
+                      name: countryName,
+                      dial_code: dialCode,
+                      code: countryCode,
+                      flag_found: flag,
+                      flag_type: typeof flag,
+                      flag_length: flag?.length,
+                      all_keys: Object.keys(country),
+                      raw_country: country
+                    });
+                  }
+                  
+                  // Use package flag, or generate from country code if available
+                  let finalFlag = flag;
+                  if (!finalFlag && countryCode && countryCode.length === 2) {
+                    finalFlag = getFlagEmoji(countryCode);
+                  }
+                  
+                  return {
+                    id: `${code}-${countryCode || index}`, // Unique ID combining dial code and country code
+                    code: code,
+                    country: countryName,
+                    flag: finalFlag, // This should be the emoji flag
+                    countryCode: countryCode
+                  };
+                })
+                .filter(item => item.code && item.code.trim() && item.code !== '+' && item.code !== '++');
+              
+              // Deduplicate by dial code - keep the first country for each dial code
+              const seenCodes = new Set();
+              const formattedCountries = allCountries
+                .filter(item => {
+                  if (!seenCodes.has(item.code)) {
+                    seenCodes.add(item.code);
+                    return true;
+                  }
+                  return false;
+                })
+                .map(item => ({
+                  id: item.id,
+                  code: item.code,
+                  country: item.country,
+                  flag: item.flag
+                }))
+                .sort((a, b) => {
+                  // Sort by country name for better UX
+                  return a.country.localeCompare(b.country);
+                });
+              
+              console.log('Formatted countries sample (first 5):', formattedCountries.slice(0, 5));
+              console.log('Sample formatted country:', formattedCountries[0]);
+              console.log('Total formatted countries:', formattedCountries.length);
+              console.log('Countries with flags:', formattedCountries.filter(c => c.flag).length);
+              console.log('Countries without flags:', formattedCountries.filter(c => !c.flag).slice(0, 5));
+            
+              if (formattedCountries.length > 0) {
+                setCountryCodes(formattedCountries);
+                setCountryCodesLoading(false);
+                // Set default country code if not already set
+                if (!formData.countryCode || formData.countryCode === '+1') {
+                  const defaultCode = formattedCountries.find(c => c.code === '+1') || formattedCountries[0];
+                  if (defaultCode) {
+                    setFormData(prev => ({ ...prev, countryCode: defaultCode.code }));
+                  }
+                }
+              } else {
+                console.error('No formatted country codes found. Sample country object:', countries[0]);
+                setCountryCodesLoading(false);
+              }
+            } else {
+              console.error('Invalid countries data from getAll(). Type:', typeof countries, 'Is Array:', Array.isArray(countries), 'Length:', countries?.length);
+              setCountryCodesLoading(false);
+            }
+          } else {
+            console.error('CountryList.getAll is not a function. Available methods:', Object.keys(CountryList || {}));
+            setCountryCodesLoading(false);
+          }
+        } catch (error) {
+          console.error('Error loading country codes:', error);
+          console.error('Error stack:', error.stack);
+          setCountryCodesLoading(false);
+        }
+      };
+
+      loadCountries();
+    }
+  }, []);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -56,8 +212,11 @@ export default function RegisterPage() {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
-    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!formData.fullName || !formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+    } else if (formData.fullName.trim().split(' ').length < 2) {
+      newErrors.fullName = "Please enter your full name (first and last name)";
+    }
     
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
@@ -65,9 +224,29 @@ export default function RegisterPage() {
       newErrors.email = "Please enter a valid email address";
     }
     
-    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-    if (!formData.experience) newErrors.experience = "Please select experience level";
-    if (!formData.location) newErrors.location = "Please select location";
+    // Phone number is mandatory for email registration
+    if (!formData.countryCode || !formData.countryCode.trim()) {
+      newErrors.countryCode = "Country code is required";
+    }
+    if (!formData.phone || !formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^\d{6,15}$/.test(formData.phone.trim())) {
+      newErrors.phone = "Phone number must be 6-15 digits";
+    }
+    
+    // Address validation
+    if (!formData.street || !formData.street.trim()) {
+      newErrors.street = "Street address is required";
+    }
+    if (!formData.city || !formData.city.trim()) {
+      newErrors.city = "City is required";
+    }
+    if (!formData.state || !formData.state.trim()) {
+      newErrors.state = "State is required";
+    }
+    if (!formData.postalCode || !formData.postalCode.trim()) {
+      newErrors.postalCode = "Postal code is required";
+    }
     
     if (!formData.password) {
       newErrors.password = "Password is required";
@@ -169,12 +348,16 @@ export default function RegisterPage() {
         email: formData.email,
         otp: otp,
         password: formData.password,
-        fullName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
-        phone: formData.phone || undefined,
-        address: formData.location ? {
-          city: formData.location,
-          country: "India"
-        } : undefined,
+        fullName: formData.fullName.trim(),
+        phone: formData.phone ? formData.phone.trim() : undefined,
+        countryCode: formData.countryCode || undefined,
+        address: {
+          street: formData.street?.trim() || undefined,
+          city: formData.city?.trim() || undefined,
+          state: formData.state?.trim() || undefined,
+          postalCode: formData.postalCode?.trim() || undefined,
+          country: formData.country || "USA"
+        },
       };
 
       const response = await verifyEmailAndRegister(registrationData);
@@ -198,13 +381,67 @@ export default function RegisterPage() {
     }
   };
 
-  const experienceLevels = [
-    "Fresh Graduate", "1-2 years", "3-5 years", "6-10 years", "11-15 years", "16-20 years", "20+ years"
-  ];
+  const handleGoogleRegister = async () => {
+    setError("");
+    setIsGoogleLoading(true);
+    
+    try {
+      const result = await loginWithGoogle();
+      
+      if (result.success) {
+        // Check if profile needs completion
+        try {
+          const { checkProfileCompletion } = await import("@/lib/api/student");
+          const profileCheck = await checkProfileCompletion();
+          
+          if (profileCheck.success && profileCheck.data && profileCheck.data.needsCompletion) {
+            // Profile needs completion, redirect to complete profile page
+            showSuccess('Account Created!', 'Please complete your profile to continue.');
+            setTimeout(() => {
+              router.push("/complete-profile");
+            }, 1000);
+          } else {
+            // Profile is complete, redirect to dashboard
+            showSuccess('Registration Successful!', 'Welcome! Your account has been created.');
+            setTimeout(() => {
+              router.push("/dashboard");
+            }, 1500);
+          }
+        } catch (profileError) {
+          // If profile check fails, still redirect to complete profile as fallback
+          console.error('Error checking profile:', profileError);
+          showSuccess('Account Created!', 'Please complete your profile to continue.');
+          setTimeout(() => {
+            router.push("/complete-profile");
+          }, 1000);
+        }
+      } else {
+        const errorMsg = result.error || "Google registration failed. Please try again.";
+        setError(errorMsg);
+        showError('Google Registration Failed', errorMsg);
+      }
+    } catch (err) {
+      const errorMsg = err.message || "An error occurred during Google registration. Please try again.";
+      setError(errorMsg);
+      showError('Google Registration Error', errorMsg);
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
-  const locations = [
-    "Mumbai", "Delhi", "Kolkata", "Chennai", "Bangalore", "Hyderabad", "Pune", "Ahmedabad", "Other"
-  ];
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-yellow-500" />
+      </div>
+    );
+  }
+
+  // Don't render if already authenticated (will redirect)
+  if (isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -276,60 +513,85 @@ export default function RegisterPage() {
 
           {/* Step 1: Fill All Details */}
           {step === 1 && (
-            <form className="space-y-6" onSubmit={handleSendOTP}>
-              {/* Personal Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-white mb-2">
-                    First Name
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User className="h-5 w-5 text-blue-300" />
-                    </div>
-                    <input
-                      id="firstName"
-                      name="firstName"
-                      type="text"
-                      required
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      className={`block w-full pl-10 pr-3 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
-                        errors.firstName ? "border-red-500" : "border-white/30"
-                      }`}
-                      placeholder="Enter first name"
-                    />
-                  </div>
-                  {errors.firstName && <p className="text-red-400 text-sm mt-1">{errors.firstName}</p>}
-                </div>
+            <div className="space-y-6">
+            {/* Google Register Button - Shown at top */}
+            <div>
+              <motion.button
+                type="button"
+                onClick={handleGoogleRegister}
+                disabled={isLoading || isGoogleLoading}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full flex justify-center items-center gap-3 py-3 px-4 border border-white/30 rounded-xl shadow-sm text-sm font-medium text-white bg-white/10 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                {isGoogleLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    Registering with Google...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path
+                        fill="currentColor"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      />
+                    </svg>
+                    Register with Google
+                  </>
+                )}
+              </motion.button>
 
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-white mb-2">
-                    Last Name
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User className="h-5 w-5 text-blue-300" />
-                    </div>
-                    <input
-                      id="lastName"
-                      name="lastName"
-                      type="text"
-                      required
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      className={`block w-full pl-10 pr-3 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
-                        errors.lastName ? "border-red-500" : "border-white/30"
-                      }`}
-                      placeholder="Enter last name"
-                    />
-                  </div>
-                  {errors.lastName && <p className="text-red-400 text-sm mt-1">{errors.lastName}</p>}
+              {/* Divider */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-white/20"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-transparent text-blue-200">Or register with email</span>
                 </div>
               </div>
+            </div>
 
-              {/* Contact Information */}
+            <form className="space-y-6" onSubmit={handleSendOTP}>
+              {/* Personal Information - Name and Email in same row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="fullName" className="block text-sm font-medium text-white mb-2">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-blue-300" />
+                    </div>
+                    <input
+                      id="fullName"
+                      name="fullName"
+                      type="text"
+                      required
+                      value={formData.fullName}
+                      onChange={handleInputChange}
+                      className={`block w-full pl-10 pr-3 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
+                        errors.fullName ? "border-red-500" : "border-white/30"
+                      }`}
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                  {errors.fullName && <p className="text-red-400 text-sm mt-1">{errors.fullName}</p>}
+                </div>
+
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
                     Email Address
@@ -354,86 +616,153 @@ export default function RegisterPage() {
                   </div>
                   {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
                 </div>
+              </div>
 
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-white mb-2">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Phone className="h-5 w-5 text-blue-300" />
-                    </div>
+              {/* Phone Number */}
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-white mb-2">
+                  Phone Number <span className="text-red-400">*</span>
+                </label>
+                <div className="flex gap-3">
+                  <CountryCodeSelector
+                    value={formData.countryCode}
+                    onChange={handleInputChange}
+                    disabled={countryCodesLoading || countryCodes.length === 0}
+                    error={!!errors.countryCode}
+                    countryCodes={countryCodes}
+                    loading={countryCodesLoading}
+                    className="w-44"
+                    size="md"
+                  />
+                  <div className="relative flex-1">
                     <input
                       id="phone"
                       name="phone"
                       type="tel"
                       required
                       value={formData.phone}
-                      onChange={handleInputChange}
-                      className={`block w-full pl-10 pr-3 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        setFormData(prev => ({
+                          ...prev,
+                          phone: value
+                        }));
+                        if (errors.phone) setErrors(prev => ({ ...prev, phone: "" }));
+                      }}
+                      className={`block w-full px-4 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
                         errors.phone ? "border-red-500" : "border-white/30"
                       }`}
                       placeholder="Enter phone number"
+                      maxLength={15}
+                      pattern="[0-9]{6,15}"
+                      title="Phone number must be 6-15 digits"
                     />
                   </div>
-                  {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone}</p>}
                 </div>
+                {errors.countryCode && <p className="text-red-400 text-sm mt-1">{errors.countryCode}</p>}
+                {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone}</p>}
               </div>
 
-              {/* BVT Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Address Information */}
+              <div className="space-y-4">
+                <label className="block text-sm font-medium text-white mb-2">
+                  Address <span className="text-red-400">*</span>
+                </label>
+                
                 <div>
-                  <label htmlFor="experience" className="block text-sm font-medium text-white mb-2">
-                    Experience Level
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Briefcase className="h-5 w-5 text-blue-300" />
-                    </div>
-                    <select
-                      id="experience"
-                      name="experience"
-                      required
-                      value={formData.experience}
-                      onChange={handleInputChange}
-                      className={`block w-full pl-10 pr-3 py-3 border rounded-xl bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all appearance-none ${
-                        errors.experience ? "border-red-500" : "border-white/30"
-                      }`}
-                    >
-                      <option value="" className="text-gray-900">Select experience level</option>
-                      {experienceLevels.map((level) => (
-                        <option key={level} value={level} className="text-gray-900">{level}</option>
-                      ))}
-                    </select>
-                  </div>
-                  {errors.experience && <p className="text-red-400 text-sm mt-1">{errors.experience}</p>}
-                </div>
-
-                <div>
-                  <label htmlFor="location" className="block text-sm font-medium text-white mb-2">
-                    Preferred Training Location
-                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <MapPin className="h-5 w-5 text-blue-300" />
                     </div>
-                    <select
-                      id="location"
-                      name="location"
+                    <input
+                      id="street"
+                      name="street"
+                      type="text"
                       required
-                      value={formData.location}
+                      value={formData.street}
                       onChange={handleInputChange}
-                      className={`block w-full pl-10 pr-3 py-3 border rounded-xl bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all appearance-none ${
-                        errors.location ? "border-red-500" : "border-white/30"
+                      className={`block w-full pl-10 pr-3 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
+                        errors.street ? "border-red-500" : "border-white/30"
+                      }`}
+                      placeholder="Street Address"
+                    />
+                  </div>
+                  {errors.street && <p className="text-red-400 text-sm mt-1">{errors.street}</p>}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <input
+                      id="city"
+                      name="city"
+                      type="text"
+                      required
+                      value={formData.city}
+                      onChange={handleInputChange}
+                      className={`block w-full px-3 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
+                        errors.city ? "border-red-500" : "border-white/30"
+                      }`}
+                      placeholder="City"
+                    />
+                    {errors.city && <p className="text-red-400 text-sm mt-1">{errors.city}</p>}
+                  </div>
+
+                  <div>
+                    <input
+                      id="state"
+                      name="state"
+                      type="text"
+                      required
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      className={`block w-full px-3 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
+                        errors.state ? "border-red-500" : "border-white/30"
+                      }`}
+                      placeholder="State/Province"
+                    />
+                    {errors.state && <p className="text-red-400 text-sm mt-1">{errors.state}</p>}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <input
+                      id="postalCode"
+                      name="postalCode"
+                      type="text"
+                      required
+                      value={formData.postalCode}
+                      onChange={handleInputChange}
+                      className={`block w-full px-3 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
+                        errors.postalCode ? "border-red-500" : "border-white/30"
+                      }`}
+                      placeholder="Postal/ZIP Code"
+                    />
+                    {errors.postalCode && <p className="text-red-400 text-sm mt-1">{errors.postalCode}</p>}
+                  </div>
+
+                  <div>
+                    <select
+                      id="country"
+                      name="country"
+                      required
+                      value={formData.country}
+                      onChange={handleInputChange}
+                      className={`block w-full px-3 py-3 border rounded-xl bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all appearance-none ${
+                        errors.country ? "border-red-500" : "border-white/30"
                       }`}
                     >
-                      <option value="" className="text-gray-900">Select preferred location</option>
-                      {locations.map((location) => (
-                        <option key={location} value={location} className="text-gray-900">{location}</option>
-                      ))}
+                      <option value="USA" className="text-gray-900">United States</option>
+                      <option value="India" className="text-gray-900">India</option>
+                      <option value="UK" className="text-gray-900">United Kingdom</option>
+                      <option value="Canada" className="text-gray-900">Canada</option>
+                      <option value="Australia" className="text-gray-900">Australia</option>
+                      <option value="Germany" className="text-gray-900">Germany</option>
+                      <option value="France" className="text-gray-900">France</option>
+                      <option value="Other" className="text-gray-900">Other</option>
                     </select>
+                    {errors.country && <p className="text-red-400 text-sm mt-1">{errors.country}</p>}
                   </div>
-                  {errors.location && <p className="text-red-400 text-sm mt-1">{errors.location}</p>}
                 </div>
               </div>
 
@@ -539,7 +868,7 @@ export default function RegisterPage() {
               {/* Submit Button */}
               <motion.button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-blue-950 bg-yellow-500 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
@@ -557,6 +886,7 @@ export default function RegisterPage() {
                 )}
               </motion.button>
             </form>
+            </div>
           )}
 
           {/* Step 2: OTP Verification */}
@@ -606,7 +936,7 @@ export default function RegisterPage() {
               {/* Verify Button */}
               <motion.button
                 type="submit"
-                disabled={isLoading || otp.length !== 6}
+                disabled={isLoading || isGoogleLoading || otp.length !== 6}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-blue-950 bg-yellow-500 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"

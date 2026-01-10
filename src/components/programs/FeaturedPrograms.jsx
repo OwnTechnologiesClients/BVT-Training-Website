@@ -3,7 +3,7 @@
 // import { motion } from "framer-motion";
 // import { ChevronLeft, ChevronRight, Star, Clock, Users, Award } from "lucide-react";
 // import { useState } from "react";
-// import { SAMPLE_PROGRAMS } from "./ProgramCard";
+// Sample data removed - use programs prop instead
 // import Link from "next/link";
 // import { useAuth } from "@/context/AuthContext";
 

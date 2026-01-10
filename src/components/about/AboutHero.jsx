@@ -45,7 +45,7 @@ export default function AboutHero() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight"
           >
-            Naval Excellence <br />
+            Maritime Excellence <br />
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

@@ -61,3 +61,29 @@ export const getStudentProfile = async () => {
   });
 };
 
+/**
+ * Google authentication (login or register)
+ * @param {string} idToken - Firebase ID token
+ * @param {Object} userData - Additional user data from Google (optional)
+ */
+export const googleAuth = async (idToken, userData = {}) => {
+  const response = await apiRequest('/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ 
+      idToken,
+      ...userData 
+    }),
+  });
+  
+  if (response.success && response.data) {
+    if (response.data.token) {
+      setToken(response.data.token);
+    }
+    if (response.data.student) {
+      setStudent(response.data.student);
+    }
+    return response;
+  }
+  throw new Error(response.message || 'Google authentication failed');
+};
+

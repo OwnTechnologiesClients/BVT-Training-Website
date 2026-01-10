@@ -46,7 +46,7 @@ export default function EventsHero() {
               </motion.div>
               <div className="bg-yellow-600/20 backdrop-blur-sm px-4 py-2 rounded-full border border-yellow-600/30">
                 <span className="text-sm font-semibold text-yellow-400 uppercase tracking-wide">
-                  Naval Events & Training
+                  Maritime Events & Training
                 </span>
               </div>
             </div>

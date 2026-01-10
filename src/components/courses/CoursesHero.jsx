@@ -14,8 +14,8 @@ export default function CoursesHero({ content }) {
   // Default content if none provided - Generic for both online and offline
   const defaultContent = {
     title: "BVT Training Courses",
-    subtitle: "Master Naval Skills with Expert-Led Programs",
-    description: "Explore comprehensive naval training programs designed for both online and offline learning. Access world-class instruction, hands-on training, and expert guidance to advance your career.",
+    subtitle: "Master Maritime Skills with Expert-Led Programs",
+    description: "Explore comprehensive maritime training programs designed for both online and offline learning. Access world-class instruction, hands-on training, and expert guidance to advance your career.",
     stats: [
       { number: "400+", label: "Training Courses" },
       { number: "8.5K+", label: "Active Students" },
@@ -68,7 +68,7 @@ export default function CoursesHero({ content }) {
               )}
             </motion.div>
             <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-              <span className="text-sm font-semibold text-yellow-400 uppercase tracking-wide">Premier Naval Training</span>
+              <span className="text-sm font-semibold text-yellow-400 uppercase tracking-wide">Premier Maritime Training</span>
             </div>
           </motion.div>
 
@@ -93,7 +93,7 @@ export default function CoursesHero({ content }) {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg lg:text-xl xl:text-2xl text-blue-100 mb-8 leading-relaxed max-w-3xl"
           >
-            {heroContent.description || "Explore comprehensive naval training programs designed for both online and offline learning. Access world-class instruction, hands-on training, and expert guidance to advance your career."}
+            {heroContent.description || "Explore comprehensive Maritime training programs designed for both online and offline learning. Access world-class instruction, hands-on training, and expert guidance to advance your career."}
           </motion.p>
 
           {/* Stats Grid */}

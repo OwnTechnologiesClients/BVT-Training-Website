@@ -160,7 +160,7 @@ export default function Hero() {
                 <Award className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-yellow-400" />
               </motion.div>
               <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-yellow-400 uppercase tracking-wider">
-                Navy Certified Training
+                Maritime Certified Training
               </span>
               <Sparkles className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 text-yellow-400 animate-pulse" />
             </motion.div>
@@ -187,7 +187,7 @@ export default function Hero() {
                   ease: "linear"
                 }}
               >
-                Naval Career
+                Maritime Career
                 <motion.div
                   className="absolute -bottom-0.5 sm:-bottom-0.5 md:-bottom-1 left-0 right-0 h-0.5 sm:h-0.5 md:h-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full"
                   initial={{ scaleX: 0 }}

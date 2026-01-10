@@ -3,14 +3,30 @@
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Calendar, MapPin, Users, Star, Clock } from "lucide-react";
 import { useState } from "react";
-import { SAMPLE_EVENTS } from "./EventCard";
 import Link from "next/link";
 
-export default function FeaturedEvents() {
+export default function FeaturedEvents({ events = [] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   
-  // Get featured events
-  const featuredEvents = SAMPLE_EVENTS.filter(event => event.featured).slice(0, 3);
+  // Get featured events from props, or use all events if none are featured
+  const featuredEvents = events.length === 0 
+    ? []
+    : events.filter(event => event.featured).length > 0
+    ? events.filter(event => event.featured).slice(0, 3)
+    : events.slice(0, 3);
+
+  // Show empty state if no events
+  if (featuredEvents.length === 0) {
+    return (
+      <section className="py-16 bg-gradient-to-br from-blue-50 to-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No featured events available at this time.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => 

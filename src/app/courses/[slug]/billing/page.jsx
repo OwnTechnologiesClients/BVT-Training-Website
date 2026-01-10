@@ -56,8 +56,8 @@ export default function CourseBillingPage({ params }) {
       const response = await enrollInCourse(course._id);
       
       if (response.success) {
-        // Redirect to course learning page
-        router.push(`/courses/${slug}/learn`);
+        // Redirect to dashboard
+        router.push('/dashboard');
       } else {
         throw new Error(response.message || 'Failed to enroll in course');
       }

@@ -102,7 +102,7 @@ export default function Footer() {
               </div>
 
               <p className="text-xs lg:text-sm mb-4 opacity-90 leading-relaxed max-w-lg">
-                Excellence in Naval and Maritime Training. Providing comprehensive courses, events, and programs for professional development.
+                Excellence in Maritime Training. Providing comprehensive courses, events, and programs for professional development.
               </p>
 
               {/* Contact Info Cards */}
@@ -279,7 +279,7 @@ export default function Footer() {
                 className="flex items-center gap-1.5 text-[10px] lg:text-xs opacity-80"
               >
                 <MapPin className="w-3.5 h-3.5 text-yellow-400" />
-                <span>Naval & Maritime Excellence</span>
+                <span>Maritime Excellence</span>
               </motion.div>
             </div>
           </div>

@@ -2,15 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { Search, Filter, X } from "lucide-react";
-import { SAMPLE_PROGRAMS } from "./ProgramCard";
 
-export default function ProgramsSearch({ onSearchResults, onFilterChange }) {
+export default function ProgramsSearch({ programs = [], onSearchResults, onFilterChange }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedDuration, setSelectedDuration] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
-  const [filteredResults, setFilteredResults] = useState(SAMPLE_PROGRAMS);
+  const [filteredResults, setFilteredResults] = useState(programs || []);
 
   const categories = ["Technical", "Leadership", "Security", "Navigation", "Safety"];
   const levels = ["Beginner", "Intermediate", "Advanced"];
@@ -18,7 +17,7 @@ export default function ProgramsSearch({ onSearchResults, onFilterChange }) {
 
   // Filter programs based on search and filters
   useEffect(() => {
-    let results = SAMPLE_PROGRAMS;
+    let results = programs || [];
 
     // Apply search query
     if (searchQuery) {
@@ -70,7 +69,7 @@ export default function ProgramsSearch({ onSearchResults, onFilterChange }) {
     }
 
     setFilteredResults(results);
-  }, [searchQuery, selectedFilter, selectedCategories, selectedDuration, selectedLevel]);
+  }, [searchQuery, selectedFilter, selectedCategories, selectedDuration, selectedLevel, programs]);
 
   // Separate effect for notifying parent components
   useEffect(() => {

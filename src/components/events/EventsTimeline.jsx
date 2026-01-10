@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { Calendar, Clock, MapPin, Users, ChevronRight, ChevronLeft, Sparkles, Award, ArrowRight } from "lucide-react";
 import { useState, useRef } from "react";
-import { SAMPLE_EVENTS } from "./EventCard";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils/imageUtils";
 import ImagePlaceholder from "@/components/common/ImagePlaceholder";
@@ -11,8 +10,8 @@ import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, events = [], hideMaxAttendees = false }) {
   const scrollContainerRef = useRef(null);
   
-  // Use provided events or fallback to SAMPLE_EVENTS
-  const allEvents = events.length > 0 ? events : SAMPLE_EVENTS;
+  // Use provided events (required prop - no fallback)
+  const allEvents = events || [];
   
   // Helper function to filter events by timeframe
   const filterEventsByTimeframe = (eventsList, timeframe) => {

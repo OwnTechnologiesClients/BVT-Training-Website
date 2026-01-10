@@ -3,9 +3,8 @@
 import { motion } from "framer-motion";
 import { Calendar, ChevronLeft, ChevronRight, MapPin, Clock } from "lucide-react";
 import { useState } from "react";
-import { SAMPLE_EVENTS } from "./EventCard";
 
-export default function EventsCalendar() {
+export default function EventsCalendar({ events = [] }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -40,9 +39,9 @@ export default function EventsCalendar() {
   };
 
   const getEventsForDate = (date) => {
-    if (!date) return [];
-    return SAMPLE_EVENTS.filter(event => {
-      const eventDate = new Date(event.date);
+    if (!date || !events || events.length === 0) return [];
+    return events.filter(event => {
+      const eventDate = new Date(event.date || event.startDate);
       return eventDate.toDateString() === date.toDateString();
     });
   };

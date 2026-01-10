@@ -8,8 +8,10 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { signInWithPopup } from "firebase/auth";
 import { getToken, getStudent, removeToken } from "@/lib/api";
-import { studentLogin, studentLogout } from "@/lib/api/auth";
+import { studentLogin, studentLogout, googleAuth } from "@/lib/api/auth";
+import { auth, googleProvider } from "@/lib/firebase";
 
 const AuthContext = createContext(null);
 
@@ -68,6 +70,65 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  // Google login function
+  const loginWithGoogle = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      // Sign in with Google using Firebase
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      
+      // Get the ID token
+      const idToken = await user.getIdToken();
+      
+      // Extract user data from Google
+      const userData = {
+        email: user.email,
+        fullName: user.displayName || `${user.email?.split('@')[0]}`,
+        photoURL: user.photoURL,
+        phone: user.phoneNumber,
+      };
+      
+      // Send to backend for authentication/registration
+      const response = await googleAuth(idToken, userData);
+      
+      if (response.success && response.data) {
+        const studentData = response.data.student || {
+          email: user.email,
+          fullName: user.displayName || user.email?.split('@')[0],
+          photoURL: user.photoURL,
+        };
+        setStudentState(studentData);
+        setIsAuthenticated(true);
+        return { success: true, data: response.data };
+      }
+      
+      throw new Error(response.message || "Google authentication failed");
+    } catch (error) {
+      console.error("Google login error:", error);
+      
+      // Handle Firebase auth errors
+      let errorMessage = "Google authentication failed. Please try again.";
+      if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = "Sign-in popup was closed. Please try again.";
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMessage = "Popup was blocked by browser. Please allow popups and try again.";
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        errorMessage = "Sign-in was cancelled. Please try again.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      return {
+        success: false,
+        error: errorMessage,
+      };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // Clear auth state function (for use when token is invalidated externally)
   const clearAuth = useCallback(() => {
     setStudentState(null);
@@ -111,9 +172,10 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated,
       loading,
       login,
+      loginWithGoogle,
       logout,
     };
-  }, [studentWithDetails, isAuthenticated, loading, login, logout]);
+  }, [studentWithDetails, isAuthenticated, loading, login, loginWithGoogle, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -2,14 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { Search, Filter, X, Calendar } from "lucide-react";
-import { SAMPLE_EVENTS } from "./EventCard";
 
-export default function EventsSearch({ onSearchResults, onFilterChange }) {
+export default function EventsSearch({ events = [], onSearchResults, onFilterChange }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedDateRange, setSelectedDateRange] = useState("");
   const [selectedPrice, setSelectedPrice] = useState("");
-  const [filteredResults, setFilteredResults] = useState(SAMPLE_EVENTS);
+  const [filteredResults, setFilteredResults] = useState(events || []);
 
   const categories = ["Conference", "Workshop", "Symposium", "Training", "Drill", "Seminar"];
   const dateRanges = ["This Week", "This Month", "Next Month", "Next 3 Months"];
@@ -17,7 +16,7 @@ export default function EventsSearch({ onSearchResults, onFilterChange }) {
 
   // Filter events based on search and filters
   useEffect(() => {
-    let results = SAMPLE_EVENTS;
+    let results = events || [];
 
     // Apply search query
     if (searchQuery) {
@@ -83,7 +82,7 @@ export default function EventsSearch({ onSearchResults, onFilterChange }) {
     }
 
     setFilteredResults(results);
-  }, [searchQuery, selectedCategory, selectedDateRange, selectedPrice]);
+  }, [searchQuery, selectedCategory, selectedDateRange, selectedPrice, events]);
 
   // Separate effect for notifying parent components
   useEffect(() => {

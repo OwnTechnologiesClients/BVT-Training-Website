@@ -49,7 +49,7 @@ export default function Stats() {
             </span>
           </div>
           <h2 className="mb-4 text-4xl md:text-5xl font-bold text-white">
-            Excellence in Naval Training
+            Excellence in Maritime Training
           </h2>
           <p className="mx-auto w-full text-lg text-blue-100 lg:w-6/12">
             Decades of experience delivering world-class vocational training 

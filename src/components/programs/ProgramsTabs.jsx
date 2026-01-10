@@ -1,32 +1,46 @@
 "use client";
 
 import { useState } from "react";
-import ProgramCard, { SAMPLE_PROGRAMS } from "./ProgramCard";
+import ProgramCard from "./ProgramCard";
 
-export default function ProgramsTabs({ searchResults, activeFilters }) {
+export default function ProgramsTabs({ programs = [], searchResults, activeFilters }) {
   const [activeTab, setActiveTab] = useState("all");
 
+  // Calculate counts from actual programs
+  const calculateCounts = () => {
+    return {
+      all: programs.length,
+      technical: programs.filter(p => p.category?.toLowerCase() === "technical").length,
+      leadership: programs.filter(p => p.category?.toLowerCase() === "leadership").length,
+      security: programs.filter(p => p.category?.toLowerCase() === "security").length,
+      navigation: programs.filter(p => p.category?.toLowerCase() === "navigation").length,
+      safety: programs.filter(p => p.category?.toLowerCase() === "safety").length
+    };
+  };
+
+  const counts = calculateCounts();
+
   const tabs = [
-    { id: "all", label: "All Programs", count: SAMPLE_PROGRAMS.length },
-    { id: "technical", label: "Technical", count: SAMPLE_PROGRAMS.filter(p => p.category === "Technical").length },
-    { id: "leadership", label: "Leadership", count: SAMPLE_PROGRAMS.filter(p => p.category === "Leadership").length },
-    { id: "security", label: "Security", count: SAMPLE_PROGRAMS.filter(p => p.category === "Security").length },
-    { id: "navigation", label: "Navigation", count: SAMPLE_PROGRAMS.filter(p => p.category === "Navigation").length },
-    { id: "safety", label: "Safety", count: SAMPLE_PROGRAMS.filter(p => p.category === "Safety").length }
+    { id: "all", label: "All Programs", count: counts.all },
+    { id: "technical", label: "Technical", count: counts.technical },
+    { id: "leadership", label: "Leadership", count: counts.leadership },
+    { id: "security", label: "Security", count: counts.security },
+    { id: "navigation", label: "Navigation", count: counts.navigation },
+    { id: "safety", label: "Safety", count: counts.safety }
   ];
 
   // Use search results if available, otherwise use filtered programs based on active tab
   const getDisplayPrograms = () => {
-    if (searchResults) {
+    if (searchResults && searchResults.length > 0) {
       return searchResults;
     }
     
     if (activeTab === "all") {
-      return SAMPLE_PROGRAMS;
+      return programs;
     }
     
-    return SAMPLE_PROGRAMS.filter(program => 
-      program.category.toLowerCase() === activeTab.toLowerCase()
+    return programs.filter(program => 
+      program.category?.toLowerCase() === activeTab.toLowerCase()
     );
   };
 

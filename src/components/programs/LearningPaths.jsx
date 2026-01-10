@@ -3,11 +3,10 @@
 import { motion } from "framer-motion";
 import { BookOpen, Users, Clock, Award, ChevronRight, CheckCircle, Star } from "lucide-react";
 import { useState } from "react";
-import { SAMPLE_PROGRAMS } from "./ProgramCard";
 
 export default function LearningPaths({ selectedPath, onPathChange, programs = [] }) {
-  // Use provided programs or fallback to SAMPLE_PROGRAMS
-  const displayPrograms = programs.length > 0 ? programs : SAMPLE_PROGRAMS;
+  // Use provided programs (required prop - no fallback)
+  const displayPrograms = programs || [];
   
   // Generate learning paths dynamically from programs or use defaults
   const getLearningPaths = () => {
@@ -39,60 +38,8 @@ export default function LearningPaths({ selectedPath, onPathChange, programs = [
       });
     }
     
-    // Default paths if no programs
-    return [
-    {
-      id: "technical",
-      title: "Technical Excellence Path",
-      description: "Master advanced technical skills in BVT engineering and systems",
-      duration: "12-18 months",
-      difficulty: "Advanced",
-      programCount: 8,
-      color: "blue",
-      icon: "⚙️",
-      outcomes: [
-        "Advanced Naval Engineering Certification",
-        "Systems Architecture Expertise",
-        "Technical Leadership Skills",
-        "Innovation & Problem Solving"
-      ],
-      programs: SAMPLE_PROGRAMS.filter(p => p.category === "Technical").slice(0, 4)
-    },
-    {
-      id: "leadership",
-      title: "Leadership Development Path",
-      description: "Build essential leadership and management capabilities",
-      duration: "8-12 months",
-      difficulty: "Intermediate",
-      programCount: 6,
-      color: "green",
-      icon: "👥",
-      outcomes: [
-        "Executive Leadership Certification",
-        "Team Management Skills",
-        "Strategic Planning Expertise",
-        "Communication Excellence"
-      ],
-      programs: SAMPLE_PROGRAMS.filter(p => p.category === "Leadership").slice(0, 3)
-    },
-    {
-      id: "security",
-      title: "Security & Defense Path",
-      description: "Specialize in maritime security and defense protocols",
-      duration: "10-14 months",
-      difficulty: "Advanced",
-      programCount: 7,
-      color: "red",
-      icon: "🛡️",
-      outcomes: [
-        "Security Specialist Certification",
-        "Defense Strategy Expertise",
-        "Risk Assessment Skills",
-        "Crisis Management"
-      ],
-      programs: SAMPLE_PROGRAMS.filter(p => p.category === "Security").slice(0, 4)
-    }
-  ];
+    // Return empty array if no programs (don't use default/sample data)
+    return [];
   };
 
   const learningPaths = getLearningPaths();

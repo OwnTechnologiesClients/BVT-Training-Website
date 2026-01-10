@@ -1,36 +1,58 @@
 "use client";
 
 import { useState } from "react";
-import EventCard, { SAMPLE_EVENTS } from "./EventCard";
+import EventCard from "./EventCard";
 
-export default function EventsTabs({ searchResults, activeFilters }) {
+export default function EventsTabs({ events = [], searchResults, activeFilters }) {
   const [activeTab, setActiveTab] = useState("upcoming");
 
+  // Calculate counts from actual events
+  const calculateCounts = () => {
+    const now = new Date();
+    return {
+      upcoming: events.filter(e => {
+        const eventDate = new Date(e.date || e.startDate);
+        return eventDate >= now;
+      }).length,
+      featured: events.filter(e => e.featured).length,
+      conference: events.filter(e => e.category === "Conference").length,
+      workshop: events.filter(e => e.category === "Workshop").length,
+      training: events.filter(e => e.category === "Training").length,
+      free: events.filter(e => e.price === "Free" || e.price === 0 || e.cost === 0).length
+    };
+  };
+
+  const counts = calculateCounts();
+
   const tabs = [
-    { id: "upcoming", label: "Upcoming Events", count: SAMPLE_EVENTS.filter(e => new Date(e.date) >= new Date()).length },
-    { id: "featured", label: "Featured", count: SAMPLE_EVENTS.filter(e => e.featured).length },
-    { id: "conference", label: "Conferences", count: SAMPLE_EVENTS.filter(e => e.category === "Conference").length },
-    { id: "workshop", label: "Workshops", count: SAMPLE_EVENTS.filter(e => e.category === "Workshop").length },
-    { id: "training", label: "Training", count: SAMPLE_EVENTS.filter(e => e.category === "Training").length },
-    { id: "free", label: "Free Events", count: SAMPLE_EVENTS.filter(e => e.price === "Free").length }
+    { id: "upcoming", label: "Upcoming Events", count: counts.upcoming },
+    { id: "featured", label: "Featured", count: counts.featured },
+    { id: "conference", label: "Conferences", count: counts.conference },
+    { id: "workshop", label: "Workshops", count: counts.workshop },
+    { id: "training", label: "Training", count: counts.training },
+    { id: "free", label: "Free Events", count: counts.free }
   ];
 
   // Use search results if available, otherwise use filtered events based on active tab
   const getDisplayEvents = () => {
-    if (searchResults) {
+    if (searchResults && searchResults.length > 0) {
       return searchResults;
     }
     
+    const now = new Date();
     switch (activeTab) {
       case "upcoming":
-        return SAMPLE_EVENTS.filter(event => new Date(event.date) >= new Date());
+        return events.filter(event => {
+          const eventDate = new Date(event.date || event.startDate);
+          return eventDate >= now;
+        });
       case "featured":
-        return SAMPLE_EVENTS.filter(event => event.featured);
+        return events.filter(event => event.featured);
       case "free":
-        return SAMPLE_EVENTS.filter(event => event.price === "Free");
+        return events.filter(event => event.price === "Free" || event.price === 0 || event.cost === 0);
       default:
-        return SAMPLE_EVENTS.filter(event => 
-          event.category.toLowerCase() === activeTab.toLowerCase()
+        return events.filter(event => 
+          event.category?.toLowerCase() === activeTab.toLowerCase()
         );
     }
   };

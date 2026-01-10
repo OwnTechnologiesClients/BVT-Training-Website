@@ -6,7 +6,7 @@ import { Trophy, Medal, Star, Award, Shield, Target, Sparkles } from "lucide-rea
 const ACHIEVEMENTS = [
   {
     icon: Trophy,
-    title: "Naval Training Excellence Award",
+    title: "Maritime Training Excellence Award",
     year: "2024",
     organization: "US Navy",
     description: "Recognized for outstanding contribution to BVT vocational training and education.",

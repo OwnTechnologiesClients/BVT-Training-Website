@@ -251,7 +251,7 @@ export default function WhyChooseUs() {
             </div>
 
             <div className="relative z-10">
-              <h3 className="text-xl lg:text-2xl font-bold mb-3">Ready to Start Your Naval Career Journey?</h3>
+              <h3 className="text-xl lg:text-2xl font-bold mb-3">Ready to Start Your Maritime Career Journey?</h3>
               <p className="text-blue-100 mb-6 max-w-2xl mx-auto text-base lg:text-lg leading-relaxed">
                 Join thousands of successful graduates who have advanced their careers through BVT Training's 
                 world-class programs. Your future in BVT excellence starts here.

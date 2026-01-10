@@ -345,6 +345,14 @@ export default function Navbar() {
                           <Settings className="w-3.5 h-3.5 group-hover/item:rotate-90 transition-transform" />
                           Dashboard
                         </Link>
+                        <Link
+                          href="/profile"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="block px-3.5 py-2 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-950 transition-all duration-200 flex items-center gap-2 font-medium group/item"
+                        >
+                          <User className="w-3.5 h-3.5 group-hover/item:scale-110 transition-transform" />
+                          Profile
+                        </Link>
                         <button
                           onClick={handleLogout}
                           className="w-full text-left px-3.5 py-2 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-600 transition-all duration-200 flex items-center gap-2 font-medium group/item cursor-pointer"
@@ -602,8 +610,17 @@ export default function Navbar() {
                         whileTap={{ scale: 0.95 }}
                         className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
                       >
-                        <User className="w-4 h-4" />
+                        <Settings className="w-4 h-4" />
                         Dashboard
+                      </motion.button>
+                    </Link>
+                    <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)}>
+                      <motion.button 
+                        whileTap={{ scale: 0.95 }}
+                        className="w-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 text-white px-4 py-2.5 rounded-lg text-sm font-bold hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <User className="w-4 h-4" />
+                        Profile
                       </motion.button>
                     </Link>
                     <motion.button
