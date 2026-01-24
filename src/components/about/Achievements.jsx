@@ -8,7 +8,7 @@ const ACHIEVEMENTS = [
     icon: Trophy,
     title: "Maritime Training Excellence Award",
     year: "2024",
-    organization: "US Navy",
+    organization: "Maritime Training Council",
     description: "Recognized for outstanding contribution to BVT vocational training and education.",
     category: "Excellence"
   },
@@ -54,14 +54,6 @@ const ACHIEVEMENTS = [
   }
 ];
 
-const STATS = [
-  { number: "95%", label: "Graduate Success Rate", icon: Trophy },
-  { number: "8,500+", label: "Successful Graduates", icon: Award },
-  { number: "50+", label: "Years of Excellence", icon: Star },
-  { number: "400+", label: "Training Programs", icon: Target },
-  { number: "24/7", label: "Student Support", icon: Shield },
-  { number: "100+", label: "Industry Partnerships", icon: Medal }
-];
 
 export default function Achievements() {
   return (
@@ -156,52 +148,6 @@ export default function Achievements() {
             );
           })}
         </div>
-
-        {/* Statistics */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="bg-gradient-to-r from-blue-900 to-blue-950 rounded-2xl lg:rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden border-2 border-yellow-400/30"
-        >
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-4 left-4 w-32 h-32 border-2 border-yellow-500 rounded-full"></div>
-            <div className="absolute bottom-4 right-4 w-24 h-24 border-2 border-yellow-500 rounded-full"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 border-2 border-yellow-500 rounded-full"></div>
-          </div>
-
-          <div className="relative z-10">
-            <div className="text-center mb-8 lg:mb-12">
-              <h3 className="text-2xl lg:text-3xl font-bold mb-2">Our Impact by the Numbers</h3>
-              <p className="text-blue-100 text-base lg:text-lg">Measurable results that demonstrate our commitment to excellence</p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-6">
-              {STATS.map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
-                    whileHover={{ y: -8, scale: 1.05 }}
-                    className="text-center p-4 lg:p-6 bg-blue-800/30 backdrop-blur-sm rounded-xl lg:rounded-2xl border border-blue-700/50 hover:bg-blue-800/50 hover:border-yellow-400/50 transition-all"
-                  >
-                    <div className="w-12 h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
-                      <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-blue-950" />
-                    </div>
-                    <div className="text-2xl lg:text-3xl font-bold text-yellow-400 mb-1">{stat.number}</div>
-                    <div className="text-xs lg:text-sm text-blue-200 leading-tight">{stat.label}</div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        </motion.div>
 
         {/* Recognition Banner */}
         <motion.div

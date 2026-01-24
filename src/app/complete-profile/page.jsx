@@ -9,6 +9,8 @@ import { completeProfile, checkProfileCompletion, verifyPhoneNumber } from "@/li
 import { sendPhoneVerificationCode, verifyPhoneCode, cleanupRecaptcha } from "@/lib/firebase";
 import { showSuccess, showError } from "@/lib/utils/sweetalert";
 import CountryCodeSelector from "@/components/common/CountryCodeSelector";
+import CountrySelector from "@/components/common/CountrySelector";
+import { countries } from "countries-list";
 // Country codes will be loaded dynamically in useEffect
 
 
@@ -26,11 +28,12 @@ export default function CompleteProfilePage() {
     city: "",
     state: "",
     postalCode: "",
-    country: "USA",
+    country: "Norway",
   });
   const [errors, setErrors] = useState({});
   const [countryCodes, setCountryCodes] = useState([]);
   const [countryCodesLoading, setCountryCodesLoading] = useState(true);
+  const [countriesList, setCountriesList] = useState([]);
   
   // Phone verification states
   const [phoneVerificationStep, setPhoneVerificationStep] = useState(0); // 0: not started, 1: OTP sent, 2: verified
@@ -38,6 +41,42 @@ export default function CompleteProfilePage() {
   const [verificationCode, setVerificationCode] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+
+  // Load countries list from countries-list package
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        // Convert countries object to array and sort by name
+        const countriesArray = Object.entries(countries)
+          .map(([code, country]) => ({
+            code: code,
+            name: country.name
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        
+        setCountriesList(countriesArray);
+        // Set default country if not already set
+        setFormData(prev => {
+          if (!prev.country || prev.country === "USA" || prev.country === "United States") {
+            return { ...prev, country: "Norway" };
+          }
+          return prev;
+        });
+      } catch (error) {
+        console.error('Error loading countries list:', error);
+        // Fallback to default countries if package fails
+        setCountriesList([
+          { code: 'US', name: 'United States' },
+          { code: 'IN', name: 'India' },
+          { code: 'GB', name: 'United Kingdom' },
+          { code: 'CA', name: 'Canada' },
+          { code: 'AU', name: 'Australia' },
+          { code: 'DE', name: 'Germany' },
+          { code: 'FR', name: 'France' }
+        ]);
+      }
+    }
+  }, []);
 
   // Load country codes from country-list-with-dial-code-and-flag package
   useEffect(() => {
@@ -200,7 +239,7 @@ export default function CompleteProfilePage() {
         city: student.address?.city || "",
         state: student.address?.state || "",
         postalCode: student.address?.postalCode || "",
-        country: student.address?.country || "USA",
+        country: student.address?.country || countriesList.find(c => c.code === 'NO')?.name || "Norway",
       }));
       
       // Check if phone is already verified
@@ -825,25 +864,16 @@ export default function CompleteProfilePage() {
                 </div>
 
                 <div>
-                  <select
-                    id="country"
-                    name="country"
-                    required
+                  <CountrySelector
                     value={formData.country}
                     onChange={handleInputChange}
-                    className={`block w-full px-3 py-3 border rounded-xl bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all appearance-none ${
-                      errors.country ? "border-red-500" : "border-white/30"
-                    }`}
-                  >
-                    <option value="USA" className="text-gray-900">United States</option>
-                    <option value="India" className="text-gray-900">India</option>
-                    <option value="UK" className="text-gray-900">United Kingdom</option>
-                    <option value="Canada" className="text-gray-900">Canada</option>
-                    <option value="Australia" className="text-gray-900">Australia</option>
-                    <option value="Germany" className="text-gray-900">Germany</option>
-                    <option value="France" className="text-gray-900">France</option>
-                    <option value="Other" className="text-gray-900">Other</option>
-                  </select>
+                    disabled={false}
+                    error={!!errors.country}
+                    countriesList={countriesList}
+                    loading={countriesList.length === 0}
+                    className="w-full"
+                    size="md"
+                  />
                   {errors.country && <p className="text-red-400 text-sm mt-1">{errors.country}</p>}
                 </div>
               </div>

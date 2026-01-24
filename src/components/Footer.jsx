@@ -108,7 +108,7 @@ export default function Footer() {
               {/* Contact Info Cards */}
               <div className="space-y-2 mb-4">
                 <motion.a
-                  href="mailto:info@bvttraining.com"
+                  href="mailto:Cato.grasdal@gmail.com"
                   whileHover={{ x: 5, scale: 1.02 }}
                   className="flex items-center space-x-2 group bg-white/5 backdrop-blur-sm rounded-lg p-2 border border-white/10 hover:border-yellow-500/50 hover:bg-white/10 transition-all"
                 >
@@ -116,7 +116,7 @@ export default function Footer() {
                     <Mail className="w-4 h-4" />
                   </div>
                   <span className="text-xs lg:text-sm group-hover:text-yellow-400 transition-colors">
-                    info@bvttraining.com
+                    Cato.grasdal@gmail.com
                   </span>
                 </motion.a>
               </div>

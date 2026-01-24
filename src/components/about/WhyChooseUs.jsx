@@ -8,26 +8,26 @@ const REASONS = [
   {
     icon: Award,
     title: "Proven Excellence",
-    description: "50+ years of delivering world-class BVT training with a 95% graduate success rate.",
-    benefits: ["Established in 1973", "95% Success Rate", "Navy Certified"]
+    description: "Decades of delivering world-class BVT training with exceptional graduate success.",
+    benefits: ["Established in 1973", "High Success Rate", "Industry Certified"]
   },
   {
     icon: Users,
     title: "Expert Instructors",
     description: "Learn from experienced BVT officers and industry professionals with decades of real-world experience.",
-    benefits: ["120+ Expert Instructors", "Real-World Experience", "Navy Certified"]
+    benefits: ["Expert Instructors", "Real-World Experience", "Industry Certified"]
   },
   {
     icon: Target,
     title: "Comprehensive Programs",
-    description: "400+ specialized training programs covering all aspects of BVT operations and maritime careers.",
-    benefits: ["400+ Programs", "All Specialties", "Career-Focused"]
+    description: "Specialized training programs covering all aspects of BVT operations and maritime careers.",
+    benefits: ["Comprehensive Programs", "All Specialties", "Career-Focused"]
   },
   {
     icon: Shield,
     title: "Safety First",
     description: "Industry-leading safety protocols and comprehensive support systems for all trainees.",
-    benefits: ["Safety Excellence", "24/7 Support", "Risk Management"]
+    benefits: ["Safety Excellence", "Round-the-Clock Support", "Risk Management"]
   },
   {
     icon: Clock,

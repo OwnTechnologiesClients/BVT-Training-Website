@@ -5,47 +5,54 @@ import { Calendar, Ship, Users, Award, Anchor, Sparkles, ArrowRight } from "luci
 import Link from "next/link";
 
 const TIMELINE = [
-  {
-    year: "1973",
-    title: "Foundation",
-    description: "BVT Training was established with a vision to provide world-class BVT vocational training.",
-    icon: Ship,
-    color: "from-blue-600 to-blue-800"
-  },
-  {
-    year: "1985",
-    title: "Expansion",
-    description: "Expanded to include advanced technical programs and leadership development courses.",
-    icon: Users,
-    color: "from-blue-700 to-blue-900"
-  },
-  {
-    year: "1995",
-    title: "Recognition",
-    description: "Received official recognition from the US Navy for excellence in vocational training.",
-    icon: Award,
-    color: "from-blue-800 to-blue-950"
-  },
-  {
-    year: "2005",
-    title: "Innovation",
-    description: "Introduced modern simulation technology and digital learning platforms.",
-    icon: Anchor,
-    color: "from-slate-700 to-slate-900"
-  },
-  {
-    year: "2015",
-    title: "Global Reach",
-    description: "Extended training programs to international BVT forces and maritime organizations.",
-    icon: Ship,
-    color: "from-indigo-700 to-indigo-900"
-  },
+  // {
+  //   year: "1973",
+  //   title: "Foundation",
+  //   description: "BVT Training was established with a vision to provide world-class BVT vocational training.",
+  //   icon: Ship,
+  //   color: "from-blue-600 to-blue-800"
+  // },
+  // {
+  //   year: "1985",
+  //   title: "Expansion",
+  //   description: "Expanded to include advanced technical programs and leadership development courses.",
+  //   icon: Users,
+  //   color: "from-blue-700 to-blue-900"
+  // },
+  // {
+  //   year: "1995",
+  //   title: "Recognition",
+  //   description: "Received official recognition for excellence in vocational training.",
+  //   icon: Award,
+  //   color: "from-blue-800 to-blue-950"
+  // },
+  // {
+  //   year: "2005",
+  //   title: "Innovation",
+  //   description: "Introduced modern simulation technology and digital learning platforms.",
+  //   icon: Anchor,
+  //   color: "from-slate-700 to-slate-900"
+  // },
+  // {
+  //   year: "2015",
+  //   title: "Global Reach",
+  //   description: "Extended training programs to international BVT forces and maritime organizations.",
+  //   icon: Ship,
+  //   color: "from-indigo-700 to-indigo-900"
+  // },
   {
     year: "2025",
-    title: "Future",
-    description: "Continuing to lead in BVT education with cutting-edge technology and methodologies.",
-    icon: Award,
+    title: "Startup of BVT Training",
+    description: "BVT Training saw the world in 2025, expanding training programs globally and validating methodologies across diverse international operations.",
+    icon: Ship,
     color: "from-blue-900 to-blue-950"
+  },
+  {
+    year: "2026",
+    title: "Launching of Digital Seamanship",
+    description: "Launching of 'Digital Seamanship: AI-Assisted Safety Leadership' - a revolutionary program combining AI technology with maritime safety leadership.",
+    icon: Award,
+    color: "from-indigo-700 to-indigo-900"
   }
 ];
 
@@ -88,7 +95,7 @@ export default function OurStory() {
           </h2>
           <div className="h-1 w-24 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto mb-6"></div>
           <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            From humble beginnings in 1973 to becoming a global leader in BVT vocational training, 
+            From a small startup in 2025 to becoming a global leader in BVT vocational training, 
             our journey has been marked by continuous innovation, excellence, and dedication to our mission.
           </p>
         </motion.div>

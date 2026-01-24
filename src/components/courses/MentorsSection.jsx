@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Users, Award, Star, BookOpen, MapPin, TrendingUp, Loader2, Sparkles, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import MentorCard from "./MentorCard";
 import { getActiveInstructors } from "@/lib/api/instructors";
 import { apiRequest } from "@/lib/api";
@@ -89,18 +89,6 @@ export default function MentorsSection({ mentors: propMentors, showLocations = f
     fetchInstructors();
   }, [propMentors]);
 
-  const stats = showLocations ? [
-    { icon: Users, value: "15+", label: "Expert Instructors", color: "from-blue-500 to-blue-600" },
-    { icon: MapPin, value: "6+", label: "Training Locations", color: "from-green-500 to-green-600" },
-    { icon: Star, value: "4.8/5", label: "Average Rating", color: "from-yellow-500 to-yellow-600" },
-    { icon: BookOpen, value: "50+", label: "Workshops Available", color: "from-purple-500 to-purple-600" }
-  ] : [
-    { icon: Users, value: "15+", label: "Expert Instructors", color: "from-blue-500 to-blue-600" },
-    { icon: Award, value: "200+", label: "Years Combined Experience", color: "from-yellow-500 to-yellow-600" },
-    { icon: Star, value: "4.8/5", label: "Average Instructor Rating", color: "from-green-500 to-green-600" },
-    { icon: BookOpen, value: "1,200+", label: "Courses Taught", color: "from-purple-500 to-purple-600" }
-  ];
-
   return (
     <section id="instructors" className="relative py-10 lg:py-12 bg-gradient-to-br from-white via-blue-50/30 to-white overflow-hidden">
       {/* Decorative Background Elements */}
@@ -146,34 +134,6 @@ export default function MentorsSection({ mentors: propMentors, showLocations = f
               {showLocations ? " Learn hands-on skills from the best in state-of-the-art facilities." : " Learn from the best and advance your career with proven strategies and techniques."}
             </p>
           </motion.div>
-        </div>
-      </div>
-
-      {/* Mentor Stats - Enhanced */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
-            {stats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
-                  whileHover={{ y: -8, scale: 1.05 }}
-                  className="group text-center p-4 lg:p-6 bg-white rounded-2xl border-2 border-gray-200 hover:border-yellow-400 hover:shadow-xl transition-all"
-                >
-                  <div className={`w-12 h-12 lg:w-14 lg:h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
-                  </div>
-                  <div className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent mb-1">{stat.value}</div>
-                  <div className="text-xs lg:text-sm text-gray-600 font-medium">{stat.label}</div>
-                </motion.div>
-              );
-            })}
-          </div>
         </div>
       </div>
 

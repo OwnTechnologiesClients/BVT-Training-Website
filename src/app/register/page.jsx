@@ -9,6 +9,8 @@ import { sendVerificationOTP, verifyEmailAndRegister, resendVerificationOTP } fr
 import { useAuth } from "@/context/AuthContext";
 import { showSuccess, showError } from "@/lib/utils/sweetalert";
 import CountryCodeSelector from "@/components/common/CountryCodeSelector";
+import CountrySelector from "@/components/common/CountrySelector";
+import { countries } from "countries-list";
 // Country codes will be loaded dynamically in useEffect
 
 export default function RegisterPage() {
@@ -26,7 +28,7 @@ export default function RegisterPage() {
     city: "",
     state: "",
     postalCode: "",
-    country: "USA",
+    country: "Norway",
     agreeToTerms: false,
   });
   const [otp, setOtp] = useState("");
@@ -39,6 +41,43 @@ export default function RegisterPage() {
   const [countdown, setCountdown] = useState(0);
   const [countryCodes, setCountryCodes] = useState([]);
   const [countryCodesLoading, setCountryCodesLoading] = useState(true);
+  const [countriesList, setCountriesList] = useState([]);
+
+  // Load countries list from countries-list package
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        // Convert countries object to array and sort by name
+        const countriesArray = Object.entries(countries)
+          .map(([code, country]) => ({
+            code: code,
+            name: country.name
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        
+        setCountriesList(countriesArray);
+        // Set default country if not already set
+        setFormData(prev => {
+          if (!prev.country || prev.country === "USA" || prev.country === "United States") {
+            return { ...prev, country: "Norway" };
+          }
+          return prev;
+        });
+      } catch (error) {
+        console.error('Error loading countries list:', error);
+        // Fallback to default countries if package fails
+        setCountriesList([
+          { code: 'US', name: 'United States' },
+          { code: 'IN', name: 'India' },
+          { code: 'GB', name: 'United Kingdom' },
+          { code: 'CA', name: 'Canada' },
+          { code: 'AU', name: 'Australia' },
+          { code: 'DE', name: 'Germany' },
+          { code: 'FR', name: 'France' }
+        ]);
+      }
+    }
+  }, []);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -356,7 +395,7 @@ export default function RegisterPage() {
           city: formData.city?.trim() || undefined,
           state: formData.state?.trim() || undefined,
           postalCode: formData.postalCode?.trim() || undefined,
-          country: formData.country || "USA"
+          country: formData.country || "Norway"
         },
       };
 
@@ -742,25 +781,16 @@ export default function RegisterPage() {
                   </div>
 
                   <div>
-                    <select
-                      id="country"
-                      name="country"
-                      required
+                    <CountrySelector
                       value={formData.country}
                       onChange={handleInputChange}
-                      className={`block w-full px-3 py-3 border rounded-xl bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all appearance-none ${
-                        errors.country ? "border-red-500" : "border-white/30"
-                      }`}
-                    >
-                      <option value="USA" className="text-gray-900">United States</option>
-                      <option value="India" className="text-gray-900">India</option>
-                      <option value="UK" className="text-gray-900">United Kingdom</option>
-                      <option value="Canada" className="text-gray-900">Canada</option>
-                      <option value="Australia" className="text-gray-900">Australia</option>
-                      <option value="Germany" className="text-gray-900">Germany</option>
-                      <option value="France" className="text-gray-900">France</option>
-                      <option value="Other" className="text-gray-900">Other</option>
-                    </select>
+                      disabled={false}
+                      error={!!errors.country}
+                      countriesList={countriesList}
+                      loading={countriesList.length === 0}
+                      className="w-full"
+                      size="md"
+                    />
                     {errors.country && <p className="text-red-400 text-sm mt-1">{errors.country}</p>}
                   </div>
                 </div>

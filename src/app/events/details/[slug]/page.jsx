@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { getEventById, getEventBySlug } from "@/lib/api/events";
 import { getAllEvents } from "@/lib/api/events";
+import { getEventCategoryById } from "@/lib/api/eventCategory";
 import EventCard from "@/components/events/EventCard";
 import { getImageUrl } from "@/lib/utils/imageUtils";
 import ImagePlaceholder from "@/components/common/ImagePlaceholder";
@@ -74,6 +75,7 @@ export default function EventDetailsPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("info");
+  const [eventTypeSlug, setEventTypeSlug] = useState(null);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -143,6 +145,44 @@ export default function EventDetailsPage({ params }) {
         }
         
         setEventData(event);
+        
+        // Get event category slug from eventType
+        if (event.eventType) {
+          let eventTypeSlugValue = null;
+          
+          if (typeof event.eventType === 'object' && event.eventType !== null) {
+            // If eventType is populated, it should have slug from backend
+            eventTypeSlugValue = event.eventType.slug;
+            
+            // If no slug in populated object, fetch it by ID
+            if (!eventTypeSlugValue && event.eventType._id) {
+              try {
+                const categoryResponse = await getEventCategoryById(event.eventType._id);
+                if (categoryResponse.success && categoryResponse.data) {
+                  eventTypeSlugValue = categoryResponse.data.slug;
+                }
+              } catch (err) {
+                console.warn('Failed to fetch event category slug:', err);
+              }
+            }
+          } else if (typeof event.eventType === 'string') {
+            // If eventType is just an ID string, fetch the category
+            if (/^[0-9a-fA-F]{24}$/.test(event.eventType)) {
+              try {
+                const categoryResponse = await getEventCategoryById(event.eventType);
+                if (categoryResponse.success && categoryResponse.data) {
+                  eventTypeSlugValue = categoryResponse.data.slug;
+                }
+              } catch (err) {
+                console.warn('Failed to fetch event category slug:', err);
+              }
+            }
+          }
+          
+          if (eventTypeSlugValue) {
+            setEventTypeSlug(eventTypeSlugValue);
+          }
+        }
           
         const validEventTypes = ['conference', 'workshop', 'seminar', 'training', 'meeting'];
         const eventTypeForFilter = validEventTypes.includes(event.eventType) ? event.eventType : null;
@@ -172,8 +212,12 @@ export default function EventDetailsPage({ params }) {
                 category: e.category?.name || e.eventType || 'Event',
                 attendees: Array.isArray(e.attendees) ? e.attendees.length : 0,
                 maxAttendees: e.maxAttendees || 1,
-                price: e.cost === 0 || e.cost === null || e.cost === undefined ? 'Free' : `$${e.cost}`,
+                price: null, // Will use priceNOK/priceUSD instead
+                priceNOK: e.costNOK || (e.cost ? (parseFloat(e.cost) * 10.5).toFixed(2) : null),
+                priceUSD: e.costUSD || e.cost || null,
                 originalPrice: null,
+                originalPriceNOK: null,
+                originalPriceUSD: null,
                 image: e.eventImage || null,
                 badge: (e.status === 'ongoing' || e.status === 'completed') ? null : e.status,
                 featured: false,
@@ -309,7 +353,7 @@ export default function EventDetailsPage({ params }) {
                       <>
                         <span>/</span>
                         <Link 
-                          href={`/events/${typeof eventData.eventType === 'object' ? eventData.eventType.slug || eventData.eventType._id : eventData.eventType}`} 
+                          href={`/events/${eventTypeSlug || (typeof eventData.eventType === 'object' ? (eventData.eventType.slug || eventData.eventType._id) : eventData.eventType)}`} 
                           className="hover:text-blue-900"
                         >
                           {eventTypeName}
@@ -699,17 +743,31 @@ export default function EventDetailsPage({ params }) {
                       ) : null}
 
                       <div className="space-y-4 mb-6">
-                        {eventData.cost !== undefined && (
-                          <div className="flex items-center justify-between py-2 border-b border-gray-200">
-                            <div className="flex items-center gap-3">
-                              <DollarSign className="w-5 h-5 text-blue-900" />
-                              <span className="text-gray-700 font-medium">Cost</span>
+                        {(() => {
+                          const costNOK = eventData.costNOK || (eventData.cost ? (parseFloat(eventData.cost) * 10.5).toFixed(2) : null);
+                          const costUSD = eventData.costUSD || eventData.cost || null;
+                          
+                          if (!costNOK && !costUSD) return null;
+                          
+                          return (
+                            <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                              <div className="flex items-center gap-3">
+                                <DollarSign className="w-5 h-5 text-blue-900" />
+                                <span className="text-gray-700 font-medium">Cost</span>
+                              </div>
+                              <div className="text-right">
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                                    kr {costNOK}
+                                  </span>
+                                  {costUSD && (
+                                    <span className="text-sm text-gray-500 font-medium">(${costUSD})</span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                            <span className="text-2xl font-bold text-blue-900">
-                              {eventData.cost === 0 || eventData.cost === null ? 'Free' : `$${eventData.cost}`}
-                            </span>
-                          </div>
-                        )}
+                          );
+                        })()}
 
                         <div className="flex items-center justify-between py-2">
                           <div className="flex items-center gap-3">

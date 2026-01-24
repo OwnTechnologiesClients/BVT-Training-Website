@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Users, Clock, Sparkles, Award, ArrowRight } from "lucide-react";
+import { Sparkles, Award, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function EventsHero() {
@@ -66,38 +66,6 @@ export default function EventsHero() {
               Stay updated with the latest BVT training events, conferences, workshops, and networking 
               opportunities. Connect with fellow professionals and advance your career.
             </p>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 pt-8">
-              {[
-                { icon: Calendar, value: "50+", label: "Events This Year", color: "from-blue-500 to-blue-600" },
-                { icon: Users, value: "2,500+", label: "Participants", color: "from-green-500 to-green-600" },
-                { icon: MapPin, value: "15+", label: "Locations", color: "from-yellow-500 to-yellow-600" },
-                { icon: Clock, value: "24/7", label: "Registration", color: "from-purple-500 to-purple-600" }
-              ].map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
-                    whileHover={{ y: -8, scale: 1.05 }}
-                    className="group relative"
-                  >
-                    <div className="bg-white/10 backdrop-blur-md rounded-xl lg:rounded-2xl p-4 lg:p-6 border-2 border-white/20 hover:border-yellow-400/50 transition-all shadow-lg">
-                      <div className={`w-12 h-12 lg:w-14 lg:h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center mb-3 mx-auto shadow-lg group-hover:scale-110 transition-transform`}>
-                        <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
-                      </div>
-                      <div className="text-2xl lg:text-3xl font-bold text-white mb-1">{stat.value}</div>
-                      <div className="text-xs lg:text-sm text-blue-200 font-medium">{stat.label}</div>
-                    </div>
-                    {/* Decorative Corner */}
-                    <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  </motion.div>
-                );
-              })}
-            </div>
 
             {/* CTA Buttons */}
             <motion.div

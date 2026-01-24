@@ -7,7 +7,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import EventCard from "@/components/events/EventCard";
 import { getAllEvents, mapEventTypeToBackend } from "@/lib/api/events";
-import { getEventCategoryBySlug } from "@/lib/api/eventCategory";
+import { getEventCategoryBySlug, getEventCategoryById } from "@/lib/api/eventCategory";
 
 // Map backend eventType to display names
 const getEventTypeDisplayName = (type) => {
@@ -58,16 +58,33 @@ export default function EventTypePage() {
         setLoading(true);
         setError(null);
 
-        // First, try to fetch the category by slug
+        // First, determine if typeSlug is an ObjectId or a slug
+        const isObjectId = /^[0-9a-fA-F]{24}$/.test(typeSlug);
         let categoryData = null;
+        
         try {
-          const categoryResponse = await getEventCategoryBySlug(typeSlug);
+          let categoryResponse;
+          if (isObjectId) {
+            // If it's an ObjectId, fetch by ID
+            categoryResponse = await getEventCategoryById(typeSlug);
+          } else {
+            // Otherwise, try to fetch by slug
+            categoryResponse = await getEventCategoryBySlug(typeSlug);
+          }
+          
           if (categoryResponse.success && categoryResponse.data) {
             categoryData = categoryResponse.data;
             setCategory(categoryData);
+            
+            // If we fetched by ID and got a slug, redirect to the slug URL for better SEO
+            if (isObjectId && categoryData.slug && categoryData.slug !== typeSlug) {
+              router.replace(`/events/${categoryData.slug}`, { scroll: false });
+              return; // Exit early to prevent double fetch
+            }
           }
         } catch (err) {
-          // Category not found by slug, will try eventType mapping
+          // Category not found, will try eventType mapping
+          console.warn('Failed to fetch event category:', err);
         }
 
         // Build query params
@@ -112,8 +129,12 @@ export default function EventTypePage() {
               category: event.category?.name || event.eventType || 'Event',
               attendees: attendeesCount,
               maxAttendees: maxAttendees,
-              price: event.cost === 0 || event.cost === null || event.cost === undefined ? 'Free' : `$${event.cost}`,
+              price: null, // Will use priceNOK/priceUSD instead
+              priceNOK: event.costNOK || (event.cost ? (parseFloat(event.cost) * 10.5).toFixed(2) : null),
+              priceUSD: event.costUSD || event.cost || null,
               originalPrice: null,
+              originalPriceNOK: null,
+              originalPriceUSD: null,
               image: event.eventImage || null,
               badge: (event.status === 'ongoing' || event.status === 'completed') ? null : event.status,
               featured: false,
@@ -255,22 +276,6 @@ export default function EventTypePage() {
             >
               {description}
             </motion.p>
-
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="flex flex-wrap items-center justify-center gap-3"
-            >
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
-                <Calendar className="w-4 h-4 text-yellow-400" />
-                <div>
-                  <div className="text-xl font-bold">{events.length}</div>
-                  <div className="text-sm text-blue-200">{events.length === 1 ? 'Event' : 'Events'} Available</div>
-                </div>
-              </div>
-            </motion.div>
           </div>
         </div>
       </div>

@@ -8,43 +8,37 @@ export default function ProgramBenefits() {
     {
       icon: TrendingUp,
       title: "Career Advancement",
-      description: "94% of graduates receive promotions or new opportunities within 6 months",
-      stat: "94%",
+      description: "Graduates receive promotions or new opportunities within 6 months",
       color: "green"
     },
     {
       icon: Award,
       title: "Industry Recognition",
       description: "Certifications recognized by top BVT organizations worldwide",
-      stat: "100%",
       color: "blue"
     },
     {
       icon: Users,
       title: "Expert Instructors",
       description: "Learn from active and retired BVT officers with real-world experience",
-      stat: "50+",
       color: "purple"
     },
     {
       icon: Globe,
       title: "Global Network",
-      description: "Connect with BVT professionals from over 25 countries",
-      stat: "25+",
+      description: "Connect with BVT professionals from countries worldwide",
       color: "indigo"
     },
     {
       icon: Shield,
       title: "Security Clearance",
       description: "Programs designed to meet government security requirements",
-      stat: "Top Secret",
       color: "red"
     },
     {
       icon: Clock,
       title: "Flexible Learning",
-      description: "Study at your own pace with 24/7 access to materials",
-      stat: "24/7",
+      description: "Study at your own pace with round-the-clock access to materials",
       color: "orange"
     }
   ];
@@ -101,12 +95,7 @@ export default function ProgramBenefits() {
                     <Icon className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="text-lg font-bold text-gray-900">{benefit.title}</h3>
-                      <span className={`text-2xl font-bold bg-gradient-to-r ${getColorClasses(benefit.color)} bg-clip-text text-transparent`}>
-                        {benefit.stat}
-                      </span>
-                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
                     <p className="text-gray-600 text-sm">{benefit.description}</p>
                   </div>
                 </div>

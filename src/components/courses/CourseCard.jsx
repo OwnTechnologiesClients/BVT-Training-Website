@@ -180,18 +180,35 @@ export default function CourseCard({ course, index }) {
         {/* Price and CTA */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-200">
           <div>
-            {course.price ? (
-              <div>
-                <div className="text-lg lg:text-xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
-                  ${course.price}
+            {(() => {
+              const priceNOK = course.priceNOK || (course.price ? (parseFloat(course.price) * 10.5).toFixed(2) : null);
+              const priceUSD = course.priceUSD || course.price || null;
+              const originalPriceNOK = course.originalPriceNOK || (course.originalPrice ? (parseFloat(course.originalPrice) * 10.5).toFixed(2) : null);
+              const originalPriceUSD = course.originalPriceUSD || course.originalPrice || null;
+              
+              if (!priceNOK && !priceUSD) {
+                return <div className="text-base lg:text-lg font-bold text-green-600">Free</div>;
+              }
+              
+              return (
+                <div>
+                  {originalPriceNOK && parseFloat(originalPriceNOK) > parseFloat(priceNOK || 0) && (
+                    <div className="text-xs text-gray-500 line-through mb-0.5">
+                      kr {originalPriceNOK}
+                      {originalPriceUSD && <span className="ml-1">(${originalPriceUSD})</span>}
+                    </div>
+                  )}
+                  <div className="flex items-baseline gap-1.5">
+                    <div className="text-lg lg:text-xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                      kr {priceNOK}
+                    </div>
+                    {priceUSD && (
+                      <div className="text-xs text-gray-500 font-medium">(${priceUSD})</div>
+                    )}
+                  </div>
                 </div>
-                {course.originalPrice && course.originalPrice > course.price && (
-                  <div className="text-xs text-gray-500 line-through">${course.originalPrice}</div>
-                )}
-              </div>
-            ) : (
-              <div className="text-base lg:text-lg font-bold text-green-600">Free</div>
-            )}
+              );
+            })()}
           </div>
           <Link href={`/courses/${courseSlug}`}>
             <motion.button

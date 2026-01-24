@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Clock, Sparkles, ArrowRight } from "lucide-react";
+import { Mail, MapPin, Sparkles, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function ContactHero() {
@@ -68,12 +68,10 @@ export default function ContactHero() {
             </p>
 
             {/* Quick Contact Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 pt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 pt-8">
               {[
-                { icon: Phone, value: "+1 (555) 123-4567", label: "Phone Support", color: "from-blue-500 to-blue-600" },
-                { icon: Mail, value: "info@navytraining.com", label: "Email Support", color: "from-green-500 to-green-600" },
-                { icon: MapPin, value: "Naval Base", label: "Main Location", color: "from-yellow-500 to-yellow-600" },
-                { icon: Clock, value: "24/7", label: "Support Hours", color: "from-purple-500 to-purple-600" }
+                { icon: Mail, value: "Cato.grasdal@gmail.com", label: "Email Support", color: "from-green-500 to-green-600" },
+                { icon: MapPin, value: "Hetlevik, Norway", label: "Main Location", color: "from-yellow-500 to-yellow-600" }
               ].map((contact, index) => {
                 const Icon = contact.icon;
                 return (

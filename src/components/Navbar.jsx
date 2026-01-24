@@ -130,15 +130,8 @@ export default function Navbar() {
               whileHover={{ scale: 1.05 }}
               className="flex items-center space-x-2 hover:text-yellow-400 transition-colors cursor-pointer group"
             >
-              <Phone className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" />
-              <span className="hidden sm:inline font-medium">256 214 203 215</span>
-            </motion.div>
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center space-x-2 hover:text-yellow-400 transition-colors cursor-pointer group"
-            >
               <Mail className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" />
-              <span className="hidden sm:inline font-medium">info@bvttraining.com</span>
+              <span className="hidden sm:inline font-medium">Cato.grasdal@gmail.com</span>
             </motion.div>
           </div>
           {isAuthenticated ? (

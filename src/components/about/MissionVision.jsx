@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Target, Eye, Heart, Users, Award, Shield, Sparkles } from "lucide-react";
+import { Target, Eye, Heart, Sparkles } from "lucide-react";
 
 export default function MissionVision() {
   return (
@@ -218,34 +218,6 @@ export default function MissionVision() {
             {/* Decorative Corner */}
             <div className="absolute top-0 left-0 w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-br-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </motion.div>
-        </div>
-
-        {/* Supporting Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-          {[
-            { icon: Users, number: "8,500+", label: "Successful Graduates", color: "from-blue-500 to-blue-600" },
-            { icon: Award, number: "95%", label: "Career Advancement Rate", color: "from-yellow-500 to-yellow-600" },
-            { icon: Shield, number: "50+", label: "Years of Excellence", color: "from-green-500 to-green-600" }
-          ].map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
-                whileHover={{ y: -8, scale: 1.05 }}
-                className="group text-center p-6 lg:p-8 bg-white rounded-2xl border-2 border-gray-200 hover:border-yellow-400 hover:shadow-xl transition-all"
-              >
-                <div className={`w-16 h-16 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg`}>
-                  <Icon className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent mb-2">{stat.number}</div>
-                <div className="text-gray-600 font-medium text-sm lg:text-base">{stat.label}</div>
-              </motion.div>
-            );
-          })}
         </div>
       </div>
     </section>

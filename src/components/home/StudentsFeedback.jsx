@@ -267,7 +267,7 @@ export default function StudentsFeedback() {
               </motion.div>
               
               <h3 className="text-xl lg:text-2xl font-extrabold text-white mb-2">
-                Join 8,500+ Successful Graduates
+                Join Our Community
               </h3>
               <p className="text-lg lg:text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
                 Start your BVT training journey today and transform your career

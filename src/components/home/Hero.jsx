@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Ship, Anchor, Award, Users, Sparkles, ArrowRight, Play } from "lucide-react";
+import { Ship, Award, Sparkles, ArrowRight, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
@@ -239,50 +239,6 @@ export default function Hero() {
                   <span>Watch Video</span>
                 </motion.button>
               </Link>
-            </motion.div>
-
-            {/* Enhanced Stats Row - More Compact */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.8 }}
-              className="grid grid-cols-3 gap-1.5 sm:gap-2 md:gap-3 lg:gap-4 pt-1.5 sm:pt-2 md:pt-3 lg:pt-4 max-w-3xl mx-auto pb-1.5 sm:pb-3"
-            >
-              {[
-                { icon: Users, value: "8,500+", label: "Active Trainees", color: "from-blue-400 to-blue-600" },
-                { icon: Award, value: "400+", label: "Courses", color: "from-yellow-400 to-yellow-600" },
-                { icon: Anchor, value: "95%", label: "Success Rate", color: "from-green-400 to-green-600" }
-              ].map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                  <motion.div 
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.9 + index * 0.1, duration: 0.5 }}
-                    whileHover={{ scale: 1.05, y: -3 }}
-                    className="text-center group cursor-default"
-                  >
-                    <div className="relative inline-block mb-1 sm:mb-1 md:mb-1.5">
-                      <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} rounded-full blur-md opacity-40 group-hover:opacity-60 transition-opacity`}></div>
-                      <div className="relative bg-white/10 backdrop-blur-md p-1 sm:p-1.5 md:p-2 rounded-md sm:rounded-lg border border-white/20 group-hover:border-white/40 transition-all">
-                        <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-yellow-400 mx-auto group-hover:scale-110 transition-transform`} />
-                      </div>
-                    </div>
-                    <motion.div 
-                      className="text-base sm:text-lg md:text-xl lg:text-2xl font-extrabold text-white mb-0.5"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 1 + index * 0.1 }}
-                    >
-                      {stat.value}
-                    </motion.div>
-                    <div className="text-[9px] sm:text-[10px] md:text-xs text-blue-200 font-semibold uppercase tracking-wider px-0.5 leading-tight">
-                      {stat.label}
-                    </div>
-                  </motion.div>
-                );
-              })}
             </motion.div>
           </motion.div>
         </div>

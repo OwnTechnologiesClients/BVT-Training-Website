@@ -18,7 +18,7 @@ export default function AboutPage() {
       <OurStory />
       <LeadershipTeam />
       <OurValues />
-      <Achievements />
+      {/* <Achievements /> */}
       <WhyChooseUs />
     </div>
   );

@@ -18,7 +18,11 @@ export default function EventCard({
   attendees, 
   maxAttendees,
   price,
+  priceNOK,
+  priceUSD,
   originalPrice,
+  originalPriceNOK,
+  originalPriceUSD,
   image,
   badge,
   featured,
@@ -138,12 +142,64 @@ export default function EventCard({
 
         {/* Price */}
         <div className={`${compact ? 'mb-3 pb-3' : 'mb-4 pb-4'} border-b border-gray-200`}>
-          <div className="flex items-center gap-2">
-            <span className={`${compact ? 'text-lg' : 'text-2xl lg:text-3xl'} font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent`}>{price || 'Free'}</span>
-            {originalPrice && originalPrice !== "Free" && originalPrice !== price && (
-              <span className={`${compact ? 'text-sm' : 'text-lg'} text-gray-400 line-through`}>{originalPrice}</span>
-            )}
-          </div>
+          {(() => {
+            // Use priceNOK/priceUSD if available, otherwise fall back to price string (backward compatibility)
+            let costNOK = priceNOK;
+            let costUSD = priceUSD;
+            
+            // If price is a string like "kr 2999" or "$299", parse it
+            if (!costNOK && !costUSD && price && typeof price === 'string') {
+              if (price === 'Free') {
+                return (
+                  <div className="flex items-center gap-2">
+                    <span className={`${compact ? 'text-lg' : 'text-2xl lg:text-3xl'} font-bold text-green-600`}>Free</span>
+                  </div>
+                );
+              }
+              // Try to extract from price string
+              if (price.startsWith('kr ')) {
+                costNOK = price.replace('kr ', '');
+              } else if (price.startsWith('$')) {
+                costUSD = price.replace('$', '');
+                costNOK = (parseFloat(costUSD) * 10.5).toFixed(2);
+              }
+            }
+            
+            // If still no values, check if price is a number
+            if (!costNOK && !costUSD && typeof price === 'number') {
+              costUSD = price.toString();
+              costNOK = (price * 10.5).toFixed(2);
+            }
+            
+            if (!costNOK && !costUSD) {
+              return (
+                <div className="flex items-center gap-2">
+                  <span className={`${compact ? 'text-lg' : 'text-2xl lg:text-3xl'} font-bold text-green-600`}>Free</span>
+                </div>
+              );
+            }
+            
+            return (
+              <div className="flex flex-col gap-1">
+                {originalPriceNOK && parseFloat(originalPriceNOK) > parseFloat(costNOK || 0) && (
+                  <div className="flex items-center gap-2">
+                    <span className={`${compact ? 'text-sm' : 'text-base'} text-gray-400 line-through`}>
+                      kr {originalPriceNOK}
+                      {originalPriceUSD && <span className="ml-1">(${originalPriceUSD})</span>}
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-baseline gap-2">
+                  <span className={`${compact ? 'text-lg' : 'text-2xl lg:text-3xl'} font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent`}>
+                    kr {costNOK}
+                  </span>
+                  {costUSD && (
+                    <span className={`${compact ? 'text-xs' : 'text-sm'} text-gray-500 font-medium`}>(${costUSD})</span>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
         {/* CTA Button */}

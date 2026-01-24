@@ -12,7 +12,7 @@ export default function ContactPage() {
   return (
     <>
       <ContactHero />
-      <ContactInfo />
+      {/* <ContactInfo /> */}
       <ContactForm />
       <ContactMap />
       <ContactFAQ />

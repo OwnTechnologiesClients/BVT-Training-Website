@@ -91,8 +91,12 @@ function EventsContent() {
                 category: event.category?.name || event.eventType?.name || 'Event',
                 attendees: attendeesCount,
                 maxAttendees: maxAttendees,
-                price: event.cost === 0 || event.cost === null || event.cost === undefined ? 'Free' : `$${event.cost}`,
+                price: null, // Will use priceNOK/priceUSD instead
+                priceNOK: event.costNOK || (event.cost ? (parseFloat(event.cost) * 10.5).toFixed(2) : null),
+                priceUSD: event.costUSD || event.cost || null,
                 originalPrice: null,
+                originalPriceNOK: null,
+                originalPriceUSD: null,
             image: event.eventImage || event.image || null,
                 badge: (event.status === 'ongoing' || event.status === 'completed') ? null : event.status,
                 featured: false,

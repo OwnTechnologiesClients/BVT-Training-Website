@@ -335,9 +335,25 @@ export default function EventsTimeline({ selectedTimeframe, onTimeframeChange, e
                               {/* Price - Better positioned */}
                               <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                                 <span className="text-xs text-gray-500 font-medium">Price</span>
-                                <div className="text-xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
-                                  {event.price || 'Free'}
-                                </div>
+                                {(() => {
+                                  const costNOK = event.priceNOK || (event.price && typeof event.price === 'string' && event.price.startsWith('kr ') ? event.price.replace('kr ', '') : null);
+                                  const costUSD = event.priceUSD || (event.price && typeof event.price === 'string' && event.price.startsWith('$') ? event.price.replace('$', '') : null);
+                                  
+                                  if (!costNOK && !costUSD) {
+                                    return <div className="text-xl font-bold text-green-600">Free</div>;
+                                  }
+                                  
+                                  return (
+                                    <div className="flex items-baseline gap-1.5">
+                                      <div className="text-xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                                        kr {costNOK || (costUSD ? (parseFloat(costUSD) * 10.5).toFixed(2) : '0')}
+                                      </div>
+                                      {costUSD && (
+                                        <div className="text-xs text-gray-500 font-medium">(${costUSD})</div>
+                                      )}
+                                    </div>
+                                  );
+                                })()}
                               </div>
                             </div>
 

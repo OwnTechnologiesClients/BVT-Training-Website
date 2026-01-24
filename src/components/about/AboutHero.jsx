@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Play, Award, Users, Zap } from "lucide-react";
+import { Play, Users, Zap } from "lucide-react";
 import styles from "./AboutHero.module.css";
 
 export default function AboutHero() {
@@ -52,10 +52,9 @@ export default function AboutHero() {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="text-blue-600"
             >
-              Since 1973
+              Since 2025
             </motion.span>
           </motion.h1>
-
           {/* Description */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -133,52 +132,10 @@ export default function AboutHero() {
               preparing professionals for successful maritime careers.
               </motion.p>
           </div>
-
-            {/* RIGHT: Stats */}
-          <div className={styles.statsGrid}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.9 }}
-                className={styles.statBox}
-              >
-              <div className={styles.statIconBlue}>
-                <Award className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-white">50+</div>
-              <div className="text-sm text-blue-100 font-medium">Years Excellence</div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1.0 }}
-                className={styles.statBox}
-              >
-              <div className={styles.statIconGreen}>
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-white">8.5K+</div>
-              <div className="text-sm text-blue-100 font-medium">Graduates</div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1.1 }}
-                className={styles.statBox}
-              >
-              <div className={styles.statIconPurple}>
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-white">100+</div>
-              <div className="text-sm text-blue-100 font-medium">Courses</div>
-              </motion.div>
-            </div>
-          </div>
         </div>
 
       </div>
+    </div>
     </div>
   );
 }

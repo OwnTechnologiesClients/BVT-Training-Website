@@ -16,12 +16,6 @@ export default function CoursesHero({ content }) {
     title: "BVT Training Courses",
     subtitle: "Master Maritime Skills with Expert-Led Programs",
     description: "Explore comprehensive maritime training programs designed for both online and offline learning. Access world-class instruction, hands-on training, and expert guidance to advance your career.",
-    stats: [
-      { number: "400+", label: "Training Courses" },
-      { number: "8.5K+", label: "Active Students" },
-      { number: "95%", label: "Success Rate" },
-      { number: "24/7", label: "Support" }
-    ],
     features: [
       { icon: "Clock", text: "Flexible Learning" },
       { icon: "Users", text: "Expert Instructors" },
@@ -95,31 +89,6 @@ export default function CoursesHero({ content }) {
           >
             {heroContent.description || "Explore comprehensive Maritime training programs designed for both online and offline learning. Access world-class instruction, hands-on training, and expert guidance to advance your career."}
           </motion.p>
-
-          {/* Stats Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 mb-12"
-          >
-            {(heroContent.stats || defaultContent.stats).map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
-                whileHover={{ y: -8, scale: 1.05 }}
-                className="group relative bg-white/10 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-white/20 hover:border-yellow-400/50 hover:bg-white/15 transition-all"
-              >
-                <div className="text-lg lg:text-xl xl:text-2xl font-bold text-white mb-1.5">{stat.number}</div>
-                <div className="text-xs lg:text-sm text-blue-100 font-medium">{stat.label}</div>
-                
-                {/* Decorative Corner */}
-                <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </motion.div>
-            ))}
-          </motion.div>
 
           {/* Features */}
           <motion.div

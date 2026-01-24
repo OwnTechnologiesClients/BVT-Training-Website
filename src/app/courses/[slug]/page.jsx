@@ -242,12 +242,23 @@ export default function CourseDetailsPage({ params }) {
     : new Date(courseData.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   // Determine CTA button
+  // Helper to get price in NOK (primary) and USD (secondary)
+  const getPriceDisplay = (course) => {
+    const priceNOK = course.priceNOK || (course.price ? (parseFloat(course.price) * 10.5).toFixed(2) : null);
+    const priceUSD = course.priceUSD || course.price || null;
+    const originalPriceNOK = course.originalPriceNOK || (course.originalPrice ? (parseFloat(course.originalPrice) * 10.5).toFixed(2) : null);
+    const originalPriceUSD = course.originalPriceUSD || course.originalPrice || null;
+    
+    return { priceNOK, priceUSD, originalPriceNOK, originalPriceUSD };
+  };
+
   const getCTAButton = () => {
     const isOffline = courseData.isOnline === false;
+    const { priceNOK } = getPriceDisplay(courseData);
 
     if (!isAuthenticated) {
       return {
-        text: courseData.price ? `Buy Course - $${courseData.price}` : 'Buy Course',
+        text: priceNOK ? `Buy Course - kr ${priceNOK}` : 'Buy Course',
         icon: <ShoppingCart className="w-5 h-5 mr-2" />,
         action: handleCTAClick
       };
@@ -268,7 +279,7 @@ export default function CourseDetailsPage({ params }) {
     }
 
     return {
-      text: courseData.price ? `Buy Course - $${courseData.price}` : 'Enroll Now',
+      text: priceNOK ? `Buy Course - kr ${priceNOK}` : 'Enroll Now',
       icon: <ShoppingCart className="w-5 h-5 mr-2" />,
       action: handleCTAClick
     };
@@ -757,17 +768,34 @@ export default function CourseDetailsPage({ params }) {
                           </div>
                         )}
 
-                        {courseData.price && (
-                          <div className="flex items-center justify-between py-3 border-t-2 border-blue-200 pt-3 mt-2">
-                            <span className="text-gray-700 font-bold text-lg">Price</span>
-                            <div className="text-right">
-                              {courseData.originalPrice && courseData.originalPrice > courseData.price && (
-                                <span className="text-sm text-gray-500 line-through mr-2">${courseData.originalPrice}</span>
-                              )}
-                              <span className="text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">${courseData.price}</span>
+                        {(() => {
+                          const { priceNOK, priceUSD, originalPriceNOK, originalPriceUSD } = getPriceDisplay(courseData);
+                          if (!priceNOK && !priceUSD) return null;
+                          
+                          return (
+                            <div className="flex items-center justify-between py-3 border-t-2 border-blue-200 pt-3 mt-2">
+                              <span className="text-gray-700 font-bold text-lg">Price</span>
+                              <div className="text-right">
+                                {originalPriceNOK && parseFloat(originalPriceNOK) > parseFloat(priceNOK || 0) && (
+                                  <div className="mb-1">
+                                    <span className="text-sm text-gray-500 line-through mr-2">kr {originalPriceNOK}</span>
+                                    {originalPriceUSD && (
+                                      <span className="text-xs text-gray-400 line-through">(${originalPriceUSD})</span>
+                                    )}
+                                  </div>
+                                )}
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                                    kr {priceNOK}
+                                  </span>
+                                  {priceUSD && (
+                                    <span className="text-sm text-gray-500 font-medium">(${priceUSD})</span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          );
+                        })()}
                       </div>
 
                       <motion.button
@@ -958,16 +986,30 @@ export default function CourseDetailsPage({ params }) {
 
                       {/* Price and CTA */}
                       <div className="flex items-center justify-between pt-4 border-t-2 border-gray-100">
-                        {course.price ? (
-                          <>
-                            <div className="flex flex-col">
-                              {course.originalPrice && course.originalPrice > course.price && (
-                                <span className="text-xs text-gray-400 line-through mb-0.5">${course.originalPrice}</span>
-                              )}
-                              <span className="text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
-                                ${course.price}
-                              </span>
-                            </div>
+                        {(() => {
+                          const { priceNOK, priceUSD, originalPriceNOK, originalPriceUSD } = getPriceDisplay(course);
+                          if (!priceNOK && !priceUSD) return null;
+                          
+                          return (
+                            <>
+                              <div className="flex flex-col">
+                                {originalPriceNOK && parseFloat(originalPriceNOK) > parseFloat(priceNOK || 0) && (
+                                  <div className="mb-0.5">
+                                    <span className="text-xs text-gray-400 line-through">kr {originalPriceNOK}</span>
+                                    {originalPriceUSD && (
+                                      <span className="text-xs text-gray-400 line-through ml-1">(${originalPriceUSD})</span>
+                                    )}
+                                  </div>
+                                )}
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                                    kr {priceNOK}
+                                  </span>
+                                  {priceUSD && (
+                                    <span className="text-sm text-gray-500 font-medium">(${priceUSD})</span>
+                                  )}
+                                </div>
+                              </div>
                             <Link href={`/courses/${courseSlug}`}>
                               <motion.button
                                 whileHover={{ scale: 1.05, x: 5 }}
@@ -978,22 +1020,11 @@ export default function CourseDetailsPage({ params }) {
                                 <ArrowRight className="w-4 h-4" />
                               </motion.button>
                             </Link>
-                          </>
-                        ) : (
-                          <Link href={`/courses/${courseSlug}`} className="w-full">
-                            <motion.button
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-5 py-2.5 rounded-xl font-bold hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-sm"
-                            >
-                              View Course
-                              <ArrowRight className="w-4 h-4" />
-                            </motion.button>
-                          </Link>
-                        )}
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
-
                     {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-blue-400/10 to-transparent rounded-tr-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>

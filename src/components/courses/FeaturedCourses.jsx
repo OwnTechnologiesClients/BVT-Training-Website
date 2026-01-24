@@ -247,18 +247,35 @@ export default function FeaturedCourses({ courses }) {
                       <div className="pt-2 border-t border-gray-200">
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex-shrink-0">
-                            {currentCourse.price ? (
-                              <>
-                                <div className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
-                                  ${currentCourse.price}
-                                </div>
-                                {currentCourse.originalPrice && currentCourse.originalPrice > currentCourse.price && (
-                                  <div className="text-xs text-gray-500 line-through">${currentCourse.originalPrice}</div>
-                                )}
-                              </>
-                            ) : (
-                              <div className="text-lg lg:text-xl font-bold text-green-600">Free</div>
-                            )}
+                            {(() => {
+                              const priceNOK = currentCourse.priceNOK || (currentCourse.price ? (parseFloat(currentCourse.price) * 10.5).toFixed(2) : null);
+                              const priceUSD = currentCourse.priceUSD || currentCourse.price || null;
+                              const originalPriceNOK = currentCourse.originalPriceNOK || (currentCourse.originalPrice ? (parseFloat(currentCourse.originalPrice) * 10.5).toFixed(2) : null);
+                              const originalPriceUSD = currentCourse.originalPriceUSD || currentCourse.originalPrice || null;
+                              
+                              if (!priceNOK && !priceUSD) {
+                                return <div className="text-lg lg:text-xl font-bold text-green-600">Free</div>;
+                              }
+                              
+                              return (
+                                <>
+                                  {originalPriceNOK && parseFloat(originalPriceNOK) > parseFloat(priceNOK || 0) && (
+                                    <div className="text-xs text-gray-500 line-through mb-0.5">
+                                      kr {originalPriceNOK}
+                                      {originalPriceUSD && <span className="ml-1">(${originalPriceUSD})</span>}
+                                    </div>
+                                  )}
+                                  <div className="flex items-baseline gap-1.5">
+                                    <div className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                                      kr {priceNOK}
+                                    </div>
+                                    {priceUSD && (
+                                      <div className="text-xs text-gray-500 font-medium">(${priceUSD})</div>
+                                    )}
+                                  </div>
+                                </>
+                              );
+                            })()}
                           </div>
                           <Link href={`/courses/${currentCourse.slug || currentCourse.id}`} className="flex-shrink-0">
                             <motion.button

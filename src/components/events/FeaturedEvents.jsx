@@ -175,10 +175,33 @@ export default function FeaturedEvents({ events = [] }) {
                       {/* Price and CTA */}
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="text-3xl font-bold text-blue-900">{event.price}</div>
-                          {event.originalPrice && (
-                            <div className="text-lg text-gray-400 line-through">{event.originalPrice}</div>
-                          )}
+                          {(() => {
+                            const costNOK = event.priceNOK || (event.price && typeof event.price === 'string' && event.price.startsWith('kr ') ? event.price.replace('kr ', '') : null);
+                            const costUSD = event.priceUSD || (event.price && typeof event.price === 'string' && event.price.startsWith('$') ? event.price.replace('$', '') : null);
+                            
+                            if (!costNOK && !costUSD) {
+                              return <div className="text-3xl font-bold text-green-600">Free</div>;
+                            }
+                            
+                            return (
+                              <>
+                                {event.originalPriceNOK && parseFloat(event.originalPriceNOK) > parseFloat(costNOK || 0) && (
+                                  <div className="text-lg text-gray-400 line-through mb-1">
+                                    kr {event.originalPriceNOK}
+                                    {event.originalPriceUSD && <span className="ml-1">(${event.originalPriceUSD})</span>}
+                                  </div>
+                                )}
+                                <div className="flex items-baseline gap-2">
+                                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                                    kr {costNOK || (costUSD ? (parseFloat(costUSD) * 10.5).toFixed(2) : '0')}
+                                  </div>
+                                  {costUSD && (
+                                    <div className="text-sm text-gray-500 font-medium">(${costUSD})</div>
+                                  )}
+                                </div>
+                              </>
+                            );
+                          })()}
                         </div>
                         <div className="flex gap-3">
                           <Link href={`/events/${event.id}`}>

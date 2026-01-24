@@ -1,6 +1,5 @@
 import {
   Hero,
-  Stats,
   CourseCategories,
   ExploreCourses,
   Events,

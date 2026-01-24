@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "BVT Training - Navy Vocational Training",
-  description: "Professional navy vocational training programs and courses for career advancement",
+  title: "BVT Training - Maritime Vocational Training",
+  description: "Professional maritime vocational training programs and courses for career advancement",
   icons: {
     icon: "/BVT_logo.png",
     shortcut: "/BVT_logo.png",

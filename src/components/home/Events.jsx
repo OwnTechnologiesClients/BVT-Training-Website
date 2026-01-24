@@ -272,10 +272,12 @@ export default function Events() {
                           )}
                           <span className="text-sm font-semibold text-gray-700 line-clamp-1">{event.location}</span>
                         </div>
-                          {event.cost !== undefined && (
+                          {(event.costNOK !== undefined || event.cost !== undefined) && (
                             <div className="bg-gradient-to-r from-green-50 to-green-100 px-3 py-2 rounded-lg border border-green-200">
                               <span className="text-sm font-bold text-green-700">
-                                {event.cost === 0 ? 'FREE' : `$${event.cost}`}
+                                {event.costNOK === 0 || event.cost === 0 ? 'FREE' : 
+                                 event.costNOK ? `kr ${event.costNOK}` : 
+                                 `kr ${(parseFloat(event.cost) * 10.5).toFixed(2)}`}
                               </span>
                             </div>
                           )}

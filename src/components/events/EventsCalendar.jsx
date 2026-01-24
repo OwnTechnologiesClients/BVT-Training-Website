@@ -207,10 +207,37 @@ export default function EventsCalendar({ events = [] }) {
                         </div>
                         
                         <div className="mt-3 flex items-center justify-between">
-                          <span className="font-bold text-blue-900">{event.price}</span>
-                          <button className="text-blue-600 hover:text-blue-800 text-xs font-medium">
-                            View Details
-                          </button>
+                          {(() => {
+                            const costNOK = event.priceNOK || (event.price && typeof event.price === 'string' && event.price.startsWith('kr ') ? event.price.replace('kr ', '') : null);
+                            const costUSD = event.priceUSD || (event.price && typeof event.price === 'string' && event.price.startsWith('$') ? event.price.replace('$', '') : null);
+                            
+                            if (!costNOK && !costUSD) {
+                              return (
+                                <>
+                                  <span className="font-bold text-green-600">Free</span>
+                                  <button className="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                                    View Details
+                                  </button>
+                                </>
+                              );
+                            }
+                            
+                            return (
+                              <>
+                                <div className="flex items-baseline gap-1.5">
+                                  <span className="font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                                    kr {costNOK || (costUSD ? (parseFloat(costUSD) * 10.5).toFixed(2) : '0')}
+                                  </span>
+                                  {costUSD && (
+                                    <span className="text-xs text-gray-500 font-medium">(${costUSD})</span>
+                                  )}
+                                </div>
+                                <button className="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                                  View Details
+                                </button>
+                              </>
+                            );
+                          })()}
                         </div>
                       </div>
                     ))}

@@ -1,23 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, Clock, Users, Award, BookOpen, Headphones, ArrowRight, Sparkles } from "lucide-react";
+import { Mail, MapPin, Clock, Users, Award, BookOpen, Headphones, ArrowRight, Sparkles } from "lucide-react";
 
 export default function ContactInfo() {
   const contactMethods = [
     {
-      icon: Phone,
-      title: "Phone Support",
-      description: "Speak directly with our training specialists",
-      contact: "+1 (555) 123-4567",
-      hours: "Mon-Fri: 8AM-6PM EST",
-      color: "from-blue-500 to-blue-600"
-    },
-    {
       icon: Mail,
       title: "Email Support",
       description: "Get detailed responses to your inquiries",
-      contact: "info@navytraining.com",
+      contact: "Cato.grasdal@gmail.com",
       hours: "Response within 24 hours",
       color: "from-green-500 to-green-600"
     },

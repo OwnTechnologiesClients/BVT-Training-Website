@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import PromotionalPopup from "./PromotionalPopup";
+import FloatingInquiryButton from "./FloatingInquiryButton";
 
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
@@ -27,6 +28,7 @@ export default function ConditionalLayout({ children }) {
       <main>{children}</main>
       <Footer />
       <PromotionalPopup />
+      <FloatingInquiryButton />
     </>
   );
 }
