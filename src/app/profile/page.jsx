@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { User, Phone, MapPin, Loader2, CheckCircle, Edit2, Save, X } from "lucide-react";
+import { User, Phone, MapPin, Loader2, CheckCircle, Edit2, Save, X, AlertCircle, MessageSquare } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { getStudentProfile, updateStudentProfile } from "@/lib/api/student";
-import { cleanupRecaptcha } from "@/lib/firebase";
+import { getStudentProfile, updateStudentProfile, verifyPhoneNumber } from "@/lib/api/student";
+import { sendPhoneVerificationCode, verifyPhoneCode, cleanupRecaptcha } from "@/lib/firebase";
 import { showSuccess, showError } from "@/lib/utils/sweetalert";
+import CountrySelector from "@/components/common/CountrySelector";
+import { countries } from "countries-list";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -28,6 +30,42 @@ export default function ProfilePage() {
   });
   const [originalFormData, setOriginalFormData] = useState({});
   const [errors, setErrors] = useState({});
+  const [countriesList, setCountriesList] = useState([]);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [originalIsPhoneVerified, setOriginalIsPhoneVerified] = useState(false);
+  const [phoneVerificationStep, setPhoneVerificationStep] = useState(0); // 0: not started, 1: OTP sent, 2: verified
+  const [phoneVerificationLoading, setPhoneVerificationLoading] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState(null);
+
+  // Load countries list from countries-list package
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        // Convert countries object to array and sort by name
+        const countriesArray = Object.entries(countries)
+          .map(([code, country]) => ({
+            code: code,
+            name: country.name
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        
+        setCountriesList(countriesArray);
+      } catch (error) {
+        console.error('Error loading countries list:', error);
+        // Fallback to default countries if package fails
+        setCountriesList([
+          { code: 'US', name: 'United States' },
+          { code: 'IN', name: 'India' },
+          { code: 'GB', name: 'United Kingdom' },
+          { code: 'CA', name: 'Canada' },
+          { code: 'AU', name: 'Australia' },
+          { code: 'DE', name: 'Germany' },
+          { code: 'FR', name: 'France' }
+        ]);
+      }
+    }
+  }, []);
 
   // Load profile data
   useEffect(() => {
@@ -43,6 +81,14 @@ export default function ProfilePage() {
         
         if (response.success && response.data?.student) {
           const studentData = response.data.student;
+          // Normalize country value - convert common abbreviations to full names
+          let countryValue = studentData.address?.country || "United States";
+          if (countryValue === "USA" || countryValue === "US") {
+            countryValue = "United States";
+          } else if (countryValue === "UK") {
+            countryValue = "United Kingdom";
+          }
+          
           const profileData = {
             fullName: studentData.fullName || "",
             email: studentData.email || "",
@@ -52,11 +98,14 @@ export default function ProfilePage() {
             city: studentData.address?.city || "",
             state: studentData.address?.state || "",
             postalCode: studentData.address?.postalCode || "",
-            country: studentData.address?.country || "USA",
+            country: countryValue,
           };
           
           setFormData(profileData);
           setOriginalFormData(profileData);
+          const initialVerified = !!studentData.isPhoneVerified && !!studentData.phone;
+          setIsPhoneVerified(initialVerified);
+          setOriginalIsPhoneVerified(initialVerified);
         }
       } catch (error) {
         console.error("Error loading profile:", error);
@@ -82,6 +131,17 @@ export default function ProfilePage() {
       [name]: value
     }));
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: "" }));
+
+    // Reset phone verification workflow if phone or country code changes
+    if (name === "phone" || name === "countryCode") {
+      if (phoneVerificationStep > 0 || isPhoneVerified) {
+        setPhoneVerificationStep(0);
+        setIsPhoneVerified(false);
+        setConfirmationResult(null);
+        setVerificationCode("");
+        cleanupRecaptcha();
+      }
+    }
   };
 
 
@@ -122,17 +182,38 @@ export default function ProfilePage() {
     setFormData(originalFormData);
     setIsEditing(false);
     setErrors({});
+    setIsPhoneVerified(originalIsPhoneVerified);
+    setPhoneVerificationStep(0);
+    setPhoneVerificationLoading(false);
+    setVerificationCode("");
+    setConfirmationResult(null);
     cleanupRecaptcha();
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // If not in edit mode, ignore accidental submits
     if (!isEditing) {
-      setIsEditing(true);
       return;
     }
     
+    // Determine if phone number has changed and needs verification
+    const originalPhone = originalFormData.phone || "";
+    const currentPhone = formData.phone || "";
+    const phoneChanged = currentPhone.trim() !== originalPhone.trim();
+    const hasNewPhone = !!currentPhone.trim();
+
+    // If user has changed to a new non-empty phone number, require verification
+    if (phoneChanged && hasNewPhone && !isPhoneVerified) {
+      showError('Phone Verification Required', 'Please verify your new mobile number before saving changes.');
+      const phoneSection = document.getElementById('phone-section');
+      if (phoneSection) {
+        phoneSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+
     if (!validateForm()) {
       showError('Validation Error', 'Please fill all required fields correctly');
       return;
@@ -161,6 +242,14 @@ export default function ProfilePage() {
         const updatedResponse = await getStudentProfile();
         if (updatedResponse.success && updatedResponse.data?.student) {
           const studentData = updatedResponse.data.student;
+          // Normalize country value - convert common abbreviations to full names
+          let countryValue = studentData.address?.country || "United States";
+          if (countryValue === "USA" || countryValue === "US") {
+            countryValue = "United States";
+          } else if (countryValue === "UK") {
+            countryValue = "United Kingdom";
+          }
+          
           const updatedFormData = {
             fullName: studentData.fullName || "",
             email: studentData.email || "",
@@ -170,10 +259,13 @@ export default function ProfilePage() {
             city: studentData.address?.city || "",
             state: studentData.address?.state || "",
             postalCode: studentData.address?.postalCode || "",
-            country: studentData.address?.country || "USA",
+            country: countryValue,
           };
           setFormData(updatedFormData);
           setOriginalFormData(updatedFormData);
+          const updatedVerified = !!studentData.isPhoneVerified && !!studentData.phone;
+          setIsPhoneVerified(updatedVerified);
+          setOriginalIsPhoneVerified(updatedVerified);
         }
         
         setIsEditing(false);
@@ -284,40 +376,316 @@ export default function ProfilePage() {
             </div>
 
             {/* Phone Number */}
-            <div>
+            <div id="phone-section">
               <label className="block text-sm font-medium text-white mb-2">
                 Phone Number
-                {formData.phone && (
+                {formData.phone && isPhoneVerified && (
                   <span className="ml-2 inline-flex items-center gap-1 text-green-400 text-xs font-medium">
                     <CheckCircle className="w-4 h-4" />
                     Verified
                   </span>
                 )}
+                {formData.phone && !isPhoneVerified && (
+                  <span className="ml-2 inline-flex items-center gap-1 text-yellow-300 text-xs font-medium">
+                    <AlertCircle className="w-4 h-4" />
+                    Not verified
+                  </span>
+                )}
               </label>
               
-              <div className="flex gap-2">
-                <div className="relative w-32">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                    <Phone className="h-4 w-4 text-blue-300" />
+              {!isEditing ? (
+                <>
+                  <div className="flex gap-2">
+                    <div className="relative w-32">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                        <Phone className="h-4 w-4 text-blue-300" />
+                      </div>
+                      <div className="block w-full pl-8 pr-3 py-3 border rounded-xl bg-white/10 text-white/70 border-white/20 cursor-not-allowed opacity-60">
+                        <span className="text-sm font-medium">{formData.countryCode || '+1'}</span>
+                      </div>
+                    </div>
+                    <div className="relative flex-1">
+                      <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        disabled
+                        value={formData.phone || 'Not provided'}
+                        className="block w-full px-3 py-3 border rounded-xl bg-white/10 text-white/70 placeholder-blue-300 border-white/20 cursor-not-allowed opacity-60"
+                        placeholder="Phone number"
+                        readOnly
+                      />
+                    </div>
                   </div>
-                  <div className="block w-full pl-8 pr-3 py-3 border rounded-xl bg-white/10 text-white/70 border-white/20 cursor-not-allowed opacity-60">
-                    <span className="text-sm font-medium">{formData.countryCode || '+1'}</span>
+                  <p className="text-blue-300 text-xs mt-1">
+                    You can edit your mobile number when updating your profile.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="flex gap-2">
+                    <div className="relative w-32">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                        <Phone className="h-4 w-4 text-blue-300" />
+                      </div>
+                      <input
+                        id="countryCode"
+                        name="countryCode"
+                        type="text"
+                        value={formData.countryCode}
+                        onChange={handleInputChange}
+                        className="block w-full pl-8 pr-3 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all border-white/30"
+                        placeholder="+47"
+                      />
+                    </div>
+                    <div className="relative flex-1">
+                      <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          setFormData(prev => ({
+                            ...prev,
+                            phone: value
+                          }));
+                          if (errors.phone) setErrors(prev => ({ ...prev, phone: "" }));
+                          if (phoneVerificationStep > 0 || isPhoneVerified) {
+                            setPhoneVerificationStep(0);
+                            setIsPhoneVerified(false);
+                            setConfirmationResult(null);
+                            setVerificationCode("");
+                            cleanupRecaptcha();
+                          }
+                        }}
+                        className={`block w-full px-3 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
+                          errors.phone ? "border-red-500" : "border-white/30"
+                        }`}
+                        placeholder="Enter phone number"
+                        maxLength={15}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="relative flex-1">
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    disabled
-                    value={formData.phone || 'Not provided'}
-                    className="block w-full px-3 py-3 border rounded-xl bg-white/10 text-white/70 placeholder-blue-300 border-white/20 cursor-not-allowed opacity-60"
-                    placeholder="Phone number"
-                    readOnly
-                  />
-                </div>
-              </div>
-              <p className="text-blue-300 text-xs mt-1">Phone number cannot be changed. Contact support if you need to update it.</p>
+                  {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone}</p>}
+
+                  {/* Phone verification flow - only required if user enters a phone number */}
+                  {formData.phone && formData.phone.trim() && (
+                    <div className="mt-3 space-y-3">
+                      {phoneVerificationStep === 0 && !isPhoneVerified && (
+                        <motion.button
+                          type="button"
+                          onClick={async () => {
+                            setErrors({});
+                            setPhoneVerificationLoading(true);
+                            try {
+                              if (!formData.phone.trim()) {
+                                setErrors({ phone: "Phone number is required" });
+                                showError('Validation Error', 'Please enter a phone number');
+                                setPhoneVerificationLoading(false);
+                                return;
+                              }
+                              if (!/^\d{6,15}$/.test(formData.phone.trim())) {
+                                setErrors({ phone: "Phone number must be 6-15 digits" });
+                                showError('Validation Error', 'Phone number must be 6-15 digits');
+                                setPhoneVerificationLoading(false);
+                                return;
+                              }
+                              cleanupRecaptcha();
+                              const cleanPhone = formData.phone.replace(/\s|-|\(|\)/g, '');
+                              const result = await sendPhoneVerificationCode(cleanPhone, formData.countryCode);
+                              if (result.success) {
+                                setConfirmationResult(result.confirmationResult);
+                                setPhoneVerificationStep(1);
+                                showSuccess('Code Sent!', 'Verification code has been sent to your mobile number.');
+                              } else {
+                                throw new Error('Failed to send verification code');
+                              }
+                            } catch (error) {
+                              console.error('Error sending phone verification code:', error);
+                              cleanupRecaptcha();
+                              let errorMessage = 'Failed to send verification code. Please try again.';
+                              if (error.code === 'auth/invalid-phone-number') {
+                                errorMessage = 'Invalid phone number format. Please check and try again.';
+                              } else if (error.code === 'auth/too-many-requests') {
+                                errorMessage = 'Too many requests. Please try again later.';
+                              } else if (error.code === 'auth/captcha-check-failed') {
+                                errorMessage = 'reCAPTCHA verification failed. Please try again.';
+                              } else if (error.message) {
+                                errorMessage = error.message;
+                              }
+                              setErrors({ phone: errorMessage });
+                              showError('Error', errorMessage);
+                            } finally {
+                              setPhoneVerificationLoading(false);
+                            }
+                          }}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="flex items-center gap-2 py-2 px-4 border border-white/30 rounded-xl text-sm font-medium text-white bg-white/10 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                          disabled={phoneVerificationLoading}
+                        >
+                          {phoneVerificationLoading ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Sending Code...
+                            </>
+                          ) : (
+                            <>
+                              <MessageSquare className="w-4 h-4" />
+                              Verify New Mobile Number
+                            </>
+                          )}
+                        </motion.button>
+                      )}
+
+                      {phoneVerificationStep === 1 && (
+                        <div className="space-y-3 p-4 bg-white/5 rounded-xl border border-white/20">
+                          <p className="text-sm text-blue-200">
+                            Enter the 6-digit code sent to {formData.countryCode} {formData.phone}
+                          </p>
+                          <div className="relative">
+                            <input
+                              id="verificationCode"
+                              type="text"
+                              value={verificationCode}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, '').substring(0, 6);
+                                setVerificationCode(value);
+                                if (errors.verificationCode) setErrors(prev => ({ ...prev, verificationCode: "" }));
+                              }}
+                              className={`block w-full px-4 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all text-center text-2xl tracking-widest font-mono ${
+                                errors.verificationCode ? "border-red-500" : "border-white/30"
+                              }`}
+                              placeholder="000000"
+                              maxLength={6}
+                              autoFocus
+                            />
+                          </div>
+                          {errors.verificationCode && (
+                            <p className="text-red-400 text-sm text-center">{errors.verificationCode}</p>
+                          )}
+
+                          <div className="flex gap-2">
+                            <motion.button
+                              type="button"
+                              onClick={async () => {
+                                setErrors({});
+                                setPhoneVerificationLoading(true);
+                                try {
+                                  if (!verificationCode || verificationCode.length !== 6) {
+                                    setErrors({ verificationCode: "Please enter a valid 6-digit verification code" });
+                                    showError('Validation Error', 'Please enter a valid 6-digit verification code');
+                                    return;
+                                  }
+                                  const verifyResult = await verifyPhoneCode(confirmationResult, verificationCode);
+                                  if (verifyResult.success && verifyResult.idToken) {
+                                    const cleanPhone = formData.phone.trim().replace(/\D/g, '');
+                                    const backendResult = await verifyPhoneNumber(
+                                      verifyResult.idToken,
+                                      cleanPhone,
+                                      formData.countryCode
+                                    );
+                                    if (backendResult.success) {
+                                      const verifiedPhone = backendResult.data?.student?.phone || cleanPhone;
+                                      const verifiedCountryCode =
+                                        backendResult.data?.student?.countryCode || formData.countryCode;
+                                      setIsPhoneVerified(true);
+                                      setPhoneVerificationStep(2);
+                                      setFormData(prev => ({
+                                        ...prev,
+                                        phone: verifiedPhone,
+                                        countryCode: verifiedCountryCode
+                                      }));
+                                      setOriginalFormData(prev => ({
+                                        ...prev,
+                                        phone: verifiedPhone,
+                                        countryCode: verifiedCountryCode
+                                      }));
+                                      showSuccess('Phone Verified!', 'Your mobile number has been verified successfully.');
+                                      cleanupRecaptcha();
+                                    } else {
+                                      throw new Error(
+                                        backendResult.message || 'Failed to verify phone number on server'
+                                      );
+                                    }
+                                  } else {
+                                    throw new Error('Failed to verify code');
+                                  }
+                                } catch (error) {
+                                  console.error('Error verifying phone code:', error);
+                                  let errorMessage = 'Invalid verification code. Please try again.';
+                                  if (error.code === 'auth/invalid-verification-code') {
+                                    errorMessage = 'Invalid verification code. Please check and try again.';
+                                  } else if (error.code === 'auth/code-expired') {
+                                    errorMessage = 'Verification code has expired. Please request a new code.';
+                                  } else if (error.code === 'auth/session-expired') {
+                                    errorMessage = 'Session expired. Please request a new verification code.';
+                                  } else if (error.message) {
+                                    errorMessage = error.message;
+                                  }
+                                  setErrors({ verificationCode: errorMessage });
+                                  showError('Verification Failed', errorMessage);
+                                } finally {
+                                  setPhoneVerificationLoading(false);
+                                }
+                              }}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className="flex-1 flex justify-center items-center gap-2 py-2 px-4 border border-transparent rounded-xl text-sm font-medium text-blue-950 bg-yellow-500 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                              disabled={phoneVerificationLoading || verificationCode.length !== 6}
+                            >
+                              {phoneVerificationLoading ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                  Verifying...
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle className="w-4 h-4" />
+                                  Verify Code
+                                </>
+                              )}
+                            </motion.button>
+
+                            <motion.button
+                              type="button"
+                              onClick={async () => {
+                                setPhoneVerificationStep(0);
+                                setVerificationCode("");
+                                setConfirmationResult(null);
+                                cleanupRecaptcha();
+                              }}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className="px-4 py-2 border border-white/30 rounded-xl text-sm font-medium text-white bg-white/10 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            >
+                              Resend / Change Number
+                            </motion.button>
+                          </div>
+                        </div>
+                      )}
+
+                      {isPhoneVerified && (
+                        <p className="text-green-300 text-xs flex items-center gap-1">
+                          <CheckCircle className="w-4 h-4" />
+                          New mobile number verified
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {!formData.phone && (
+                    <p className="text-blue-300 text-xs mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />
+                      You can leave this empty and save your profile without verifying a number.
+                    </p>
+                  )}
+
+                  {/* Hidden recaptcha container for phone verification */}
+                  <div id="recaptcha-container-phone-verification"></div>
+                </>
+              )}
             </div>
 
             {/* Address Information */}
@@ -403,26 +771,16 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <select
-                    id="country"
-                    name="country"
-                    required
-                    disabled={!isEditing}
+                  <CountrySelector
                     value={formData.country}
                     onChange={handleInputChange}
-                    className={`block w-full px-3 py-3 border rounded-xl bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all appearance-none ${
-                      errors.country ? "border-red-500" : "border-white/30"
-                    } ${!isEditing ? "opacity-60 cursor-not-allowed" : ""}`}
-                  >
-                    <option value="USA" className="text-gray-900">United States</option>
-                    <option value="India" className="text-gray-900">India</option>
-                    <option value="UK" className="text-gray-900">United Kingdom</option>
-                    <option value="Canada" className="text-gray-900">Canada</option>
-                    <option value="Australia" className="text-gray-900">Australia</option>
-                    <option value="Germany" className="text-gray-900">Germany</option>
-                    <option value="France" className="text-gray-900">France</option>
-                    <option value="Other" className="text-gray-900">Other</option>
-                  </select>
+                    disabled={!isEditing}
+                    error={!!errors.country}
+                    countriesList={countriesList}
+                    loading={countriesList.length === 0}
+                    className="w-full"
+                    size="md"
+                  />
                   {errors.country && <p className="text-red-400 text-sm mt-1">{errors.country}</p>}
                 </div>
               </div>
@@ -432,7 +790,8 @@ export default function ProfilePage() {
             <div className="flex gap-4 pt-4">
               {!isEditing ? (
                 <motion.button
-                  type="submit"
+                  type="button"
+                  onClick={() => setIsEditing(true)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="flex-1 flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-blue-950 bg-yellow-500 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all"

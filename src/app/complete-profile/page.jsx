@@ -205,15 +205,13 @@ export default function CompleteProfilePage() {
       try {
         const response = await checkProfileCompletion();
         if (response.success && response.data) {
-          // Only redirect if profile is complete AND user didn't explicitly come here
-          // Check for query parameter to see if user wants to complete profile
+          // Only redirect to dashboard when profile is truly complete,
+          // including verified phone and full address.
+          // If phone isn't verified yet, keep user on this page even after reload.
           const urlParams = new URLSearchParams(window.location.search);
           const forceComplete = urlParams.get('complete') === 'true';
           
-          // If profile is complete and no force parameter, redirect to dashboard
-          // But if user explicitly navigated here (force=true) or profile needs completion, stay on page
           if (response.data.isComplete && !response.data.needsCompletion && !forceComplete) {
-            // Profile is already complete, redirect to dashboard
             router.push("/dashboard");
             return;
           }

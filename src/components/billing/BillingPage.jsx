@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { CreditCard, CheckCircle, ArrowLeft, Loader2, Lock, Calendar } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { showSuccess, showError } from "@/lib/utils/sweetalert";
+import { getStudentProfile } from "@/lib/api/student";
 
 const BillingPage = ({ 
   type, // 'course' or 'event'
@@ -57,7 +58,30 @@ const BillingPage = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    // Check phone verification before proceeding with payment
+    if (!isAuthenticated) {
+      showError('Authentication Required', 'Please log in to continue.');
+      router.push('/login');
+      return;
+    }
+
+    try {
+      const profileResponse = await getStudentProfile();
+      const studentData = profileResponse?.data?.student;
+      const phoneVerified = !!(studentData?.phone && studentData?.isPhoneVerified);
+
+      if (!phoneVerified) {
+        showError('Verify Phone Number', 'Please verify your mobile number in your profile before purchasing or registering.');
+        router.push('/profile');
+        return;
+      }
+    } catch (err) {
+      console.error('Error checking phone verification before billing:', err);
+      showError('Error', 'Unable to verify your profile at the moment. Please try again.');
+      return;
+    }
+
     // Validation
     if (!formData.cardNumber || formData.cardNumber.replace(/\s/g, "").length !== 16) {
       showError('Validation Error', 'Please enter a valid 16-digit card number');

@@ -969,10 +969,23 @@ export default function CourseLearningPage({ params }) {
     );
   }
 
+  // If enrollment is still loading or we're waiting for structure, show loading
+  // This prevents showing "No content" before we know if user is enrolled
+  if (enrollmentLoading || (isEnrolled && !courseStructure && !error)) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-900 mx-auto mb-4" />
+          <p className="text-gray-600">Loading course content...</p>
+        </div>
+      </div>
+    );
+  }
+
   // No content available
-  // Only show this if enrollment check is complete and user IS enrolled but has no content
-  // If user is not enrolled, they'll be redirected by the useEffect above
-  if (!enrollmentLoading && isEnrolled && (!modules.length || !allLessons.length)) {
+  // Only show this if enrollment check is complete, structure has loaded,
+  // user IS enrolled, and we truly have no modules/lessons
+  if (!enrollmentLoading && isEnrolled && courseStructure && (!modules.length || !allLessons.length)) {
     return (
       <div className="h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-4">
@@ -984,19 +997,6 @@ export default function CourseLearningPage({ params }) {
               Back to Course
             </button>
           </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // If enrollment is still loading or we're waiting for structure, show loading
-  // This prevents showing "No content" before we know if user is enrolled
-  if (enrollmentLoading || (isEnrolled && !courseStructure && !error)) {
-    return (
-      <div className="h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-900 mx-auto mb-4" />
-          <p className="text-gray-600">Loading course content...</p>
         </div>
       </div>
     );

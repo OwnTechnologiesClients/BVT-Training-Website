@@ -31,6 +31,35 @@ const getYouTubeEmbedUrl = (url) => {
   return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
 };
 
+// Helper function to extract Vimeo video ID from URL
+const getVimeoVideoId = (url) => {
+  if (!url) return null;
+  
+  // Handle various Vimeo URL formats
+  const patterns = [
+    /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/,
+    /vimeo\.com\/channels\/[^\/]+\/(\d+)/,
+    /vimeo\.com\/groups\/[^\/]+\/videos\/(\d+)/,
+    /vimeo\.com\/(\d+)/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  
+  return null;
+};
+
+// Helper function to get Vimeo embed URL
+const getVimeoEmbedUrl = (url) => {
+  const videoId = getVimeoVideoId(url);
+  if (!videoId) return null;
+  return `https://player.vimeo.com/video/${videoId}?autoplay=0&title=0&byline=0&portrait=0`;
+};
+
 const VideoPlayer = ({ 
   videoSrc, // Can be string (file path) or object with {type, filePath/youtubeUrl}
   title = "Video Player", 
@@ -211,7 +240,8 @@ const VideoPlayer = ({
       // Extract video URL from videoSrc
       const videoData = typeof videoSrc === 'object' && videoSrc !== null ? videoSrc : { type: 'upload', filePath: videoSrc };
       const isYouTube = videoData.type === 'youtube' || (videoData.youtubeUrl && getYouTubeVideoId(videoData.youtubeUrl));
-      const newVideoUrl = isYouTube ? null : (videoData.filePath || (typeof videoSrc === 'string' ? videoSrc : null));
+      const isVimeo = videoData.type === 'vimeo' || (videoData.vimeoUrl && getVimeoVideoId(videoData.vimeoUrl));
+      const newVideoUrl = (isYouTube || isVimeo) ? null : (videoData.filePath || (typeof videoSrc === 'string' ? videoSrc : null));
       
       if (newVideoUrl) {
         setVideoUrl(newVideoUrl);
@@ -275,10 +305,16 @@ const VideoPlayer = ({
   const hasYouTubeUrl = videoData.youtubeUrl && typeof videoData.youtubeUrl === 'string';
   const isYouTube = hasYouTubeType || (hasYouTubeUrl && getYouTubeVideoId(videoData.youtubeUrl));
   
-  // Get the actual video source or YouTube embed URL
+  // Check if it's a Vimeo video
+  const hasVimeoType = videoData.type === 'vimeo';
+  const hasVimeoUrl = videoData.vimeoUrl && typeof videoData.vimeoUrl === 'string';
+  const isVimeo = hasVimeoType || (hasVimeoUrl && getVimeoVideoId(videoData.vimeoUrl));
+  
+  // Get the actual video source or embed URL
   // Use videoUrl state if available (refreshed URL), otherwise use original
-  const actualVideoSrc = isYouTube ? null : (videoUrl || videoData.filePath || (typeof videoSrc === 'string' ? videoSrc : null));
+  const actualVideoSrc = (isYouTube || isVimeo) ? null : (videoUrl || videoData.filePath || (typeof videoSrc === 'string' ? videoSrc : null));
   const youtubeEmbedUrl = isYouTube ? getYouTubeEmbedUrl(videoData.youtubeUrl) : null;
+  const vimeoEmbedUrl = isVimeo ? getVimeoEmbedUrl(videoData.vimeoUrl) : null;
 
 
   // Early return for YouTube videos - render simple iframe without custom player
@@ -303,7 +339,29 @@ const VideoPlayer = ({
     );
   }
 
-  if (!videoSrc && !youtubeEmbedUrl) {
+  // Early return for Vimeo videos - render simple iframe without custom player
+  if (isVimeo && vimeoEmbedUrl) {
+    return (
+      <div className="relative w-full h-full bg-black">
+        {/* Video Title Overlay */}
+        <div className="absolute top-4 left-4 z-20">
+          <h3 className="text-white text-lg font-semibold bg-black bg-opacity-50 px-3 py-1 rounded">
+            {title}
+          </h3>
+        </div>
+        <iframe
+          src={vimeoEmbedUrl}
+          className="w-full h-full"
+          frameBorder="0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+          title={title}
+        />
+      </div>
+    );
+  }
+
+  if (!videoSrc && !youtubeEmbedUrl && !vimeoEmbedUrl) {
     return (
       <div className="w-full h-full bg-gray-900 flex items-center justify-center">
         <div className="text-center text-white">
@@ -316,7 +374,7 @@ const VideoPlayer = ({
   }
 
   // Check if video source is missing (for uploaded videos)
-  if (!isYouTube && !actualVideoSrc) {
+  if (!isYouTube && !isVimeo && !actualVideoSrc) {
     return (
       <div className="w-full h-full bg-gray-900 flex items-center justify-center">
         <div className="text-center text-white">
@@ -394,8 +452,8 @@ const VideoPlayer = ({
         </h3>
       </div>
 
-      {/* Custom Controls - Only show for uploaded videos, not YouTube */}
-      {!isYouTube && (
+      {/* Custom Controls - Only show for uploaded videos, not YouTube or Vimeo */}
+      {!isYouTube && !isVimeo && (
       <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
         {/* Progress Bar */}
         <div className="mb-4">

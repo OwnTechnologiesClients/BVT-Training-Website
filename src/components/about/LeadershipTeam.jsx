@@ -6,10 +6,9 @@ import { Linkedin, Mail, Sparkles } from "lucide-react";
 const TEAM_MEMBERS = [
   {
     name: "Cato Grasdal",
-    position: "Senior Maritime Instructor & Small Boat Manager",
-    department: "Training Operations",
+    position: "Senior Maritime Instructor & CEO",
     experience: "30+ Years",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
+    image: "/ceo-founder.jpg",
     bio: "Cato Grasdal is a senior maritime professional with over 30 years of experience at sea, including two decades as a Ship's Captain in demanding offshore and seismic operations. A Master Mariner since 1995, Cato spent years commanding complex vessels for PGS (now TGS), playing a key role in the commissioning of major newbuilds like the Ramform Titan and Ramform Tethys. Since transitioning to a shore-based leadership role in 2022, Cato has focused on elevating operational safety and competence. This focus culminated recently when BVT Training saw the world in 2025, a year where Cato expanded his training programs globally, validating his methodologies across diverse international operations. As a qualified IMO Instructor (6.09 & 6.10), Cato specializes in human factors, stress management, and proactive decision-making. He has trained over 120 participants and was instrumental in developing the new HDPE workboat prototype. Cato's teaching philosophy is simple: he translates regulation into reality, aiming to build confidence and sound judgment, not just compliance.",
     achievements: ["Master Mariner", "IMO Instructor", "30+ Years Experience"]
   }
@@ -130,10 +129,6 @@ export default function LeadershipTeam() {
 
                 {/* Social Links */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs text-gray-500 font-medium">Available</span>
-                  </div>
                   <div className="flex items-center gap-3">
                     <motion.button
                       whileHover={{ scale: 1.1, y: -2 }}
