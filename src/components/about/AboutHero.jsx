@@ -62,8 +62,7 @@ export default function AboutHero() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-lg md:text-xl text-gray-600 leading-relaxed"
           >
-            Trusted by BVT forces worldwide for over 50 years, delivering 
-            comprehensive vocational training that transforms careers.
+            Trusted by BVT forces, we provide industry-ready vocational training designed to build skills, confidence, and lasting careers.
           </motion.p>
 
           {/* Buttons */}

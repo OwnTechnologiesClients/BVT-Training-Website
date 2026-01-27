@@ -8,7 +8,7 @@ const TEAM_MEMBERS = [
     name: "Cato Grasdal",
     position: "Senior Maritime Instructor & CEO",
     experience: "30+ Years",
-    image: "/ceo-founder.jpg",
+    image: "/Cato Grasdal.jpeg",
     bio: "Cato Grasdal is a senior maritime professional with over 30 years of experience at sea, including two decades as a Ship's Captain in demanding offshore and seismic operations. A Master Mariner since 1995, Cato spent years commanding complex vessels for PGS (now TGS), playing a key role in the commissioning of major newbuilds like the Ramform Titan and Ramform Tethys. Since transitioning to a shore-based leadership role in 2022, Cato has focused on elevating operational safety and competence. This focus culminated recently when BVT Training saw the world in 2025, a year where Cato expanded his training programs globally, validating his methodologies across diverse international operations. As a qualified IMO Instructor (6.09 & 6.10), Cato specializes in human factors, stress management, and proactive decision-making. He has trained over 120 participants and was instrumental in developing the new HDPE workboat prototype. Cato's teaching philosophy is simple: he translates regulation into reality, aiming to build confidence and sound judgment, not just compliance.",
     achievements: ["Master Mariner", "IMO Instructor", "30+ Years Experience"]
   }
@@ -72,7 +72,7 @@ export default function LeadershipTeam() {
               className="group relative bg-white rounded-2xl lg:rounded-3xl overflow-hidden shadow-lg border-2 border-gray-200 hover:border-yellow-400 hover:shadow-2xl transition-all flex flex-col md:flex-row"
             >
               {/* Profile Image - Left Side */}
-              <div className="relative w-full md:w-2/5 lg:w-2/5 h-64 md:h-auto overflow-hidden flex-shrink-0">
+              <div className="relative w-full md:w-2/5 lg:w-2/5 h-64 md:h-120 overflow-hidden flex-shrink-0">
                 <motion.img
                   src={member.image}
                   alt={member.name}
@@ -105,7 +105,7 @@ export default function LeadershipTeam() {
                   <div className="mb-4">
                     <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-1">{member.name}</h3>
                     <p className="text-blue-900 font-semibold mb-3 text-base lg:text-lg">{member.position}</p>
-                    <p className="text-gray-600 text-sm lg:text-base leading-relaxed line-clamp-4">{member.bio}</p>
+                    <p className="text-gray-600 text-sm lg:text-base leading-relaxed line-clamp-7">{member.bio}</p>
                   </div>
 
                   {/* Achievements */}
