@@ -72,11 +72,11 @@ export default function LeadershipTeam() {
               className="group relative bg-white rounded-2xl lg:rounded-3xl overflow-hidden shadow-lg border-2 border-gray-200 hover:border-yellow-400 hover:shadow-2xl transition-all flex flex-col md:flex-row"
             >
               {/* Profile Image - Left Side */}
-              <div className="relative w-full md:w-2/5 lg:w-2/5 h-64 md:h-120 overflow-hidden flex-shrink-0">
+              <div className="relative w-full md:w-2/5 lg:w-2/5 h-80 md:h-120 overflow-hidden flex-shrink-0 flex items-center">
                 <motion.img
                   src={member.image}
                   alt={member.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-[center_20%] md:object-center"
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.5 }}
                 />
