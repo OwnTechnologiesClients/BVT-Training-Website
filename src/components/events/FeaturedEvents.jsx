@@ -180,23 +180,23 @@ export default function FeaturedEvents({ events = [] }) {
                             const costUSD = event.priceUSD || (event.price && typeof event.price === 'string' && event.price.startsWith('$') ? event.price.replace('$', '') : null);
                             
                             if (!costNOK && !costUSD) {
-                              return <div className="text-3xl font-bold text-green-600">Free</div>;
+                              return <div className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600">Free</div>;
                             }
                             
                             return (
                               <>
                                 {event.originalPriceNOK && parseFloat(event.originalPriceNOK) > parseFloat(costNOK || 0) && (
-                                  <div className="text-lg text-gray-400 line-through mb-1">
+                                  <div className="text-xs sm:text-sm lg:text-base text-gray-400 line-through mb-1">
                                     kr {event.originalPriceNOK}
                                     {event.originalPriceUSD && <span className="ml-1">(${event.originalPriceUSD})</span>}
                                   </div>
                                 )}
-                                <div className="flex items-baseline gap-2">
-                                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                                <div className="flex items-baseline gap-1.5 flex-wrap min-w-0">
+                                  <div className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent truncate max-w-full">
                                     kr {costNOK || (costUSD ? (parseFloat(costUSD) * 10.5).toFixed(2) : '0')}
                                   </div>
                                   {costUSD && (
-                                    <div className="text-sm text-gray-500 font-medium">(${costUSD})</div>
+                                    <div className="text-xs sm:text-sm text-gray-500 font-medium flex-shrink-0">(${costUSD})</div>
                                   )}
                                 </div>
                               </>

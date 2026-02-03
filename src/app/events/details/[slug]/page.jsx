@@ -245,8 +245,7 @@ export default function EventDetailsPage({ params }) {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-blue-900 mx-auto mb-4" />
-          <p className="text-gray-600">Loading event...</p>
-          <p className="text-sm text-gray-400 mt-2">Event slug: {eventSlug}</p>
+          <p className="text-gray-600">Loading event details...</p>
         </div>
       </div>
     );
@@ -258,8 +257,7 @@ export default function EventDetailsPage({ params }) {
         <div className="text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h2>
-          <p className="text-gray-600 mb-2">{error || 'The event you are looking for does not exist.'}</p>
-          <p className="text-sm text-gray-400 mb-6">Event slug: {eventSlug}</p>
+          <p className="text-gray-600 mb-6">{error || 'The event you are looking for does not exist.'}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/events">
               <button className="bg-blue-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-800 transition-colors">

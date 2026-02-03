@@ -9,58 +9,66 @@ export default function AboutHero() {
     <div className={styles.section}>
       {/* Pattern Overlay */}
       <div className={styles.patternOverlay}></div>
+      {/* Left-side gradient overlay so text is always readable over image (no white-on-white) */}
+      <div
+        className="absolute inset-0 z-[4] pointer-events-none"
+        style={{
+          background: 'linear-gradient(to right, rgba(15,36,102,0.97) 0%, rgba(15,36,102,0.85) 35%, rgba(15,36,102,0.4) 60%, transparent 85%)',
+        }}
+        aria-hidden
+      />
 
       {/* CONTENT */}
-      <div className="relative z-20 container mx-auto px-6 pt-24 pb-20">
+      <div className="relative z-20 container mx-auto px-4 sm:px-6 pt-20 pb-12 sm:pt-24 sm:pb-16 md:pb-20">
 
         {/* LEFT SIDE CONTENT */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="max-w-2xl space-y-6"
+          className="max-w-2xl space-y-4 sm:space-y-6"
         >
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="inline-flex items-center gap-2 bg-blue-100 px-4 py-1 rounded-full"
+            className="inline-flex items-center gap-2 bg-blue-100 px-3 py-1 sm:px-4 rounded-full"
           >
             <motion.div
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
             >
-              <Zap className="w-4 h-4 text-blue-600" />
+              <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
             </motion.div>
-            <span className="text-sm font-semibold text-blue-600">
+            <span className="text-xs sm:text-sm font-semibold text-blue-600">
               About BVT Training
             </span>
           </motion.div>
 
-          {/* Heading */}
+          {/* Heading - responsive sizes, white text for contrast on overlay */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight drop-shadow-md"
           >
             Maritime Excellence <br />
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-blue-600"
+              className="text-yellow-300"
             >
               Since 2025
             </motion.span>
           </motion.h1>
-          {/* Description */}
+          {/* Description - light text for contrast */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-lg md:text-xl text-gray-600 leading-relaxed"
+            className="text-base sm:text-lg md:text-xl text-blue-100 leading-relaxed"
           >
             Trusted by BVT forces, we provide industry-ready vocational training designed to build skills, confidence, and lasting careers.
           </motion.p>
@@ -117,7 +125,7 @@ export default function AboutHero() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.7 }}
-                className="text-3xl md:text-4xl font-bold text-white mb-4"
+                className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4"
               >
               About Our Mission
               </motion.h2>
@@ -125,7 +133,7 @@ export default function AboutHero() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
-                className="text-blue-100 text-lg leading-relaxed"
+                className="text-blue-100 text-base sm:text-lg leading-relaxed"
               >
               We are committed to excellence in BVT vocational training, 
               preparing professionals for successful maritime careers.

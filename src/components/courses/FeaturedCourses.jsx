@@ -116,17 +116,17 @@ export default function FeaturedCourses({ courses }) {
               onClick={goToPrevious}
               whileHover={{ scale: 1.1, x: -5 }}
               whileTap={{ scale: 0.95 }}
-              className="absolute left-[-20px] lg:left-[-50px] top-1/2 transform -translate-y-1/2 z-20 w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 rounded-full shadow-lg hover:from-yellow-400 hover:to-yellow-500 transition-all flex items-center justify-center border-2 border-white"
+              className="absolute left-2 sm:left-4 lg:left-[-50px] top-1/2 transform -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 rounded-full shadow-lg hover:from-yellow-400 hover:to-yellow-500 transition-all flex items-center justify-center border-2 border-white"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </motion.button>
             <motion.button
               onClick={goToNext}
               whileHover={{ scale: 1.1, x: 5 }}
               whileTap={{ scale: 0.95 }}
-              className="absolute right-[-20px] lg:right-[-50px] top-1/2 transform -translate-y-1/2 z-20 w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 rounded-full shadow-lg hover:from-yellow-400 hover:to-yellow-500 transition-all flex items-center justify-center border-2 border-white"
+              className="absolute right-2 sm:right-4 lg:right-[-50px] top-1/2 transform -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 rounded-full shadow-lg hover:from-yellow-400 hover:to-yellow-500 transition-all flex items-center justify-center border-2 border-white"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </motion.button>
 
             {/* Course Cards Container */}
@@ -138,7 +138,7 @@ export default function FeaturedCourses({ courses }) {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -300 }}
                   transition={{ duration: 0.6, ease: "easeInOut" }}
-                  className="bg-white rounded-2xl lg:rounded-3xl shadow-2xl border-2 border-gray-200 overflow-hidden h-[420px] lg:h-[380px]"
+                  className="bg-white rounded-2xl lg:rounded-3xl shadow-2xl border-2 border-gray-200 overflow-hidden min-h-[360px] h-auto sm:min-h-[380px] lg:h-[380px]"
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full">
                     {/* Course Image */}
@@ -254,23 +254,23 @@ export default function FeaturedCourses({ courses }) {
                               const originalPriceUSD = currentCourse.originalPriceUSD || currentCourse.originalPrice || null;
                               
                               if (!priceNOK && !priceUSD) {
-                                return <div className="text-lg lg:text-xl font-bold text-green-600">Free</div>;
+                                return <div className="text-sm sm:text-base lg:text-lg font-bold text-green-600">Free</div>;
                               }
                               
                               return (
                                 <>
                                   {originalPriceNOK && parseFloat(originalPriceNOK) > parseFloat(priceNOK || 0) && (
-                                    <div className="text-xs text-gray-500 line-through mb-0.5">
+                                    <div className="text-[10px] sm:text-xs text-gray-500 line-through mb-0.5">
                                       kr {originalPriceNOK}
                                       {originalPriceUSD && <span className="ml-1">(${originalPriceUSD})</span>}
                                     </div>
                                   )}
-                                  <div className="flex items-baseline gap-1.5">
-                                    <div className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                                  <div className="flex items-baseline gap-1.5 flex-wrap">
+                                    <div className="text-sm sm:text-base lg:text-xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
                                       kr {priceNOK}
                                     </div>
                                     {priceUSD && (
-                                      <div className="text-xs text-gray-500 font-medium">(${priceUSD})</div>
+                                      <div className="text-[10px] sm:text-xs text-gray-500 font-medium">(${priceUSD})</div>
                                     )}
                                   </div>
                                 </>

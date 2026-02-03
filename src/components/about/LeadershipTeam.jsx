@@ -80,8 +80,7 @@ export default function LeadershipTeam() {
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.5 }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-950/90 via-blue-950/50 to-transparent md:bg-gradient-to-t md:from-blue-950/90 md:via-blue-950/50 md:to-transparent"></div>
-                
+
                 {/* Experience Badge */}
                 <motion.div
                   initial={{ scale: 0 }}

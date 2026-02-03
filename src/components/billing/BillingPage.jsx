@@ -177,18 +177,18 @@ const BillingPage = ({
                 )}
 
                 <div className="border-t border-gray-200 pt-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="font-semibold">${price.toFixed(2)}</span>
+                  <div className="flex justify-between items-center mb-2 gap-2 min-w-0">
+                    <span className="text-sm sm:text-base text-gray-600">Subtotal</span>
+                    <span className="font-semibold text-sm sm:text-base truncate">${price.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Processing Fee</span>
-                    <span className="font-semibold">$0.00</span>
+                  <div className="flex justify-between items-center mb-2 gap-2">
+                    <span className="text-sm sm:text-base text-gray-600">Processing Fee</span>
+                    <span className="font-semibold text-sm sm:text-base">$0.00</span>
                   </div>
                   <div className="border-t border-gray-200 pt-2 mt-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-bold text-gray-900">Total</span>
-                      <span className="text-2xl font-bold text-blue-900">${price.toFixed(2)}</span>
+                    <div className="flex justify-between items-center gap-2 min-w-0">
+                      <span className="text-base sm:text-lg font-bold text-gray-900">Total</span>
+                      <span className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-900 truncate">${price.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

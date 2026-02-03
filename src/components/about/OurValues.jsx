@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Heart, Shield, Award, Users, Lightbulb, Target, Sparkles, CheckCircle2 } from "lucide-react";
+import { Heart, Shield, Award, Users, Lightbulb, Target, Sparkles } from "lucide-react";
 
 const VALUES = [
   {
@@ -153,22 +153,22 @@ export default function OurValues() {
                   <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3">{value.title}</h3>
                   <p className="text-gray-600 leading-relaxed mb-6 text-base lg:text-lg">{value.description}</p>
 
-                  {/* Details */}
-                  <div className="space-y-2">
+                  {/* Details - list with visible dots/bullets */}
+                  <ul className="space-y-2 list-none pl-0">
                     {value.details.map((detail, idx) => (
-                      <motion.div
+                      <motion.li
                         key={idx}
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: index * 0.1 + idx * 0.05 }}
-                        className="flex items-center gap-2"
+                        className="flex items-start gap-2"
                       >
-                        <CheckCircle2 className={`w-4 h-4 text-transparent bg-gradient-to-r ${value.color} bg-clip-text`} />
+                        <span className={`flex-shrink-0 w-1.5 h-1.5 rounded-full mt-1.5 bg-gradient-to-r ${value.color}`} />
                         <span className="text-sm lg:text-base text-gray-600">{detail}</span>
-                      </motion.div>
+                      </motion.li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
 
                 {/* Decorative Corner */}

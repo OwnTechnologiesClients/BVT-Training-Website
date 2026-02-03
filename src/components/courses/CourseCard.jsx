@@ -43,22 +43,13 @@ export default function CourseCard({ course, index }) {
           <ImagePlaceholder type="course" className="w-full h-full" />
         </div>
         
-        {/* Category Badge */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="absolute top-4 left-4"
-        >
-          <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+        {/* Category + Level badges in one row to prevent overlap */}
+        <div className="absolute top-2 left-2 right-2 sm:top-3 sm:left-3 sm:right-3 flex items-center justify-between gap-2 z-10">
+          <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold shadow-lg truncate max-w-[60%] sm:max-w-[70%] min-w-0" title={course.category || (isOnline ? 'Course' : 'Workshop')}>
             {course.category || (isOnline ? 'Course' : 'Workshop')}
           </span>
-        </motion.div>
-
-        {/* Level Badge */}
-        {course.level && (
-          <div className="absolute top-4 right-4">
-            <span className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-lg ${
+          {course.level && (
+            <span className={`flex-shrink-0 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold shadow-lg ${
               course.level === 'Beginner' ? 'bg-green-500 text-white' :
               course.level === 'Intermediate' ? 'bg-yellow-500 text-white' :
               course.level === 'Advanced' ? 'bg-red-500 text-white' :
@@ -66,8 +57,8 @@ export default function CourseCard({ course, index }) {
             }`}>
               {course.level}
             </span>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Featured Badge */}
         {course.isFeatured && (
@@ -178,8 +169,8 @@ export default function CourseCard({ course, index }) {
         )}
         
         {/* Price and CTA */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-          <div>
+        <div className="flex items-center justify-between gap-2 pt-4 border-t border-gray-200 min-w-0">
+          <div className="min-w-0">
             {(() => {
               const priceNOK = course.priceNOK || (course.price ? (parseFloat(course.price) * 10.5).toFixed(2) : null);
               const priceUSD = course.priceUSD || course.price || null;
@@ -187,23 +178,23 @@ export default function CourseCard({ course, index }) {
               const originalPriceUSD = course.originalPriceUSD || course.originalPrice || null;
               
               if (!priceNOK && !priceUSD) {
-                return <div className="text-base lg:text-lg font-bold text-green-600">Free</div>;
+                return <div className="text-sm sm:text-base lg:text-lg font-bold text-green-600">Free</div>;
               }
               
               return (
                 <div>
                   {originalPriceNOK && parseFloat(originalPriceNOK) > parseFloat(priceNOK || 0) && (
-                    <div className="text-xs text-gray-500 line-through mb-0.5">
+                    <div className="text-[10px] sm:text-xs text-gray-500 line-through mb-0.5">
                       kr {originalPriceNOK}
                       {originalPriceUSD && <span className="ml-1">(${originalPriceUSD})</span>}
                     </div>
                   )}
-                  <div className="flex items-baseline gap-1.5">
-                    <div className="text-lg lg:text-xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                  <div className="flex items-baseline gap-1 flex-wrap">
+                    <div className="text-sm sm:text-base lg:text-lg font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent truncate max-w-full">
                       kr {priceNOK}
                     </div>
                     {priceUSD && (
-                      <div className="text-xs text-gray-500 font-medium">(${priceUSD})</div>
+                      <div className="text-[10px] sm:text-xs text-gray-500 font-medium">(${priceUSD})</div>
                     )}
                   </div>
                 </div>

@@ -311,12 +311,12 @@ export default function CourseCategories({ courseType = 'online' }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex items-center gap-3 mb-6"
+            className="flex items-center gap-3 mb-4 sm:mb-6"
           >
-            <Award className="w-6 h-6 text-blue-900" />
-            <h3 className="text-2xl lg:text-3xl font-bold text-gray-900">{content.allTitle}</h3>
+            <Award className="w-5 h-5 sm:w-6 sm:h-6 text-blue-900 flex-shrink-0" />
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words min-w-0">{content.allTitle}</h3>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
             {categories.map((category, index) => {
                 const Icon = category.icon;
                 return (
@@ -334,19 +334,19 @@ export default function CourseCategories({ courseType = 'online' }) {
                     <div className="absolute top-2 right-2 w-16 h-16 border border-blue-600 rounded-full"></div>
                       </div>
 
-                  <div className="relative z-10 flex items-center gap-3">
+                  <div className="relative z-10 flex items-center gap-2 sm:gap-3 min-w-0">
                     {/* Icon */}
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
                       transition={{ duration: 0.3 }}
-                      className={`flex-shrink-0 w-12 h-12 lg:w-14 lg:h-14 bg-gradient-to-r ${category.color} rounded-xl flex items-center justify-center shadow-lg`}
+                      className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-r ${category.color} rounded-xl flex items-center justify-center shadow-lg`}
                     >
-                      <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
+                      <Icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-white" />
                     </motion.div>
 
                       {/* Content */}
-                      <div className="flex-1 min-w-0">
-                      <h4 className="text-sm lg:text-base font-bold text-gray-900 group-hover:text-blue-900 transition-colors truncate mb-1">
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                      <h4 className="text-xs sm:text-sm lg:text-base font-bold text-gray-900 group-hover:text-blue-900 transition-colors truncate mb-0.5 sm:mb-1">
                           {category.title}
                         </h4>
                       <div className="flex items-center gap-3 text-xs lg:text-sm text-gray-500">

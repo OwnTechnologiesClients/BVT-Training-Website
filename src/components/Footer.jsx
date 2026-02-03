@@ -211,6 +211,8 @@ export default function Footer() {
                 {[
                   { label: 'About Us', href: '/about' },
                   { label: 'Contact Us', href: '/contact' },
+                  { label: 'Terms and Conditions', href: '/terms' },
+                  { label: 'Privacy Policy', href: '/privacy' },
                   { label: 'Instructors', href: '/courses#instructors', onClick: handleInstructorsClick }
                 ].map((item, index) => (
                   <motion.li

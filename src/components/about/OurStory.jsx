@@ -58,7 +58,7 @@ const TIMELINE = [
 
 export default function OurStory() {
   return (
-    <section className="relative px-3 sm:px-4 lg:px-6 py-12 lg:py-16 bg-gradient-to-br from-white via-blue-50/50 to-white overflow-hidden">
+    <section className="relative px-3 sm:px-4 lg:px-6 py-12 lg:py-16 bg-gradient-to-br from-white via-blue-50/50 to-white overflow-x-hidden overflow-y-visible">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
@@ -100,12 +100,12 @@ export default function OurStory() {
           </p>
         </motion.div>
 
-        {/* Timeline */}
-        <div className="relative">
-          {/* Timeline Line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-blue-600 via-yellow-500 to-blue-600 rounded-full hidden lg:block"></div>
+        {/* Timeline - mobile: compact left-aligned line + cards; desktop: alternating */}
+        <div className="relative max-w-full">
+          {/* Timeline Line - left on mobile (aligned with dots), center on desktop */}
+          <div className="absolute left-3 w-1 h-full min-h-[120px] bg-gradient-to-b from-yellow-500 via-yellow-400 to-yellow-500 rounded-full lg:left-1/2 lg:transform lg:-translate-x-1/2 lg:min-h-0" aria-hidden></div>
 
-          <div className="space-y-12 lg:space-y-16">
+          <div className="space-y-8 sm:space-y-10 lg:space-y-16 pl-8 sm:pl-10 lg:pl-0">
             {TIMELINE.map((item, index) => {
               const Icon = item.icon;
               const isEven = index % 2 === 0;
@@ -117,54 +117,53 @@ export default function OurStory() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1, duration: 0.6 }}
-                  className={`flex flex-col lg:flex-row items-center ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}
+                  className={`relative flex flex-col lg:flex-row items-stretch lg:items-center ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}
                 >
-                  {/* Content */}
-                  <div className={`w-full lg:w-5/12 ${isEven ? 'lg:text-right lg:pr-8' : 'lg:text-left lg:pl-8'} mb-6 lg:mb-0`}>
+                  {/* Content card */}
+                  <div className={`w-full max-w-full lg:w-5/12 ${isEven ? 'lg:text-right lg:pr-8' : 'lg:text-left lg:pl-8'} mb-0 lg:mb-0`}>
                     <motion.div
-                      whileHover={{ y: -8, scale: 1.02 }}
-                      className={`bg-white rounded-xl lg:rounded-2xl p-4 lg:p-6 shadow-lg border-2 border-gray-200 hover:border-yellow-400 hover:shadow-2xl transition-all group ${isEven ? 'lg:ml-auto' : 'lg:mr-auto'} max-w-md`}
+                      whileHover={{ y: -6, scale: 1.02 }}
+                      className={`bg-white rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border-2 border-gray-200 hover:border-yellow-400 hover:shadow-2xl transition-all group ${isEven ? 'lg:ml-auto' : 'lg:mr-auto'} max-w-full lg:max-w-md w-full relative`}
                     >
-                      {/* Background Pattern */}
-                      <div className="absolute inset-0 opacity-5 rounded-2xl lg:rounded-3xl overflow-hidden">
-                        <div className={`absolute ${isEven ? 'top-4 right-4' : 'top-4 left-4'} w-32 h-32 border-2 border-blue-600 rounded-full`}></div>
+                      {/* Dot anchor: on mobile the dot sits at same vertical position as this card's top */}
+                      <div className="hidden lg:block" aria-hidden />
+                      {/* Background Pattern - subtle */}
+                      <div className="absolute inset-0 opacity-5 rounded-xl overflow-hidden pointer-events-none">
+                        <div className={`absolute ${isEven ? 'top-2 right-2' : 'top-2 left-2'} w-20 h-20 border border-blue-600 rounded-full`}></div>
                       </div>
 
                       <div className="relative z-10">
-                        <div className={`flex items-center gap-4 mb-4 ${isEven ? 'lg:justify-end' : 'lg:justify-start'} flex-col sm:flex-row`}>
-                          <motion.div
-                            whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
-                            transition={{ duration: 0.3 }}
-                            className={`w-14 h-14 bg-gradient-to-r ${item.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg`}
-                          >
-                            <Icon className="w-7 h-7 text-white" />
-                          </motion.div>
-                          <div className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">{item.year}</div>
+                        {/* Icon + Year in one compact row - no extra circle */}
+                        <div className={`flex items-center gap-3 mb-2 sm:mb-3 ${isEven ? 'lg:justify-end' : 'lg:justify-start'}`}>
+                          <span className={`inline-flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 lg:w-14 lg:h-14 rounded-xl bg-gradient-to-r ${item.color} shadow-md flex-shrink-0`}>
+                            <Icon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-7 lg:h-7 text-white" />
+                          </span>
+                          <span className="text-base sm:text-lg lg:text-2xl font-bold text-blue-900">{item.year}</span>
                         </div>
-                        <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                        <p className="text-gray-600 leading-relaxed text-base lg:text-lg">{item.description}</p>
+                        <h3 className="text-base sm:text-lg lg:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 leading-tight">{item.title}</h3>
+                        <p className="text-gray-600 leading-relaxed text-sm sm:text-base lg:text-lg">{item.description}</p>
                       </div>
 
-                      {/* Decorative Corner */}
-                      <div className={`absolute ${isEven ? 'top-0 right-0' : 'top-0 left-0'} w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-transparent ${isEven ? 'rounded-bl-full' : 'rounded-br-full'} opacity-0 group-hover:opacity-100 transition-opacity`}></div>
+                      {/* Decorative Corner - desktop only */}
+                      <div className={`hidden lg:block absolute ${isEven ? 'top-0 right-0' : 'top-0 left-0'} w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-transparent ${isEven ? 'rounded-bl-full' : 'rounded-br-full'} opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`}></div>
                     </motion.div>
                   </div>
 
-                  {/* Timeline Dot */}
-                  <div className="w-full lg:w-2/12 flex justify-center my-4 lg:my-0">
+                  {/* Timeline Dot - mobile: left on line, vertically centered with card; desktop: center */}
+                  <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 lg:relative lg:left-0 lg:top-0 lg:translate-x-0 lg:translate-y-0 lg:w-2/12 flex justify-center items-center lg:my-0">
                     <motion.div
                       initial={{ scale: 0 }}
                       whileInView={{ scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 + 0.3, type: "spring" }}
                       whileHover={{ scale: 1.2 }}
-                      className="relative z-10 w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full border-4 border-white shadow-xl flex items-center justify-center"
+                      className="relative z-10 w-5 h-5 sm:w-6 sm:h-6 lg:w-10 lg:h-10 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center ring-2 ring-yellow-400/30"
                     >
-                      <div className="w-3 h-3 lg:w-4 lg:h-4 bg-white rounded-full"></div>
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-4 lg:h-4 bg-white rounded-full block" />
                     </motion.div>
                   </div>
 
-                  {/* Empty Space */}
+                  {/* Empty Space for desktop layout */}
                   <div className="hidden lg:block w-5/12"></div>
                 </motion.div>
               );

@@ -152,7 +152,7 @@ export default function EventCard({
               if (price === 'Free') {
                 return (
                   <div className="flex items-center gap-2">
-                    <span className={`${compact ? 'text-lg' : 'text-2xl lg:text-3xl'} font-bold text-green-600`}>Free</span>
+                    <span className={`${compact ? 'text-base sm:text-lg' : 'text-base sm:text-lg lg:text-xl'} font-bold text-green-600`}>Free</span>
                   </div>
                 );
               }
@@ -174,7 +174,7 @@ export default function EventCard({
             if (!costNOK && !costUSD) {
               return (
                 <div className="flex items-center gap-2">
-                  <span className={`${compact ? 'text-lg' : 'text-2xl lg:text-3xl'} font-bold text-green-600`}>Free</span>
+                  <span className={`${compact ? 'text-base sm:text-lg' : 'text-base sm:text-lg lg:text-xl'} font-bold text-green-600`}>Free</span>
                 </div>
               );
             }
@@ -189,12 +189,12 @@ export default function EventCard({
                     </span>
                   </div>
                 )}
-                <div className="flex items-baseline gap-2">
-                  <span className={`${compact ? 'text-lg' : 'text-2xl lg:text-3xl'} font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent`}>
+                <div className="flex items-baseline gap-1.5 flex-wrap min-w-0">
+                  <span className={`${compact ? 'text-base sm:text-lg' : 'text-base sm:text-lg lg:text-xl xl:text-2xl'} font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent truncate max-w-full`}>
                     kr {costNOK}
                   </span>
                   {costUSD && (
-                    <span className={`${compact ? 'text-xs' : 'text-sm'} text-gray-500 font-medium`}>(${costUSD})</span>
+                    <span className={`${compact ? 'text-[10px] sm:text-xs' : 'text-[10px] sm:text-xs lg:text-sm'} text-gray-500 font-medium flex-shrink-0`}>(${costUSD})</span>
                   )}
                 </div>
               </div>

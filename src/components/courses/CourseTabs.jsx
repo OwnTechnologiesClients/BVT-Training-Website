@@ -535,7 +535,7 @@ export default function CourseTabs({
             )}
           </motion.div>
 
-          {/* Tab Navigation - Enhanced */}
+          {/* Tab Navigation - Horizontal scroll on mobile, wrap on desktop */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -543,76 +543,74 @@ export default function CourseTabs({
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mb-12"
           >
-            <div className="flex flex-wrap justify-center items-center gap-3 lg:gap-4">
-              {/* All Courses Button */}
+            <div className="flex flex-nowrap md:flex-wrap overflow-x-auto scrollbar-hide gap-2 sm:gap-3 lg:gap-4 justify-start md:justify-center items-center pb-2 -mx-1 px-1 md:mx-0 md:px-0 pr-4 md:pr-0 snap-x snap-mandatory md:snap-none">
+              {/* All Courses Button - never truncate */}
               <motion.button
                 onClick={() => {
                   setActiveTab('all');
-                  // Clear category from URL to show all courses
                   if (categoryFromUrl) {
                     router.push('/courses#courses-section');
                   }
                 }}
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className={`px-6 py-3 lg:px-8 lg:py-4 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 ${
+                className={`flex-shrink-0 whitespace-nowrap px-3 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 text-xs sm:text-base snap-start ${
                   activeTab === 'all'
                     ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 shadow-lg transform scale-105"
                     : "bg-white text-gray-700 hover:bg-gray-50 hover:scale-105 border-2 border-gray-200 hover:border-yellow-400"
                 }`}
               >
                 All Courses
-                <span className={`ml-2 text-xs lg:text-sm ${activeTab === 'all' ? 'opacity-90' : 'opacity-75'}`}>
+                <span className={`ml-1 sm:ml-2 text-[10px] sm:text-sm ${activeTab === 'all' ? 'opacity-90' : 'opacity-75'}`}>
                   ({tabs.find(t => t.id === 'all')?.count || 0})
                 </span>
               </motion.button>
 
-              {/* Category Dropdown */}
+              {/* Category Dropdown - responsive, no truncation in row */}
               {categoryTabs.length > 0 && (
-                <div className="relative">
+                <div className="relative flex-shrink-0 w-auto min-w-[140px] max-w-[160px] sm:min-w-[160px] sm:max-w-[200px] lg:max-w-none snap-start">
                   <select
                     value={displayCategory?.id || (activeTab !== 'all' && categoryTabs.find(t => t.id === activeTab)?.id) || ''}
                     onChange={handleCategoryChange}
-                    className={`appearance-none px-6 py-3 lg:px-8 lg:py-4 pr-12 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 border-2 ${
+                    className={`appearance-none w-full min-w-0 px-2.5 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 pr-8 sm:pr-12 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 border-2 text-xs sm:text-base ${
                       (displayCategory && activeTab === displayCategory.id) || (activeTab !== 'all' && categoryTabs.find(t => t.id === activeTab))
                         ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 shadow-lg border-yellow-600"
                         : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200 hover:border-yellow-400"
                     }`}
                   >
-                    <option value="">Select Category</option>
+                    <option value="">Category</option>
                     {categoryTabs.map((tab) => (
                       <option key={tab.id} value={tab.id}>
                         {tab.label} ({tab.count})
                       </option>
                     ))}
                   </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                    <ChevronDown className={`w-5 h-5 ${(displayCategory && activeTab === displayCategory.id) || (activeTab !== 'all' && categoryTabs.find(t => t.id === activeTab)) ? 'text-blue-950' : 'text-gray-500'}`} />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-2.5 sm:pr-4 pointer-events-none">
+                    <ChevronDown className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${(displayCategory && activeTab === displayCategory.id) || (activeTab !== 'all' && categoryTabs.find(t => t.id === activeTab)) ? 'text-blue-950' : 'text-gray-500'}`} />
                   </div>
                 </div>
               )}
 
-              {/* Other Filter Buttons */}
+              {/* Other Filter Buttons - whitespace-nowrap so Featured never truncates */}
               {otherTabs.map((tab) => (
                 <motion.button
                   key={tab.id}
                   onClick={() => {
                     setActiveTab(tab.id);
-                    // Clear category from URL for "Featured" and other special tabs to show all
                     if (categoryFromUrl && (tab.id === 'featured' || tab.id === 'certified')) {
                       router.push('/courses#courses-section');
                     }
                   }}
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`px-6 py-3 lg:px-8 lg:py-4 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 ${
+                  className={`flex-shrink-0 whitespace-nowrap px-3 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 rounded-xl lg:rounded-2xl font-bold transition-all duration-300 text-xs sm:text-base snap-start ${
                     activeTab === tab.id
                       ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-blue-950 shadow-lg transform scale-105"
                       : "bg-white text-gray-700 hover:bg-gray-50 hover:scale-105 border-2 border-gray-200 hover:border-yellow-400"
                   }`}
                 >
                   {tab.label}
-                  <span className={`ml-2 text-xs lg:text-sm ${activeTab === tab.id ? 'opacity-90' : 'opacity-75'}`}>
+                  <span className={`ml-1 sm:ml-2 text-[10px] sm:text-sm ${activeTab === tab.id ? 'opacity-90' : 'opacity-75'}`}>
                     ({tab.count})
                   </span>
                 </motion.button>

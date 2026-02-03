@@ -186,18 +186,18 @@ export default function ContactForm() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
+                <div className="min-w-0">
+                  <label className="block text-xs sm:text-sm font-bold text-gray-700 mb-2">
                     Phone Number
                   </label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0" />
                     <input
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all"
+                      className="w-full min-w-0 pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all placeholder:text-gray-400"
                       placeholder="Enter your phone number"
                     />
                   </div>

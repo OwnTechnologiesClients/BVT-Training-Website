@@ -83,7 +83,9 @@ function EventsContent() {
             title: event.title,
             description: event.description || '',
             date: event.date || event.startDate,
+            startDate: event.startDate || event.date,
             endDate: event.endDate,
+                registrationDeadline: event.registrationDeadline || null,
                 time: event.startTime && event.endTime 
                   ? `${event.startTime} - ${event.endTime}`
                   : event.startTime || 'TBA',
