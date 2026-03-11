@@ -6,11 +6,14 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, User, Shield, ArrowRight, Phone, MapPin, CheckCircle, Loader2 } from "lucide-react";
 import { sendVerificationOTP, verifyEmailAndRegister, resendVerificationOTP } from "@/lib/api/password";
+import { verifyPhoneNumber } from "@/lib/api/student";
+import { sendPhoneVerificationCode, verifyPhoneCode, cleanupRecaptcha } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { showSuccess, showError } from "@/lib/utils/sweetalert";
 import CountryCodeSelector from "@/components/common/CountryCodeSelector";
 import CountrySelector from "@/components/common/CountrySelector";
 import { countries } from "countries-list";
+import { AlertCircle, MessageSquare } from "lucide-react";
 // Country codes will be loaded dynamically in useEffect
 
 export default function RegisterPage() {
@@ -41,6 +44,11 @@ export default function RegisterPage() {
   const [countdown, setCountdown] = useState(0);
   const [countryCodes, setCountryCodes] = useState([]);
   const [countryCodesLoading, setCountryCodesLoading] = useState(true);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [phoneVerificationStep, setPhoneVerificationStep] = useState(0); // 0: not started, 1: OTP sent, 2: verified
+  const [phoneVerificationLoading, setPhoneVerificationLoading] = useState(false);
+  const [phoneVerificationCode, setPhoneVerificationCode] = useState("");
+  const [phoneConfirmationResult, setPhoneConfirmationResult] = useState(null);
   const [countriesList, setCountriesList] = useState([]);
 
   // Load countries list from countries-list package
@@ -246,7 +254,25 @@ export default function RegisterPage() {
     }));
     if (error) setError("");
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: "" }));
+
+    // Reset phone verification workflow if phone or country code changes
+    if (name === "phone" || name === "countryCode") {
+      if (phoneVerificationStep > 0 || isPhoneVerified) {
+        setPhoneVerificationStep(0);
+        setIsPhoneVerified(false);
+        setPhoneConfirmationResult(null);
+        setPhoneVerificationCode("");
+        cleanupRecaptcha("recaptcha-container-registration-phone");
+      }
+    }
   };
+
+  // Cleanup Recaptcha on unmount
+  useEffect(() => {
+    return () => {
+      cleanupRecaptcha("recaptcha-container-registration-phone");
+    };
+  }, []);
 
   const validateForm = () => {
     const newErrors = {};
@@ -262,15 +288,12 @@ export default function RegisterPage() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
-    
-    // Phone number is mandatory for email registration
-    if (!formData.countryCode || !formData.countryCode.trim()) {
-      newErrors.countryCode = "Country code is required";
-    }
-    if (!formData.phone || !formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    } else if (!/^\d{6,15}$/.test(formData.phone.trim())) {
-      newErrors.phone = "Phone number must be 6-15 digits";
+
+    // Phone number is optional, but if entered, it must be valid format
+    if (formData.phone && formData.phone.trim()) {
+      if (!/^\d{6,15}$/.test(formData.phone.trim())) {
+        newErrors.phone = "Phone number must be 6-15 digits";
+      }
     }
     
     // Address validation
@@ -325,6 +348,17 @@ export default function RegisterPage() {
 
     if (!validateForm()) {
       showError('Validation Error', 'Please fill all required fields correctly');
+      return;
+    }
+
+    // If phone is provided, it MUST be verified first
+    if (formData.phone && formData.phone.trim() && !isPhoneVerified) {
+      showError('Phone Verification Required', 'Please verify your mobile number before proceeding to email verification.');
+      // Scroll to phone section - find by ID or selector
+      const phoneSection = document.getElementById('phone-section-registration');
+      if (phoneSection) {
+        phoneSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       return;
     }
 
@@ -397,6 +431,7 @@ export default function RegisterPage() {
           postalCode: formData.postalCode?.trim() || undefined,
           country: formData.country || "Norway"
         },
+        isPhoneVerified: isPhoneVerified // Pass verification status
       };
 
       const response = await verifyEmailAndRegister(registrationData);
@@ -658,48 +693,175 @@ export default function RegisterPage() {
               </div>
 
               {/* Phone Number */}
-              <div>
+              <div id="phone-section-registration">
                 <label htmlFor="phone" className="block text-sm font-medium text-white mb-2">
-                  Phone Number <span className="text-red-400">*</span>
+                  Phone Number (Optional)
+                  {formData.phone && isPhoneVerified && (
+                    <span className="ml-2 inline-flex items-center gap-1 text-green-400 text-xs font-medium">
+                      <CheckCircle className="w-4 h-4" />
+                      Verified
+                    </span>
+                  )}
                 </label>
                 <div className="flex gap-3">
-                  <CountryCodeSelector
-                    value={formData.countryCode}
-                    onChange={handleInputChange}
-                    disabled={countryCodesLoading || countryCodes.length === 0}
-                    error={!!errors.countryCode}
-                    countryCodes={countryCodes}
-                    loading={countryCodesLoading}
-                    className="w-44"
-                    size="md"
-                  />
+                  <div className="relative w-32">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                      <Phone className="h-4 w-4 text-blue-300" />
+                    </div>
+                    <CountryCodeSelector
+                      value={formData.countryCode}
+                      onChange={(e) => handleInputChange({ target: { name: 'countryCode', value: e.target.value } })}
+                      disabled={countryCodesLoading || countryCodes.length === 0}
+                      error={!!errors.countryCode}
+                      countryCodes={countryCodes}
+                      loading={countryCodesLoading}
+                      className="w-full"
+                      size="md"
+                    />
+                  </div>
                   <div className="relative flex-1">
                     <input
                       id="phone"
                       name="phone"
                       type="tel"
-                      required
                       value={formData.phone}
                       onChange={(e) => {
                         const value = e.target.value.replace(/\D/g, '');
-                        setFormData(prev => ({
-                          ...prev,
-                          phone: value
-                        }));
-                        if (errors.phone) setErrors(prev => ({ ...prev, phone: "" }));
+                        handleInputChange({ target: { name: 'phone', value } });
                       }}
                       className={`block w-full px-4 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
                         errors.phone ? "border-red-500" : "border-white/30"
                       }`}
                       placeholder="Enter phone number"
                       maxLength={15}
-                      pattern="[0-9]{6,15}"
-                      title="Phone number must be 6-15 digits"
                     />
                   </div>
                 </div>
-                {errors.countryCode && <p className="text-red-400 text-sm mt-1">{errors.countryCode}</p>}
                 {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone}</p>}
+
+                {/* Phone Verification Flow */}
+                {formData.phone && formData.phone.trim() && (
+                  <div className="mt-4 space-y-3">
+                    {phoneVerificationStep === 0 && !isPhoneVerified && (
+                      <motion.button
+                        type="button"
+                        onClick={async () => {
+                          setPhoneVerificationLoading(true);
+                          try {
+                            cleanupRecaptcha("recaptcha-container-registration-phone");
+                            const cleanPhone = formData.phone.trim();
+                            const result = await sendPhoneVerificationCode(cleanPhone, formData.countryCode, "recaptcha-container-registration-phone");
+                            if (result.success) {
+                              setPhoneConfirmationResult(result.confirmationResult);
+                              setPhoneVerificationStep(1);
+                              showSuccess('Code Sent!', 'Verification code has been sent to your mobile number.');
+                            } else {
+                              throw new Error('Failed to send verification code');
+                            }
+                          } catch (error) {
+                            console.error('Error sending code:', error);
+                            cleanupRecaptcha("recaptcha-container-registration-phone");
+                            let errorMessage = 'Failed to send verification code. Please try again.';
+                            if (error.code === 'auth/invalid-phone-number') {
+                              errorMessage = 'Invalid phone number format.';
+                            } else if (error.code === 'auth/too-many-requests') {
+                              errorMessage = 'Too many requests. Please try again later.';
+                            }
+                            showError('Error', errorMessage);
+                          } finally {
+                            setPhoneVerificationLoading(false);
+                          }
+                        }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="flex items-center gap-2 py-2 px-4 border border-white/30 rounded-xl text-sm font-medium text-white bg-white/10 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all"
+                        disabled={phoneVerificationLoading}
+                      >
+                        {phoneVerificationLoading ? (
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Sending Code...</>
+                        ) : (
+                          <><MessageSquare className="w-4 h-4" /> Verify Mobile Number</>
+                        )}
+                      </motion.button>
+                    )}
+
+                    {phoneVerificationStep === 1 && (
+                      <div className="space-y-3 p-4 bg-white/5 rounded-xl border border-white/20">
+                        <p className="text-sm text-blue-200 text-center">
+                          Enter the 6-digit code sent to {formData.countryCode} {formData.phone}
+                        </p>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={phoneVerificationCode}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/\D/g, '').substring(0, 6);
+                              setPhoneVerificationCode(value);
+                            }}
+                            className="block w-full px-4 py-3 border border-white/30 rounded-xl bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all text-center text-2xl tracking-widest font-mono"
+                            placeholder="000000"
+                            maxLength={6}
+                            autoFocus
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <motion.button
+                            type="button"
+                            onClick={async () => {
+                              setPhoneVerificationLoading(true);
+                              try {
+                                if (phoneVerificationCode.length !== 6) return;
+                                const verifyResult = await verifyPhoneCode(phoneConfirmationResult, phoneVerificationCode);
+                                if (verifyResult.success) {
+                                  setIsPhoneVerified(true);
+                                  setPhoneVerificationStep(2);
+                                  showSuccess('Phone Verified!', 'Your mobile number has been verified successfully.');
+                                  cleanupRecaptcha("recaptcha-container-registration-phone");
+                                } else {
+                                  throw new Error('Verification failed');
+                                }
+                              } catch (error) {
+                                console.error('Error verifying code:', error);
+                                showError('Verification Failed', 'Invalid verification code. Please try again.');
+                              } finally {
+                                setPhoneVerificationLoading(false);
+                              }
+                            }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="flex-1 flex justify-center items-center gap-2 py-2 px-4 border border-transparent rounded-xl text-sm font-medium text-blue-950 bg-yellow-500 hover:bg-yellow-400 transition-all"
+                            disabled={phoneVerificationLoading || phoneVerificationCode.length !== 6}
+                          >
+                            {phoneVerificationLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                            Verify Code
+                          </motion.button>
+                          <motion.button
+                            type="button"
+                            onClick={() => {
+                              setPhoneVerificationStep(0);
+                              setPhoneVerificationCode("");
+                              setPhoneConfirmationResult(null);
+                              cleanupRecaptcha("recaptcha-container-registration-phone");
+                            }}
+                            className="px-4 py-2 border border-white/30 rounded-xl text-sm font-medium text-white bg-white/10 hover:bg-white/20 transition-all"
+                          >
+                            Change
+                          </motion.button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {!formData.phone && (
+                  <p className="text-blue-300 text-xs mt-2 flex items-center gap-1">
+                    <AlertCircle className="w-4 h-4" />
+                    Phone number is optional.
+                  </p>
+                )}
+                
+                {/* reCAPTCHA for registration phone verification */}
+                <div id="recaptcha-container-registration-phone"></div>
               </div>
 
               {/* Address Information */}

@@ -245,11 +245,9 @@ export default function CourseDetailsPage({ params }) {
   // Helper to get price in NOK (primary) and USD (secondary)
   const getPriceDisplay = (course) => {
     const priceNOK = course.priceNOK || (course.price ? (parseFloat(course.price) * 10.5).toFixed(2) : null);
-    const priceUSD = course.priceUSD || course.price || null;
     const originalPriceNOK = course.originalPriceNOK || (course.originalPrice ? (parseFloat(course.originalPrice) * 10.5).toFixed(2) : null);
-    const originalPriceUSD = course.originalPriceUSD || course.originalPrice || null;
     
-    return { priceNOK, priceUSD, originalPriceNOK, originalPriceUSD };
+    return { priceNOK, originalPriceNOK };
   };
 
   const getCTAButton = () => {
@@ -769,8 +767,8 @@ export default function CourseDetailsPage({ params }) {
                         )}
 
                         {(() => {
-                          const { priceNOK, priceUSD, originalPriceNOK, originalPriceUSD } = getPriceDisplay(courseData);
-                          if (!priceNOK && !priceUSD) return null;
+                          const { priceNOK, originalPriceNOK } = getPriceDisplay(courseData);
+                          if (!priceNOK) return null;
                           
                           return (
                             <div className="flex items-center justify-between py-3 border-t-2 border-blue-200 pt-3 mt-2">
@@ -779,18 +777,12 @@ export default function CourseDetailsPage({ params }) {
                                 {originalPriceNOK && parseFloat(originalPriceNOK) > parseFloat(priceNOK || 0) && (
                                   <div className="mb-1">
                                     <span className="text-sm text-gray-500 line-through mr-2">kr {originalPriceNOK}</span>
-                                    {originalPriceUSD && (
-                                      <span className="text-xs text-gray-400 line-through">(${originalPriceUSD})</span>
-                                    )}
                                   </div>
                                 )}
                                 <div className="flex items-baseline gap-2">
                                   <span className="text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
                                     kr {priceNOK}
                                   </span>
-                                  {priceUSD && (
-                                    <span className="text-sm text-gray-500 font-medium">(${priceUSD})</span>
-                                  )}
                                 </div>
                               </div>
                             </div>

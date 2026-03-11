@@ -140,15 +140,13 @@ export default function EventCard({
           </div>
         )}
 
-        {/* Price */}
         <div className={`${compact ? 'mb-3 pb-3' : 'mb-4 pb-4'} border-b border-gray-200`}>
           {(() => {
-            // Use priceNOK/priceUSD if available, otherwise fall back to price string (backward compatibility)
+            // Use priceNOK if available, otherwise fall back to price string (backward compatibility)
             let costNOK = priceNOK;
-            let costUSD = priceUSD;
             
             // If price is a string like "kr 2999" or "$299", parse it
-            if (!costNOK && !costUSD && price && typeof price === 'string') {
+            if (!costNOK && price && typeof price === 'string') {
               if (price === 'Free') {
                 return (
                   <div className="flex items-center gap-2">
@@ -160,18 +158,17 @@ export default function EventCard({
               if (price.startsWith('kr ')) {
                 costNOK = price.replace('kr ', '');
               } else if (price.startsWith('$')) {
-                costUSD = price.replace('$', '');
+                const costUSD = price.replace('$', '');
                 costNOK = (parseFloat(costUSD) * 10.5).toFixed(2);
               }
             }
             
             // If still no values, check if price is a number
-            if (!costNOK && !costUSD && typeof price === 'number') {
-              costUSD = price.toString();
+            if (!costNOK && typeof price === 'number') {
               costNOK = (price * 10.5).toFixed(2);
             }
             
-            if (!costNOK && !costUSD) {
+            if (!costNOK) {
               return (
                 <div className="flex items-center gap-2">
                   <span className={`${compact ? 'text-base sm:text-lg' : 'text-base sm:text-lg lg:text-xl'} font-bold text-green-600`}>Free</span>
@@ -185,7 +182,6 @@ export default function EventCard({
                   <div className="flex items-center gap-2">
                     <span className={`${compact ? 'text-sm' : 'text-base'} text-gray-400 line-through`}>
                       kr {originalPriceNOK}
-                      {originalPriceUSD && <span className="ml-1">(${originalPriceUSD})</span>}
                     </span>
                   </div>
                 )}
@@ -193,9 +189,6 @@ export default function EventCard({
                   <span className={`${compact ? 'text-base sm:text-lg' : 'text-base sm:text-lg lg:text-xl xl:text-2xl'} font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent truncate max-w-full`}>
                     kr {costNOK}
                   </span>
-                  {costUSD && (
-                    <span className={`${compact ? 'text-[10px] sm:text-xs' : 'text-[10px] sm:text-xs lg:text-sm'} text-gray-500 font-medium flex-shrink-0`}>(${costUSD})</span>
-                  )}
                 </div>
               </div>
             );

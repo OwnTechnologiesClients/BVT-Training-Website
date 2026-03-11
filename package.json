@@ -9,10 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^8.9.0",
     "axios": "^1.13.2",
     "countries-list": "^3.2.2",
     "country-list-with-dial-code-and-flag": "^5.1.1",
-    "firebase": "^11.10.0",
+    "firebase": "^12.10.0",
     "framer-motion": "^12.23.22",
     "lucide-react": "^0.544.0",
     "next": "^16.1.1",

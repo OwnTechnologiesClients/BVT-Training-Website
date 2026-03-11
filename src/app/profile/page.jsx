@@ -9,6 +9,7 @@ import { getStudentProfile, updateStudentProfile, verifyPhoneNumber } from "@/li
 import { sendPhoneVerificationCode, verifyPhoneCode, cleanupRecaptcha } from "@/lib/firebase";
 import { showSuccess, showError } from "@/lib/utils/sweetalert";
 import CountrySelector from "@/components/common/CountrySelector";
+import CountryCodeSelector from "@/components/common/CountryCodeSelector";
 import { countries } from "countries-list";
 
 export default function ProfilePage() {
@@ -37,6 +38,8 @@ export default function ProfilePage() {
   const [phoneVerificationLoading, setPhoneVerificationLoading] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
+  const [countryCodes, setCountryCodes] = useState([]);
+  const [countryCodesLoading, setCountryCodesLoading] = useState(true);
 
   // Load countries list from countries-list package
   useEffect(() => {
@@ -64,6 +67,82 @@ export default function ProfilePage() {
           { code: 'FR', name: 'France' }
         ]);
       }
+    }
+  }, []);
+
+  // Load country codes from country-list-with-dial-code-and-flag package
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const loadCountries = async () => {
+        try {
+          // Import the package dynamically
+          const CountryListModule = await import('country-list-with-dial-code-and-flag');
+          
+          // The package exports CountryList with getAll() method
+          const CountryList = CountryListModule.default || CountryListModule;
+          
+          if (CountryList && typeof CountryList.getAll === 'function') {
+            const countries = CountryList.getAll();
+            
+            if (countries && Array.isArray(countries) && countries.length > 0) {
+              // Helper function to generate flag emoji
+              const getFlagEmoji = (countryCode) => {
+                if (!countryCode || countryCode.length !== 2) return '';
+                const codePoints = countryCode
+                  .toUpperCase()
+                  .split('')
+                  .map(char => 127397 + char.charCodeAt());
+                return String.fromCodePoint(...codePoints);
+              };
+              
+              const allCountries = countries
+                .map((country) => {
+                  const dialCode = country.dial_code || country.dialCode || '';
+                  const code = dialCode ? (dialCode.toString().startsWith('+') ? dialCode.toString() : `+${dialCode}`) : '';
+                  const countryName = country.name || country.countryName || '';
+                  const countryCode = country.code || country.countryCode || country.iso2 || country.iso || '';
+                  
+                  const flag = country.flag || country.flagEmoji || country.emoji || '';
+                  
+                  let finalFlag = flag;
+                  if (!finalFlag && countryCode && countryCode.length === 2) {
+                    finalFlag = getFlagEmoji(countryCode);
+                  }
+                  
+                  return {
+                    id: `${code}-${countryCode || Math.random()}`,
+                    code: code,
+                    country: countryName,
+                    flag: finalFlag,
+                    countryCode: countryCode
+                  };
+                })
+                .filter(item => item.code && item.code.trim() && item.code !== '+' && item.code !== '++');
+              
+              const seenCodes = new Set();
+              const formattedCountries = allCountries
+                .filter(item => {
+                  if (!seenCodes.has(item.code)) {
+                    seenCodes.add(item.code);
+                    return true;
+                  }
+                  return false;
+                })
+                .sort((a, b) => a.country.localeCompare(b.country));
+              
+              if (formattedCountries.length > 0) {
+                setCountryCodes(formattedCountries);
+              }
+              setCountryCodesLoading(false);
+            }
+          }
+        } catch (error) {
+          console.error('Error loading country codes:', error);
+          setCountryCodesLoading(false);
+        }
+      };
+
+      loadCountries();
     }
   }, []);
 
@@ -428,14 +507,15 @@ export default function ProfilePage() {
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                         <Phone className="h-4 w-4 text-blue-300" />
                       </div>
-                      <input
-                        id="countryCode"
-                        name="countryCode"
-                        type="text"
+                      <CountryCodeSelector
                         value={formData.countryCode}
-                        onChange={handleInputChange}
-                        className="block w-full pl-8 pr-3 py-3 border rounded-xl bg-white/5 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all border-white/30"
-                        placeholder="+47"
+                        onChange={(e) => handleInputChange({ target: { name: 'countryCode', value: e.target.value } })}
+                        disabled={countryCodesLoading || countryCodes.length === 0}
+                        error={!!errors.countryCode}
+                        countryCodes={countryCodes}
+                        loading={countryCodesLoading}
+                        className="w-full"
+                        size="md"
                       />
                     </div>
                     <div className="relative flex-1">

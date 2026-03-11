@@ -743,9 +743,8 @@ export default function EventDetailsPage({ params }) {
                       <div className="space-y-4 mb-6">
                         {(() => {
                           const costNOK = eventData.costNOK || (eventData.cost ? (parseFloat(eventData.cost) * 10.5).toFixed(2) : null);
-                          const costUSD = eventData.costUSD || eventData.cost || null;
                           
-                          if (!costNOK && !costUSD) return null;
+                          if (!costNOK) return null;
                           
                           return (
                             <div className="flex items-center justify-between py-2 border-b border-gray-200">
@@ -758,9 +757,6 @@ export default function EventDetailsPage({ params }) {
                                   <span className="text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
                                     kr {costNOK}
                                   </span>
-                                  {costUSD && (
-                                    <span className="text-sm text-gray-500 font-medium">(${costUSD})</span>
-                                  )}
                                 </div>
                               </div>
                             </div>

@@ -173,11 +173,9 @@ export default function CourseCard({ course, index }) {
           <div className="min-w-0">
             {(() => {
               const priceNOK = course.priceNOK || (course.price ? (parseFloat(course.price) * 10.5).toFixed(2) : null);
-              const priceUSD = course.priceUSD || course.price || null;
               const originalPriceNOK = course.originalPriceNOK || (course.originalPrice ? (parseFloat(course.originalPrice) * 10.5).toFixed(2) : null);
-              const originalPriceUSD = course.originalPriceUSD || course.originalPrice || null;
               
-              if (!priceNOK && !priceUSD) {
+              if (!priceNOK) {
                 return <div className="text-sm sm:text-base lg:text-lg font-bold text-green-600">Free</div>;
               }
               
@@ -186,16 +184,12 @@ export default function CourseCard({ course, index }) {
                   {originalPriceNOK && parseFloat(originalPriceNOK) > parseFloat(priceNOK || 0) && (
                     <div className="text-[10px] sm:text-xs text-gray-500 line-through mb-0.5">
                       kr {originalPriceNOK}
-                      {originalPriceUSD && <span className="ml-1">(${originalPriceUSD})</span>}
                     </div>
                   )}
                   <div className="flex items-baseline gap-1 flex-wrap">
                     <div className="text-sm sm:text-base lg:text-lg font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent truncate max-w-full">
                       kr {priceNOK}
                     </div>
-                    {priceUSD && (
-                      <div className="text-[10px] sm:text-xs text-gray-500 font-medium">(${priceUSD})</div>
-                    )}
                   </div>
                 </div>
               );
