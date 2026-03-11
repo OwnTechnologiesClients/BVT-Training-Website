@@ -11,6 +11,7 @@ import ContinueLearning from "@/components/dashboard/ContinueLearning";
 import RecentActivity from "@/components/dashboard/RecentActivity";
 import UpcomingTests from "@/components/dashboard/UpcomingTests";
 import MyEvents from "@/components/dashboard/MyEvents";
+import MyInvoices from "@/components/dashboard/MyInvoices";
 import { useQuery } from "@/context/QueryContext";
 import { StudentQueryModal } from "@/components/queries";
 import { MessageCircle, Clock, BookOpen, Eye, GraduationCap, Calendar, FileText } from "lucide-react";
@@ -238,6 +239,12 @@ export default function DashboardPage() {
       label: "My Events",
       icon: <Calendar className="w-5 h-5" />,
       count: null // Events count would come from MyEvents component
+    },
+    {
+      id: "invoices",
+      label: "Invoices",
+      icon: <FileText className="w-5 h-5" />,
+      count: null
     }
   ];
 
@@ -470,6 +477,13 @@ export default function DashboardPage() {
             {activeTab === "events" && (
               <div className="space-y-8">
                 <MyEvents />
+              </div>
+            )}
+
+            {/* Invoices Tab */}
+            {activeTab === "invoices" && (
+              <div className="space-y-8">
+                <MyInvoices />
               </div>
             )}
           </div>
