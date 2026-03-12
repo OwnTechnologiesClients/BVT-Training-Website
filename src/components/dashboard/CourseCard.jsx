@@ -224,7 +224,7 @@ export default function CourseCard({ enrollment, onRefresh }) {
               className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
             >
               <CheckCircle className="w-4 h-4" />
-              View Certificate
+              View Details
             </Link>
           ) : (
             <button

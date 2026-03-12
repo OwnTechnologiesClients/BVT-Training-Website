@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getMyEnrollments } from "@/lib/api/enrollment";
+import { getMyCertificates } from "@/lib/api/certificates";
 import { getCourseStructure } from "@/lib/api/courses";
 import { useRouter } from "next/navigation";
 import DashboardStats from "@/components/dashboard/DashboardStats";
@@ -12,15 +13,17 @@ import RecentActivity from "@/components/dashboard/RecentActivity";
 import UpcomingTests from "@/components/dashboard/UpcomingTests";
 import MyEvents from "@/components/dashboard/MyEvents";
 import MyInvoices from "@/components/dashboard/MyInvoices";
+import MyCertificates from "@/components/dashboard/MyCertificates";
 import { useQuery } from "@/context/QueryContext";
 import { StudentQueryModal } from "@/components/queries";
-import { MessageCircle, Clock, BookOpen, Eye, GraduationCap, Calendar, FileText } from "lucide-react";
+import { MessageCircle, Clock, BookOpen, Eye, GraduationCap, Calendar, FileText, Award } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
   const { student, isAuthenticated, loading: authLoading } = useAuth();
   const { studentQueries } = useQuery();
   const [enrollments, setEnrollments] = useState([]);
+  const [certificatesCount, setCertificatesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedQueryId, setSelectedQueryId] = useState(null);
@@ -40,6 +43,7 @@ export default function DashboardPage() {
     if (isAuthenticated && student?.id && !hasFetchedRef.current) {
       hasFetchedRef.current = true;
       fetchEnrollments();
+      fetchCertificatesCount();
     }
   }, [isAuthenticated, authLoading, student]);
 
@@ -128,6 +132,17 @@ export default function DashboardPage() {
     }
   };
 
+  const fetchCertificatesCount = async () => {
+    try {
+      const response = await getMyCertificates();
+      if (response.success) {
+        setCertificatesCount(response.data?.length || 0);
+      }
+    } catch (err) {
+      console.error("Error fetching certificates count:", err);
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -199,6 +214,7 @@ export default function DashboardPage() {
     averageProgress: enrollments.length > 0
       ? Math.round(enrollments.reduce((sum, e) => sum + calculateProgress(e), 0) / enrollments.length)
       : 0,
+    certificates: certificatesCount,
   };
 
   // Get last accessed ONLINE course - show most recently accessed, prioritizing active courses
@@ -227,6 +243,12 @@ export default function DashboardPage() {
       label: "My Courses",
       icon: <GraduationCap className="w-5 h-5" />,
       count: enrollments.length
+    },
+    {
+      id: "certificates",
+      label: "My Certificates",
+      icon: <Award className="w-5 h-5" />,
+      count: certificatesCount
     },
     {
       id: "tests",
@@ -484,6 +506,13 @@ export default function DashboardPage() {
             {activeTab === "invoices" && (
               <div className="space-y-8">
                 <MyInvoices />
+              </div>
+            )}
+
+            {/* Certificates Tab */}
+            {activeTab === "certificates" && (
+              <div className="space-y-8">
+                <MyCertificates />
               </div>
             )}
           </div>

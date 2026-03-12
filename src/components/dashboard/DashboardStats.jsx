@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, PlayCircle, CheckCircle, Award } from "lucide-react";
+import { BookOpen, PlayCircle, CheckCircle, Award, GraduationCap } from "lucide-react";
 
 export default function DashboardStats({ stats }) {
   const statCards = [
@@ -31,6 +31,13 @@ export default function DashboardStats({ stats }) {
       icon: Award,
       color: "bg-purple-500",
       textColor: "text-purple-600",
+    },
+    {
+      title: "Certificates",
+      value: stats.certificates || 0,
+      icon: GraduationCap,
+      color: "bg-blue-900",
+      textColor: "text-blue-950",
     },
   ];
 
