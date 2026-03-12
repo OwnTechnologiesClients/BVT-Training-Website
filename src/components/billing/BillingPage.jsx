@@ -169,12 +169,6 @@ const BillingPage = ({
                   </>
                 )}
               </button>
-
-              <div className="flex flex-wrap justify-center gap-4 grayscale opacity-50 select-none">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" alt="Visa" className="h-6" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-8" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-6" />
-              </div>
             </div>
           </motion.div>
         </div>
